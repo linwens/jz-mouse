@@ -1,5 +1,9 @@
 <template>
-  <div>小鼠管理</div>
+  <div>
+    <main-box>
+      <div>小鼠管理</div>
+    </main-box>
+  </div>
 </template>
 
 <script>

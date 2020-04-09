@@ -50,6 +50,7 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/views/variety/index'),
         name: 'varietyList',
+        hidden: true,
         meta: { title: '品系列表', noCache: true }
       },
       {
@@ -76,6 +77,7 @@ export const constantRoutes = [
         path: 'main',
         component: () => import('@/views/mouse/index'),
         name: 'mouseMain',
+        hidden: true,
         meta: { title: '详情', noCache: true }
       },
       {
@@ -123,6 +125,7 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/views/experiment/index'),
         name: 'experimentList',
+        hidden: true,
         meta: { title: '列表', noCache: true }
       },
       {
@@ -169,6 +172,7 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/views/breed/index'),
         name: 'breedList',
+        hidden: true,
         meta: { title: '列表', noCache: true }
       },
       {

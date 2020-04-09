@@ -1,5 +1,9 @@
 <template>
-  <div>待处理事项</div>
+  <div>
+    <main-box>
+      <div>待处理事项</div>
+    </main-box>
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,9 @@
 <template>
-  <div>移除小鼠列表</div>
+  <div>
+    <main-box>
+      <div>移除小鼠列表</div>
+    </main-box>
+  </div>
 </template>
 
 <script>

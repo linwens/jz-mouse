@@ -1,5 +1,9 @@
 <template>
-  <div>品系管理</div>
+  <div>
+    <main-box>
+      <div>品系管理</div>
+    </main-box>
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,9 @@
 <template>
-  <div>笼位选择</div>
+  <div>
+    <main-box>
+      <div>笼位选择</div>
+    </main-box>
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,9 @@
 <template>
-  <div>查看/新增繁育组</div>
+  <div>
+    <main-box>
+      <div>查看/新增繁育组</div>
+    </main-box>
+  </div>
 </template>
 
 <script>

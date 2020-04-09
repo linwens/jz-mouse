@@ -1,5 +1,9 @@
 <template>
-  <div>查看/编辑小鼠</div>
+  <div>
+    <main-box>
+      <div>查看/编辑小鼠</div>
+    </main-box>
+  </div>
 </template>
 
 <script>
