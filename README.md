@@ -1,1 +1,1 @@
-# jz-mouse
+# vue-mouse
