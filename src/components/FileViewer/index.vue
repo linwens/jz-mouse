@@ -1,28 +1,45 @@
 <template>
   <div>
     <el-button type="text" @click="dialogVisible = true">打开file-viewer</el-button>
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="30%"
-      :before-close="handleClose"
-    >
-      <div v-if="type === 'pdf'">
+    <div v-if="type === 'pdf'">
+      <el-dialog
+        title="pdf查看"
+        fullscreen
+        custom-class="mouse__preview"
+        :visible.sync="dialogVisible"
+        width="30%"
+        :before-close="handleClose"
+      >
         <embed
           :src="fileUrl"
           style="width: 100%; height: 100%"
-        ></embde>
-      </div>
-      <div v-if="type === 'img'"></div>
-      <div v-if="type === 'doc'">
+        >
+      </el-dialog>
+    </div>
+    <div v-if="type === 'img'">
+      <el-image
+        style="width: 100px; height: 100px"
+        :src="fileUrl"
+        :preview-src-list="[fileUrl]"
+      />
+    </div>
+    <div v-if="type === 'office'">
+      <el-dialog
+        title="office查看"
+        fullscreen
+        :visible.sync="dialogVisible"
+        width="30%"
+        :before-close="handleClose"
+        custom-class="mouse__preview"
+      >
         <iframe
           frameborder="0"
-          :src="'https://view.officeapps.live.com/op/view.aspx?src=' + fileUrl"
+          :src="'https://view.officeapps.live.com/op/view.aspx?src=' + officeUrl"
           width="100%"
+          height="100%"
         />
-      </div>
-      <div v-if="type === 'xls'"></div>
-    </el-dialog>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -31,14 +48,14 @@ export default {
   props: {
     fileUrl: {
       type: String,
-      default: ''
+      default: 'http://localhost/test.pdf'
     }
   },
   data() {
     return {
       dialogVisible: false,
-      // filesType: ['doc', 'xls', 'pdf', 'jpg', 'png'],
-      type: ''
+      type: '',
+      officeUrl: ''
     }
   },
   created() {
@@ -47,12 +64,18 @@ export default {
   methods: {
     // 获取类型
     getType(url) {
-      const type = url.match(/\.(.*)$/g)[0].slice(1)
-      const pattImg = new RegExp(/(jpg|png)/g)
+      const type = url.match(/\.[^\.]+$/g)[0].slice(1)
+      const pattImg = new RegExp(/(jpg|png|jpeg)/g)
+      const pattOffice = new RegExp(/(docx|xlsx|pptx)/g)
       if (pattImg.test(type)) {
         this.type = 'img'
+      } else if (pattOffice.test(type)) {
+        this.type = 'office'
+        this.officeUrl = encodeURIComponent(this.fileUrl)
+      } else {
+        this.type = type
       }
-      this.type = type
+      console.log('type==', this.type)
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -66,5 +89,9 @@ export default {
 </script>
 
 <style lang="scss">
-
+  .mouse__preview{
+    .el-dialog__body{
+      height: calc( 100% - 54px);
+    }
+  }
 </style>

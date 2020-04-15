@@ -1,8 +1,9 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
+    <sum-bar />
     <guide :text="'展示引导'" />
-    <file-viewer />
+    <file-viewer :file-url="fileUrl" />
     <el-button type="text" @click="dialogVisible = true">点击打开 Family-tree</el-button>
     <el-dialog
       title="提示"
@@ -19,6 +20,7 @@
 import Guide from '@/components/Guide'
 import FileViewer from '@/components/FileViewer'
 import FamilyTree from '@/components/Charts/FamilyTree'
+import SumBar from '@/components/Charts/SumBar'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -26,11 +28,13 @@ export default {
   components: {
     Guide,
     FileViewer,
-    FamilyTree
+    FamilyTree,
+    SumBar
   },
   data() {
     return {
-      dialogVisible: false
+      dialogVisible: false,
+      fileUrl: 'http://localhost/test.pdf'
     }
   },
   computed: {
