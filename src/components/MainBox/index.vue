@@ -12,7 +12,8 @@ export default {
 
 <style lang="scss">
   .mouse__basic-mainBox {
+    overflow: hidden;
     box-sizing: border-box;
-    padding: 20px;
+    padding: 0 16px;
   }
 </style>

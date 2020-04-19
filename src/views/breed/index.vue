@@ -1,7 +1,10 @@
 <template>
   <div>
     <main-box>
-      <div>繁育管理</div>
+      <div>
+        <span>繁育管理</span>
+        <el-button type="primary">新增繁育组</el-button>
+      </div>
     </main-box>
   </div>
 </template>

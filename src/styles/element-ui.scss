@@ -47,3 +47,14 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+// 设置文字按钮的不同类型色
+.el-button--text.btn-text--danger{
+  color:#EB5444;
+  &:focus, &:hover{
+    color:#ef7669;
+  }
+  &:active{
+    color:#d44c3d;
+  }
+}
