@@ -6,12 +6,15 @@
       style="width: 100%"
       :stripe="tableOption.stripe"
       :border="tableOption.border"
+      :header-cell-style="tableOption.headerCellStyle"
+      :row-class-name="tableRowClassName"
     >
       <el-table-column
         v-if="!tableOption.noIndex"
         type="index"
         label="序号"
         :align="tableOption.align"
+        :index="formatIndex"
         width="50"
         fixed
       />
@@ -22,6 +25,9 @@
         :label="item['label']"
         :width="item['width']"
         :fixed="item['fixed']"
+        :show-overflow-tooltip="item['overHidden']"
+        :class-name="item['className']"
+        :label-class-name="item['labelClassName']"
         :align="item['align'] || tableOption.align"
       >
         <template slot-scope="scope">
@@ -43,6 +49,7 @@
         v-if="tableOption.menu"
         label="操作"
         :align="tableOption.align || 'center'"
+        :width="tableOption.menuWidth"
         fixed="right"
       >
         <template slot-scope="scope">
@@ -59,6 +66,7 @@
 <script>
 import { dateTimeFormatter } from '@/utils'
 import Pagination from '@/components/Pagination'
+import axios from 'axios'
 
 export default {
   filters: {
@@ -78,11 +86,7 @@ export default {
     data: {
       type: Array,
       default() {
-        return [{
-          createTime: 1581929792000,
-          roleName: '王小虎',
-          roleDesc: '上海市普陀区金沙江路 1518 弄'
-        }]
+        return []
       }
     },
     // 表格配置
@@ -111,44 +115,10 @@ export default {
   },
   data() {
     return {
-      pageInfo: this.page,
-      tableOptionMock: {
-        stripe: true,
-        column: [{
-          prop: 'date',
-          label: '日期',
-          width: '180',
-          fixed: '',
-          format: 'yyyy-MM-dd hh:mm' // 界面展示的格式
-        }, {
-          prop: 'name',
-          label: '姓名',
-          slot: true
-        }, {
-          prop: 'address',
-          label: '地址'
-        }]
-      },
-      tableDataMock: [{
-        date: 1581929792000,
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: 1581728614000,
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: 1581628614000,
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: 1581528614000,
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      pageInfo: this.page
     }
   },
-  computed: {
+  asyncComputed: {
     pagPos: { // 分页器的对齐位置
       get() {
         const posObj = {
@@ -162,26 +132,70 @@ export default {
     option: {
       get() {
         let newOpt = null
+        const dictPromises = []
         try {
           newOpt = this.tableOption.column.filter(el => !el.hide)
+          // 获取动态数据字典值
+          newOpt.forEach(ele => {
+            if (ele.dicUrl) {
+              const dictReq = () => {
+                return axios({
+                  url: process.env.VUE_APP_BASE_API + ele.dicUrl,
+                  method: ele.dicMethod || 'get'
+                })
+              }
+              const promise = new Promise((reslove, reject) => {
+                dictReq().then(res => {
+                  ele['dicData'] = res.data.data || []
+                  reslove()
+                }).catch((err) => {
+                  console.log(`[ERROR::]字典值获取失败!\n${err}`)
+                })
+              })
+              dictPromises.push(promise)
+            }
+          })
+          Promise.all(dictPromises).then(res => {
+            this.$emit('on-load') // 初始化请求
+          })
         } catch (err) {
-          console.log('tableOption---err->', err)
+          console.log(err)
         }
         return newOpt
+      }
+    },
+    indexBaseNum: {
+      get() {
+        if (this.pageInfo.page < 2) {
+          return 1
+        } else {
+          return (this.pageInfo.page - 1) * this.pageInfo.limit + 1
+        }
       }
     }
   },
   created() {
-    this.$emit('on-load') // 初始化请求
+    // this.$emit('on-load') // 初始化请求
   },
   methods: {
     getData() { // 修改分页数据时
       this.$emit('refresh-change')
+    },
+    formatIndex(index) {
+      index = index + this.indexBaseNum
+      return index < 10 ? '0' + index : index
+    },
+    tableRowClassName({ row, rowIndex }) {
+      if (this.tableOption.rowClassName) {
+        this.tableOption.stripe = false
+        if (rowIndex % 2 !== 0) {
+          return this.tableOption.rowClassName
+        }
+      }
     }
   }
 }
 </script>
 
 <style lang="scss">
-
 </style>

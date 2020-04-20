@@ -2,7 +2,7 @@
   <div>
     <main-box>
       <div class="delList__sum fs14">总计：{{ sum }}条数据</div>
-      <div class="ofh">
+      <div class="bd-gray">
         <merge-table
           ref="crud"
           :page="page"
@@ -109,7 +109,7 @@ export default {
       }).finally(() => {
         this.tableLoading = false
       })
-    },
+    }
   }
 }
 </script>

@@ -16,6 +16,10 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+// https://github.com/foxbenjaminfox/vue-async-computed
+import AsyncComputed from 'vue-async-computed' // 实现异步计算属性
+
+Vue.use(AsyncComputed)
 
 /**
  * If you don't want to use mock-server

@@ -1,7 +1,7 @@
 export const tableOption = {
   border: false,
   noIndex: true,
-  stripe: false,
+  stripe: true,
   headerCellStyle: {
     color: '#333',
     backgroundColor: '#F0F0F0'
@@ -9,28 +9,22 @@ export const tableOption = {
   rowClassName: 'mouse__table--stripe',
   align: 'left',
   menu: true,
+  menuWidth: 130,
 
   column: [{
-    label: '状态',
-    prop: 'status',
-    align: 'center',
-    slot: true
-  }, {
-    label: '类型',
-    prop: 'type'
-  }, {
-    label: '标题',
-    prop: 'title',
+    label: '繁育组名称',
+    prop: 'num',
     overHidden: true
   }, {
-    width: 200,
-    label: '提醒时间',
-    prop: 'tipsTime',
+    label: '繁育时间',
+    prop: 'borth_time',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
-    width: 200,
-    label: '发送时间',
-    prop: 'sendTime',
+    label: '小鼠数量',
+    prop: 'weight'
+  }, {
+    label: '创建时间',
+    prop: 'borth_time',
     format: 'yyyy-MM-dd hh:mm:ss'
   }]
 }

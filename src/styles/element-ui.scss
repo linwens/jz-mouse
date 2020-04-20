@@ -58,3 +58,13 @@
     color:#d44c3d;
   }
 }
+
+// 表格斑马纹 背景色
+.el-table .mouse__table--stripe {
+  background-color: #F0F0F0;
+}
+
+// 表单错误提示位置往上移
+.el-form-item__error {
+  padding-top: 0;
+}

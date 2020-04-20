@@ -3,106 +3,112 @@
     <main-box class="pos-r">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane :label="`未读(${tabsSum[0]})`" name="first">
-          <merge-table
-            ref="crud"
-            :page="page"
-            :data="tableData"
-            :table-option="tableOption"
-            :table-loading="tableLoading"
-            @on-load="getList"
-            @refresh-change="handleRefreshChange"
-          >
-            <template slot="status" slot-scope="scope">
-              <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
-              <svg-icon v-else icon-class="isReaded" class="fs30" />
-            </template>
-            <template slot="menu" slot-scope="scope">
-              <el-button
-                type="text"
-                size="mini"
-                class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
-              >
-                删除
-              </el-button>
-              <el-button
-                v-if="scope.scope.row.status === 1"
-                type="text"
-                size="mini"
-                @click="markReaded(scope.scope.row)"
-              >
-                标为已读
-              </el-button>
-            </template>
-          </merge-table>
+          <div class="bd-gray">
+            <merge-table
+              ref="crud"
+              :page="page"
+              :data="tableData"
+              :table-option="tableOption"
+              :table-loading="tableLoading"
+              @on-load="getList"
+              @refresh-change="handleRefreshChange"
+            >
+              <template slot="status" slot-scope="scope">
+                <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
+                <svg-icon v-else icon-class="isReaded" class="fs30" />
+              </template>
+              <template slot="menu" slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="mini"
+                  class="btn-text--danger"
+                  @click="rowItemDel(scope.scope.row)"
+                >
+                  删除
+                </el-button>
+                <el-button
+                  v-if="scope.scope.row.status === 1"
+                  type="text"
+                  size="mini"
+                  @click="markReaded(scope.scope.row)"
+                >
+                  标为已读
+                </el-button>
+              </template>
+            </merge-table>
+          </div>
         </el-tab-pane>
         <el-tab-pane :label="`已读(${tabsSum[1]})`" name="second">
-          <merge-table
-            ref="crud"
-            :page="page"
-            :data="tableData"
-            :table-option="tableOption"
-            :table-loading="tableLoading"
-            @on-load="getList"
-            @refresh-change="handleRefreshChange"
-          >
-            <template slot="status" slot-scope="scope">
-              <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
-              <svg-icon v-else icon-class="isReaded" class="fs30" />
-            </template>
-            <template slot="menu" slot-scope="scope">
-              <el-button
-                type="text"
-                size="mini"
-                class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
-              >
-                删除
-              </el-button>
-              <el-button
-                v-if="scope.scope.row.status === 1"
-                type="text"
-                size="mini"
-                @click="markReaded(scope.scope.row)"
-              >
-                标为已读
-              </el-button>
-            </template>
-          </merge-table>
+          <div class="bd-gray">
+            <merge-table
+              ref="crud"
+              :page="page"
+              :data="tableData"
+              :table-option="tableOption"
+              :table-loading="tableLoading"
+              @on-load="getList"
+              @refresh-change="handleRefreshChange"
+            >
+              <template slot="status" slot-scope="scope">
+                <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
+                <svg-icon v-else icon-class="isReaded" class="fs30" />
+              </template>
+              <template slot="menu" slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="mini"
+                  class="btn-text--danger"
+                  @click="rowItemDel(scope.scope.row)"
+                >
+                  删除
+                </el-button>
+                <el-button
+                  v-if="scope.scope.row.status === 1"
+                  type="text"
+                  size="mini"
+                  @click="markReaded(scope.scope.row)"
+                >
+                  标为已读
+                </el-button>
+              </template>
+            </merge-table>
+          </div>
         </el-tab-pane>
         <el-tab-pane :label="`全部(${tabsSum[2]})`" name="third">
-          <merge-table
-            ref="crud"
-            :page="page"
-            :data="tableData"
-            :table-option="tableOption"
-            :table-loading="tableLoading"
-            @on-load="getList"
-            @refresh-change="handleRefreshChange"
-          >
-            <template slot="status" slot-scope="scope">
-              <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
-              <svg-icon v-else icon-class="isReaded" class="fs30" />
-            </template>
-            <template slot="menu" slot-scope="scope">
-              <el-button
-                type="text"
-                size="mini"
-                class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
-              >
-                删除
-              </el-button>
-              <el-button
-                v-if="scope.scope.row.status === 1"
-                type="text"
-                size="mini"
-                @click="markReaded(scope.scope.row)"
-              >
-                标为已读
-              </el-button>
-            </template>
-          </merge-table>
+          <div class="bd-gray">
+            <merge-table
+              ref="crud"
+              :page="page"
+              :data="tableData"
+              :table-option="tableOption"
+              :table-loading="tableLoading"
+              @on-load="getList"
+              @refresh-change="handleRefreshChange"
+            >
+              <template slot="status" slot-scope="scope">
+                <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
+                <svg-icon v-else icon-class="isReaded" class="fs30" />
+              </template>
+              <template slot="menu" slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="mini"
+                  class="btn-text--danger"
+                  @click="rowItemDel(scope.scope.row)"
+                >
+                  删除
+                </el-button>
+                <el-button
+                  v-if="scope.scope.row.status === 1"
+                  type="text"
+                  size="mini"
+                  @click="markReaded(scope.scope.row)"
+                >
+                  标为已读
+                </el-button>
+              </template>
+            </merge-table>
+          </div>
         </el-tab-pane>
       </el-tabs>
       <div class="todo__allReaded pos-a">

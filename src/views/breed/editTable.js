@@ -9,6 +9,7 @@ export const tableOption = {
   rowClassName: 'mouse__table--stripe',
   align: 'left',
   menu: true,
+  menuWidth: 102,
 
   column: [{
     label: '编号',
@@ -27,10 +28,9 @@ export const tableOption = {
       }
     ]
   }, {
-    width: 200,
-    label: '出生时间',
-    prop: 'borth_time',
-    format: 'yyyy-MM-dd hh:mm:ss'
+    label: '周龄',
+    prop: 'week',
+    overHidden: true
   }, {
     label: '体重',
     prop: 'weight'
@@ -51,7 +51,10 @@ export const tableOption = {
     prop: 'health_status',
     overHidden: true
   }, {
-    label: '类型',
-    prop: 'type'
+    width: 120,
+    label: '受孕时间',
+    prop: 'preg_time',
+    slot: true,
+    format: 'yyyy-MM-dd hh:mm:ss'
   }]
 }
