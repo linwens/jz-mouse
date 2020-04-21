@@ -23,18 +23,18 @@
             <div v-if="type==='add'" class="df s-jcsb breed__input--width">
               <el-form-item prop="date">
                 <el-date-picker
+                  v-model="breedForm.date"
                   class="w140 mr3"
                   size="small"
-                  v-model="breedForm.date"
                   type="date"
                   placeholder="选择日期"
                 />
               </el-form-item>
               <el-form-item prop="time">
                 <el-time-picker
+                  v-model="breedForm.time"
                   class="w120 pr0"
                   size="small"
-                  v-model="breedForm.time"
                   placeholder="选择时间"
                 />
               </el-form-item>
@@ -44,7 +44,7 @@
         </el-form>
       </div>
       <div class="df s-jcfe mb15">
-        <el-button type="primary" size="small" class="w100">添加</el-button>
+        <el-button v-if="type==='add'" type="primary" size="small" class="w100">添加</el-button>
       </div>
       <div class="bd-gray">
         <merge-table
@@ -63,7 +63,7 @@
             <el-button
               type="text"
               size="mini"
-              @click="goPage(scope.scope.row)"
+              @click="goMouse(scope.scope.row)"
             >
               查看
             </el-button>
@@ -80,14 +80,36 @@
       </div>
       <div class="breed__edit--btns pos-a w-100 h60 df s-aic">
         <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
-        <el-button type="primary" size="small" class="w100" @click="submitForm('breedForm')">确定</el-button>
+        <el-button type="primary" size="small" class="w100" @click="submitForm('breedForm')">{{ type==='add' ? '确定' : '编辑/确定' }}</el-button>
       </div>
     </main-box>
+    <!-- 设置时间弹窗 -->
+    <el-dialog
+      title="设置受孕时间"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-form ref="breedTimeForm" :model="breedTime" class="df s-jcc">
+        <el-form-item class="mb0">
+          <el-date-picker
+            v-model="breedTime.date"
+            class="w140 mr3"
+            size="small"
+            type="date"
+            placeholder="选择日期"
+          />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitPregTime()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { dateTimeFormatter } from '@/utils'
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './editTable'
 import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
@@ -97,11 +119,6 @@ export default {
   components: {
     MergeTable
   },
-  filters: {
-    timeFormat: function(val, cForm) {
-      return dateTimeFormatter(val, cForm)
-    }
-  },
   data() {
     return {
       type: '',
@@ -110,6 +127,10 @@ export default {
         date: 0,
         time: 1587375335305
       },
+      breedTime: {
+        date: 0
+      },
+      dialogVisible: false,
       tableOption,
       tableLoading: false,
       page: {
@@ -118,6 +139,7 @@ export default {
         limit: 10 // 每页显示多少条
       },
       tableData: [{
+        id: 111,
         num: 0,
         sex: 0,
         week: 'XX周Z天',
@@ -128,6 +150,7 @@ export default {
         health_status: 1,
         preg_time: 1587277449395
       }, {
+        id: 222,
         num: 0,
         sex: 1,
         week: 'XX周Z天',
@@ -148,8 +171,11 @@ export default {
     goBack() {
       this.$router.back()
     },
-    goPage(row) {
-      this.$router.push({ name: 'breedEdit', params: { id: 1, type: 'edit' }})
+    goMouse(row) {
+      this.goPage('mouseEdit', { id: row.id })
+    },
+    goPage(r, obj) {
+      this.$router.push({ name: r, params: obj })
     },
     handleRefreshChange() {
       this.getList()
@@ -199,7 +225,19 @@ export default {
     },
     // 设置受孕时间
     setPregTime(row) {
+      console.log(row)
+      this.dialogVisible = true
+      this.breedTime.date = row.preg_time
+    },
+    submitPregTime() {
 
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
     }
   }
 }

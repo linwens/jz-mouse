@@ -224,7 +224,4 @@ export default {
   .el-tabs__header {
     margin-top: 9px;
   }
-  .el-tabs__nav-wrap::after {
-    background: none;
-  }
 </style>

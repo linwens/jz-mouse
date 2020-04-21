@@ -13,6 +13,12 @@ import MainBox from '@/components/MainBox'
 import App from './App'
 import store from './store'
 import router from './router'
+// 引入全局过滤器
+import * as filters from './filters'
+Object.keys(filters).forEach(key => {
+  console.log(key)
+  Vue.filter(key, filters[key])
+})
 
 import '@/icons' // icon
 import '@/permission' // permission control

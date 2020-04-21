@@ -116,14 +116,14 @@ export const constantRoutes = [
       {
         path: 'edit',
         component: () => import('@/views/mouse/edit'),
-        name: 'edit',
+        name: 'mouseEdit',
         hidden: true,
         meta: { title: '查看/编辑', noCache: true }
       },
       {
         path: 'cage',
         component: () => import('@/views/mouse/cage'),
-        name: 'cage',
+        name: 'mouseCage',
         hidden: true,
         meta: { title: '选择笼位', noCache: true }
       }

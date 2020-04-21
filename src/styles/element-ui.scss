@@ -68,3 +68,14 @@
 .el-form-item__error {
   padding-top: 0;
 }
+
+// 文字按钮 去掉上下padding
+.el-button--text {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+// tab不要底部边框
+.el-tabs__nav-wrap::after {
+  background: none;
+}
