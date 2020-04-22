@@ -40,7 +40,7 @@
               <p class="mouse__info--p">
                 <span class="mouse__info--span">附件:</span>
                 <el-button type="text">查看</el-button>
-                <svg-icon icon-class="upload" />
+                <svg-icon icon-class="upload" class="cp" />
               </p>
             </div>
 
@@ -113,8 +113,8 @@
             <div class="df mb16">
               <el-button class="w80" size="small">新增笼位</el-button>
               <el-button class="w80" size="small">移笼</el-button>
-              <el-button class="w80" size="small">新建小鼠</el-button>
-              <el-button class="w80" size="small">新建子鼠</el-button>
+              <el-button class="w80" size="small" @click="goAdd()">新建小鼠</el-button>
+              <el-button class="w80" size="small" @click="goBuild()">新建子鼠</el-button>
               <el-button class="w80" type="primary" plain size="small" style="margin-right: 46px;">移除小鼠</el-button>
               <el-button class="w80" size="small">编辑</el-button>
               <el-button class="w80" size="small">取消</el-button>
@@ -141,6 +141,17 @@ export default {
     }
   },
   methods: {
+    // 新增小鼠
+    goAdd(row) {
+      this.goPage('addMouse', { id: 1 })
+    },
+    // 新增子鼠
+    goBuild(row) {
+      this.goPage('addChild', { id: 2 })
+    },
+    goPage(r, obj) {
+      this.$router.push({ name: r, params: obj })
+    },
     handleClick(tab, event) {
       console.log(tab, event)
     }
