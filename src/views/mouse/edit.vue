@@ -162,15 +162,17 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="实验记录" name="second">
-          <merge-table
-            ref="crud"
-            :page="page"
-            :data="tableData"
-            :table-option="tableOption"
-            :table-loading="tableLoading"
-            @on-load="getList"
-            @refresh-change="handleRefreshChange"
-          />
+          <div class="ml16 mr16 bd-gray">
+            <merge-table
+              ref="crud"
+              :page="page"
+              :data="tableData"
+              :table-option="tableOption"
+              :table-loading="tableLoading"
+              @on-load="getList"
+              @refresh-change="handleRefreshChange"
+            />
+          </div>
         </el-tab-pane>
       </el-tabs>
       <!-- 选择品系弹窗 -->

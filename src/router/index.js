@@ -159,7 +159,14 @@ export const constantRoutes = [
         component: () => import('@/views/experiment/add'),
         name: 'experimentAdd',
         hidden: true,
-        meta: { title: '添加小鼠', noCache: true }
+        meta: { title: '新增实验组', noCache: true }
+      },
+      {
+        path: 'addMouse',
+        component: () => import('@/views/experiment/addMouse'),
+        name: 'experimentAddMouse',
+        hidden: true,
+        meta: { title: '实验组增加小鼠', noCache: true }
       }
     ]
   },

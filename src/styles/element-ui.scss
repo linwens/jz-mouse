@@ -58,6 +58,15 @@
     color:#d44c3d;
   }
 }
+.el-button--text.btn-text--black{
+  color:#333;
+  &:focus, &:hover{
+    color:#5c5c5c;
+  }
+  &:active{
+    color:#2e2e2e;
+  }
+}
 
 // 表格斑马纹 背景色
 .el-table .mouse__table--stripe {
@@ -86,5 +95,25 @@
 }
 
 .el-dialog__body {
-  padding: 16px 62px 16px 34px;
+  padding: 16px 34px 16px 34px;
+}
+
+// form-item的label不设置padding-left, 改变字体颜色
+.el-form-item__label {
+  color: #333;
+  padding-right: 0;
+}
+
+// tag标签蓝色
+.el-tag {
+  color:#409EFF;
+  background-color:#ecf5ff;
+  border-color:#d9ecff;
+}
+.el-tag .el-tag__close {
+  color: #58A2FB;
+  &:hover{
+    color: #fff;
+    background-color: #409eff;
+  }
 }

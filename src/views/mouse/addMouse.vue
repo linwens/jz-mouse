@@ -303,10 +303,6 @@ export default {
 
 <style lang="scss">
   .mouse__addNew {
-    .el-form-item__label {
-      color: #333;
-      padding-right: 0;
-    }
     &--form{
       margin-bottom: 80px;
     }
