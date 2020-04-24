@@ -58,7 +58,7 @@ export const constantRoutes = [
   {
     path: '/variety',
     component: Layout,
-    redirect: '/variety/list',
+    redirect: '/variety/management',
     name: 'variety',
     meta: {
       title: '品系管理',
@@ -66,9 +66,9 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'list',
+        path: 'management',
         component: () => import('@/views/variety/index'),
-        name: 'varietyList',
+        name: 'varietyManagement',
         // hidden: true,
         meta: { title: '品系管理', noCache: true, breadcrumb: false }
       },
@@ -78,6 +78,13 @@ export const constantRoutes = [
         name: 'varietyEdit',
         hidden: true,
         meta: { title: '品系详情', noCache: true }
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/variety/list'),
+        name: 'varietyList',
+        hidden: true,
+        meta: { title: '品系列表', noCache: true }
       }
     ]
   },

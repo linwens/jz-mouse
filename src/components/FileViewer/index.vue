@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="text" @click="dialogVisible = true">打开file-viewer</el-button>
+    <el-button type="text" @click="dialogVisible = true">查看</el-button>
     <div v-if="type === 'pdf'">
       <el-dialog
         title="pdf查看"

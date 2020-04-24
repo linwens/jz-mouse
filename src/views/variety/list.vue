@@ -3,11 +3,9 @@
     <main-box>
       <div>
         <div class="df s-jcsb s-aic mt8 mb8">
-          <span>品系管理</span>
+          <span>品系列表</span>
           <div>
             <add-variety-btn />
-            <el-button type="primary" class="ml10" @click="goGenes()">新增基因型</el-button>
-            <el-button type="primary" @click="goList()">查看品系列表</el-button>
           </div>
         </div>
         <div class="bd-gray">
@@ -47,7 +45,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
-import { tableOption } from './table'
+import { tableOption } from './listTable'
 import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/variety'
 
 export default {
@@ -67,18 +65,12 @@ export default {
       },
       tableData: [{
         name: 'RON-234',
-        genes: '基因型xxx',
-        breed_condition: '繁育组XX-XX到了繁育时间',
-        fur_color: '红色',
-        app_domain: '繁育组XX-XX到了繁育时间',
-        man: '张三'
+        man: '张三',
+        create_time: 1587375335305
       }, {
         name: 'RON-234',
-        genes: '基因型xxx',
-        breed_condition: '繁育组XX-XX到了繁育时间',
-        fur_color: '红色',
-        app_domain: '繁育组XX-XX到了繁育时间',
-        man: '张三'
+        man: '张三',
+        create_time: 1587375335305
       }]
     }
   },
@@ -86,23 +78,15 @@ export default {
 
   },
   methods: {
-    goGenes() {
-      this.goPage('varietyEdit', { type: 'add' })
-    },
-    goList() {
-      this.goPage('varietyList', { type: 'list' })
-    },
     goEdit(row) {
-      this.goPage('varietyEdit', { id: 1, type: 'edit' })
+      this.goPage({ id: 1, type: 'edit' })
     },
-    goPage(r, obj) {
-      this.$router.push({ name: r, params: obj })
+    goPage(obj) {
+      this.$router.push({ name: 'varietyEdit', params: obj })
     },
     handleRefreshChange() {
       this.getList()
     },
-    // 新增品系
-    addVariety() {},
     // 删除
     rowItemDel: function(row) {
       const _this = this
