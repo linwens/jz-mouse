@@ -44,7 +44,7 @@
         </el-form>
       </div>
       <div class="df s-jcfe mb15">
-        <el-button v-if="type==='add'" type="primary" size="small" class="w100">添加</el-button>
+        <el-button v-if="type==='add'" type="primary" size="small" class="w100" @click="goAdd()">添加</el-button>
       </div>
       <div class="bd-gray">
         <merge-table
@@ -165,9 +165,14 @@ export default {
   },
   created() {
     console.log(this.$route)
+    this.$route.meta.title = this.$route.params.type === 'add' ? '新增' : '编辑/查看'
     this.type = this.$route.params.type
   },
   methods: {
+    // 添加小鼠
+    goAdd(row) {
+      this.goPage('experimentAddMouse', { id: 1, type: 'add' })
+    },
     goBack() {
       this.$router.back()
     },

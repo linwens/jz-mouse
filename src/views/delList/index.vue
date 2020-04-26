@@ -31,7 +31,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/delList'
+import { delItemObj, fetchList } from '@/api/delList'
 
 export default {
   name: 'DelList',
@@ -72,7 +72,7 @@ export default {
     }
   },
   created() {
-
+    this.getList()
   },
   methods: {
     handleRefreshChange() {

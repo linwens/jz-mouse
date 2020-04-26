@@ -112,15 +112,22 @@
           <el-button class="w80" size="small" @click="goBack()">返回</el-button>
           <el-button class="w80" size="small">确认添加</el-button>
         </div>
-        我的鼠笼
+        <div>
+          <mouse-cage />
+        </div>
       </div>
     </main-box>
   </div>
 </template>
 
 <script>
+import MouseCage from '@/components/MouseCage'
+
 export default {
   name: 'MouseMain',
+  components: {
+    MouseCage
+  },
   data() {
     return {
       activeName: 'first', // 鼠笼tab
@@ -128,8 +135,12 @@ export default {
       color: '#C4C4CD'
     }
   },
+  created() {
+
+  },
   methods: {
     goBack() {
+      console.log(this.$route)
       this.$router.back()
     },
     // 新增小鼠
@@ -146,6 +157,14 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     }
+  },
+  // 路由守卫，复用的页面，判断来源
+  beforeRouteEnter(to, from, next) {
+    console.log('enter====>', to, from)
+    next(vm => {
+      // 通过 `vm` 访问组件实例
+      console.log('enter===next=>', to, from)
+    })
   }
 }
 </script>

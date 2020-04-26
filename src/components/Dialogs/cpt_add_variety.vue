@@ -1,9 +1,9 @@
 <template>
   <div class="dib">
-    <el-button type="primary" @click="varietyDialog = true">新建品系</el-button>
+    <el-button type="primary" @click="varietyDialog = true">{{ btnText }}</el-button>
     <!-- 新增品系弹窗 -->
     <el-dialog
-      title="新增品系"
+      :title="btnText"
       :visible.sync="varietyDialog"
       width="433px"
     >
@@ -37,6 +37,12 @@
 <script>
 export default {
   name: 'VarietyEdit',
+  props: {
+    btnText: {
+      type: String,
+      default: '新增品系'
+    }
+  },
   data() {
     return {
       addVarietyForm: {
@@ -50,8 +56,10 @@ export default {
       this.$refs['addVarietyForm'].validate((valid) => {
         if (valid) {
           this.varietyDialog = false
+          // 提交成功后触发done
+          this.$emit('done')
         } else {
-          return false;
+          return false
         }
       })
       // 填充品系

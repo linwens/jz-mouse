@@ -16,6 +16,30 @@ export function getInfo(token) {
   })
 }
 
+/* export function login(data) {
+  return request({
+    url: '/token/login',
+    method: 'post',
+    data
+  })
+} */
+
+export function loginUser(data) {
+  return request({
+    url: '/token/imitateUser/login',
+    method: 'get',
+    data
+  })
+}
+
+export function loginAdmin(data) {
+  return request({
+    url: '/token/imitateAdmin/login',
+    method: 'get',
+    data
+  })
+}
+
 export function logout() {
   return request({
     url: '/vue-admin-template/user/logout',

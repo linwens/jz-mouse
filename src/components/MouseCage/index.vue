@@ -35,12 +35,16 @@
           <div
             v-for="item in items"
             :key="item.id"
-            class="mouse__item pos-r ta-c"
+            class="mouse__item ta-c"
+            :class="{'isChoiced': item.id == curId}"
+            @click="taggle(item.id)"
           >
-            <svg-icon icon-class="mouse" class="fs50" />
-            <p>AD-01</p>
-            <span>fdafdfs</span>
-            <i class="pos-a mouse__item--female">02</i>
+            <div class="pos-r">
+              <svg-icon icon-class="mouse" class="fs50" />
+              <p>AD-01</p>
+              <span>fdafdfs</span>
+              <i class="pos-a mouse__item--female">02</i>
+            </div>
           </div>
         </div>
         <div class="list__content--female df s-jcfs s-aic ofh">
@@ -48,11 +52,14 @@
             v-for="item in items"
             :key="item.id"
             class="mouse__item pos-r ta-c"
+            @click="taggle(item.id)"
           >
-            <svg-icon icon-class="mouse" class="fs50" />
-            <p>AD-01</p>
-            <span>fdafdfs</span>
-            <i class="pos-a mouse__item--male">02</i>
+            <div class="pos-r">
+              <svg-icon icon-class="mouse" class="fs50" />
+              <p>AD-01</p>
+              <span>fdafdfs</span>
+              <i class="pos-a mouse__item--male">02</i>
+            </div>
           </div>
         </div>
       </div>
@@ -65,31 +72,42 @@ export default {
   name: 'MouseCage',
   data() {
     return {
+      curId: null,
       items: [
         {
           id: 1
         }, {
-          id: 1
+          id: 2
         }, {
-          id: 1
+          id: 3
         }, {
-          id: 1
+          id: 4
         }, {
-          id: 1
+          id: 5
         }, {
-          id: 1
+          id: 6
         }, {
-          id: 1
+          id: 7
         }, {
-          id: 1
+          id: 8
         }, {
-          id: 1
+          id: 9
         }, {
-          id: 1
+          id: 10
         }, {
-          id: 1
+          id: 11
         }
       ]
+    }
+  },
+  methods: {
+    taggle(id) {
+      if (this.curId === id) { // 再次点击取消选框
+        this.curId = null
+      } else {
+        this.curId = id
+      }
+      console.log(id, this.curId)
     }
   }
 }
@@ -143,14 +161,16 @@ export default {
       padding: 0 13px;
       margin-right: 3px;
       box-sizing: border-box;
-      border: 2px solid #fff;
+      border-width: 2px;
+      border-style: solid;
+      border-color: #fff;
       border-radius: 4px;
       font-size: 14px;
       color: #333;
       cursor: pointer;
 
-      &:hover {
-        border: 2px solid #00CB7C;
+      &.isChoiced {
+        border-color: #00CB7C;
       }
 
       &--female {
@@ -161,14 +181,14 @@ export default {
         background-color: #58A2FB;
       }
 
-      > span {
+      span {
         font-size: 12px;
         color: #999;
       }
 
-      > i {
+      i {
         top: 17px;
-        right: 8px;
+        right: -3px;
         width: 18px;
         height: 18px;
         line-height: 18px;

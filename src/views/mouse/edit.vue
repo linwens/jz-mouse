@@ -365,6 +365,14 @@ export default {
         this.tableLoading = false
       })
     }
+  },
+  // 路由守卫，复用的页面，判断来源
+  beforeRouteEnter(to, from, next) {
+    console.log('enter====>', to, from)
+    next(vm => {
+      // 通过 `vm` 访问组件实例
+      console.log('enter===next=>', to, from)
+    })
   }
 }
 </script>

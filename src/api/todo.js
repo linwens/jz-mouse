@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(query) { // 待办事项列表查询
   return request({
-    url: '/dict/page',
+    url: '/sysremind/page',
     method: 'get',
     params: query
   })
@@ -16,61 +16,31 @@ export function fetchItemList(query) {
   })
 }
 
-export function addItemObj(obj) {
+export function addItemObj(obj) { // 新增待办事项
   return request({
-    url: '/dict/item',
+    url: '/sysremind',
     method: 'post',
     data: obj
   })
 }
 
-export function getItemObj(id) {
+export function getItemObj(id) { // 获取待办事项
   return request({
-    url: '/dict/item/' + id,
+    url: '/sysremind/' + id,
     method: 'get'
   })
 }
 
-export function delItemObj(id) {
+export function delItemObj(id) { // 删除待办事项
   return request({
-    url: '/dict/item/' + id,
+    url: '/sysremind/' + id,
     method: 'delete'
   })
 }
 
-export function putItemObj(obj) {
+export function putItemObj(obj) { // 修改待办事项
   return request({
-    url: '/dict/item',
-    method: 'put',
-    data: obj
-  })
-}
-
-export function addObj(obj) {
-  return request({
-    url: '/dict/',
-    method: 'post',
-    data: obj
-  })
-}
-
-export function getObj(id) {
-  return request({
-    url: '/dict/' + id,
-    method: 'get'
-  })
-}
-
-export function delObj(row) {
-  return request({
-    url: '/dict/' + row.id,
-    method: 'delete'
-  })
-}
-
-export function putObj(obj) {
-  return request({
-    url: '/dict/',
+    url: '/sysremind',
     method: 'put',
     data: obj
   })

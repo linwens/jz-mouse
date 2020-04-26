@@ -5,7 +5,7 @@
         <div class="df s-jcsb s-aic mt8 mb8">
           <span>品系列表</span>
           <div>
-            <add-variety-btn />
+            <add-variety-btn @done="getList" />
           </div>
         </div>
         <div class="bd-gray">
@@ -39,6 +39,36 @@
         </div>
       </div>
     </main-box>
+    <!-- 编辑品系弹窗 -->
+    <el-dialog
+      title="编辑品系"
+      :visible.sync="varietyDialog"
+      width="433px"
+    >
+      <div class="mouse__varietyDialog">
+        <el-form ref="addVarietyForm" :model="addVarietyForm" label-position="left" size="mini">
+          <el-form-item
+            label="品系名称:"
+            label-width="80px"
+            class="mb8"
+            prop="name"
+            :rules="[
+              { required: true, message: '品系名称不能为空'}
+            ]"
+          >
+            <el-input
+              v-model="addVarietyForm.name"
+              placeholder="请输入品系名称"
+              class="w250"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="varietyDialog = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="doEdit()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -71,7 +101,12 @@ export default {
         name: 'RON-234',
         man: '张三',
         create_time: 1587375335305
-      }]
+      }],
+      // 编辑品系
+      addVarietyForm: {
+        name: ''
+      },
+      varietyDialog: false
     }
   },
   created() {
@@ -79,7 +114,7 @@ export default {
   },
   methods: {
     goEdit(row) {
-      this.goPage({ id: 1, type: 'edit' })
+      this.varietyDialog = true
     },
     goPage(obj) {
       this.$router.push({ name: 'varietyEdit', params: obj })
@@ -118,6 +153,17 @@ export default {
       }).finally(() => {
         this.tableLoading = false
       })
+    },
+    // 编辑品系
+    doEdit() {
+      this.$refs['addVarietyForm'].validate((valid) => {
+        if (valid) {
+          this.varietyDialog = false
+        } else {
+          return false
+        }
+      })
+      // 填充品系
     }
   }
 }

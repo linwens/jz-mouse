@@ -16,9 +16,9 @@ export function fetchItemList(query) {
   })
 }
 
-export function addItemObj(obj) { // 新增
+export function addNewGenes(obj) { // 新增基因型
   return request({
-    url: '/micevarieties',
+    url: '/micegene',
     method: 'post',
     data: obj
   })
