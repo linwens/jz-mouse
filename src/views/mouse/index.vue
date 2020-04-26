@@ -119,7 +119,9 @@
               <el-button class="w80" size="small">编辑</el-button>
               <el-button class="w80" size="small">取消</el-button>
             </div>
-            我的鼠笼
+            <div>
+              <mouse-cage />
+            </div>
           </el-tab-pane>
           <el-tab-pane label="其他鼠笼" name="second">
             其他鼠笼
@@ -131,8 +133,13 @@
 </template>
 
 <script>
+import MouseCage from '@/components/MouseCage'
+
 export default {
   name: 'MouseMain',
+  components: {
+    MouseCage
+  },
   data() {
     return {
       activeName: 'first', // 鼠笼tab
