@@ -7,10 +7,15 @@
       :visible.sync="varietyDialog"
     >
       <div class="mouse__varietyDialog">
-        <el-radio v-model="variety_radio" label="1" class="mr0" size="small" border>品系A</el-radio>
-        <el-radio v-model="variety_radio" label="2" class="mr0" size="small" border>品系B</el-radio>
-        <el-radio v-model="variety_radio" label="3" class="mr0" size="small" border>品系C</el-radio>
-        <el-radio v-model="variety_radio" label="4" class="mr0" size="small" border>品系D</el-radio>
+        <el-radio
+          v-for="item in list"
+          :key="item.id"
+          v-model="variety_radio"
+          :label="item"
+          class="mr0"
+          size="small"
+          border
+        >{{ item.varietiesName }}</el-radio>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="varietyDialog = false">取 消</el-button>
@@ -21,14 +26,21 @@
 </template>
 
 <script>
+import { fetchList } from '@/api/variety'
 export default {
   name: 'ChoiceVariety',
   data() {
     return {
+      list: [],
       // 品系选择
       variety_radio: null,
       varietyDialog: false
     }
+  },
+  created() {
+    fetchList().then((res) => {
+      this.list = res.data.records
+    })
   },
   methods: {
     // 选择品系 or 基因型
@@ -37,7 +49,9 @@ export default {
     },
     fillVarity() {
       this.varietyDialog = false
+      console.log(this.variety_radio)
       // 填充品系
+      this.$emit('update:variety', JSON.stringify(this.variety_radio))
     }
   }
 }

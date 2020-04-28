@@ -1,12 +1,13 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { setStorageItem, getStorageItem, removeStorageItem, setLocalStorageItem, getLocalStorageItem } from '@/utils/storage'
 import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
     token: getToken(),
-    name: '',
-    avatar: ''
+    info: getStorageItem('u-info') || {},
+    inputHistory: getLocalStorageItem('u-history') || {}
   }
 }
 
@@ -19,11 +20,21 @@ const mutations = {
   SET_TOKEN: (state, token) => {
     state.token = token
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  SET_INFO: (state, info) => {
+    state.info = info
+    setStorageItem('u-info', JSON.stringify(info))
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
+  REMOVE_INFO: (state) => {
+    state.info = {}
+    removeStorageItem('u-info')
+  },
+  SET_INPUT_HISTORY: (state, key, value) => {
+    const oldAll = state.inputHistory // 大对象
+    const oldValue = oldAll[key] ? oldAll[key] : [] // 每个key下是一个字符串数组
+    oldValue.push(value)
+    oldAll[key] = oldValue
+    setLocalStorageItem('u-history', JSON.stringify(oldAll))
+    state.inputHistory = oldAll
   }
 }
 
@@ -35,6 +46,7 @@ const actions = {
       login({ username: username.trim(), password: password }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
+        commit('SET_INFO', data)
         setToken(data.token)
         resolve()
       }).catch(error => {
@@ -44,7 +56,7 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
+  /* getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
@@ -62,7 +74,7 @@ const actions = {
         reject(error)
       })
     })
-  },
+  }, */
 
   // user logout
   logout({ commit, state }) {
@@ -85,6 +97,11 @@ const actions = {
       commit('RESET_STATE')
       resolve()
     })
+  },
+
+  // 添加输入框记录
+  setInputHistory({ commit, state }, key, value) {
+    commit('SET_INPUT_HISTORY', key, value)
   }
 }
 

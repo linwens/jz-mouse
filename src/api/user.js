@@ -1,12 +1,12 @@
 import request from '@/utils/request'
 
-export function login(data) {
+/* export function login(data) {
   return request({
     url: '/vue-admin-template/user/login',
     method: 'post',
     data
   })
-}
+} */
 
 export function getInfo(token) {
   return request({
@@ -24,19 +24,18 @@ export function getInfo(token) {
   })
 } */
 
-export function loginUser(data) {
+/* export function login(data) { // 模拟普通用户
   return request({
     url: '/token/imitateUser/login',
     method: 'get',
     data
   })
-}
+} */
 
-export function loginAdmin(data) {
+export function login() { // 模拟admin用户
   return request({
     url: '/token/imitateAdmin/login',
-    method: 'get',
-    data
+    method: 'get'
   })
 }
 

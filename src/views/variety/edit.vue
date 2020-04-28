@@ -5,43 +5,44 @@
         <el-form ref="addGensForm" :model="addGensForm" label-position="left" size="mini">
           <el-form-item label="品系名称:" label-width="80px" class="mb8">
             <el-input
-              v-model="addGensForm.name"
+              v-model="addGensForm.varietiesName"
+              disabled
               placeholder="请输入品系名称"
               class="w250"
             />
-            <choice-variety-btn />
+            <choice-variety-btn :variety.sync="curVariety" />
           </el-form-item>
           <el-form-item label="基因型名称:" label-width="80px" class="mb8">
             <el-input
-              v-model="addGensForm.genes"
+              v-model="addGensForm.geneName"
               placeholder="请输入基因型名名称"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="饲养条件:" label-width="80px" class="mb8">
             <el-input
-              v-model="addGensForm.breed_condition"
+              v-model="addGensForm.miceCondition"
               placeholder="请输入饲养条件"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="健康状态:" label-width="80px" class="mb8">
             <el-input
-              v-model="addGensForm.health"
+              v-model="addGensForm.status"
               placeholder="请输入健康状态"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="毛色:" label-width="80px" class="mb8">
             <el-input
-              v-model="addGensForm.fur"
+              v-model="addGensForm.color"
               placeholder="请输入毛色"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="应用领域:" label-width="80px" class="mb0">
             <el-input
-              v-model="addGensForm.domain"
+              v-model="addGensForm.area"
               type="textarea"
               placeholder="请输入应用领域"
               class="w250"
@@ -59,6 +60,8 @@
 
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
+import { addNewGenes } from '@/api/genes'
+
 export default {
   name: 'VarietyEdit',
   components: {
@@ -66,14 +69,23 @@ export default {
   },
   data() {
     return {
+      curVariety: null, // 当前选中的品系
+      varietiesId: '',
       addGensForm: {
-        name: '',
-        genes: '',
-        breed_condition: '',
-        health: '',
-        fur: '',
-        domain: ''
+        varietiesName: '',
+        geneName: '',
+        miceCondition: '',
+        status: '',
+        color: '',
+        area: ''
       }
+    }
+  },
+  watch: {
+    curVariety(n, o) {
+      const newVariety = JSON.parse(n)
+      this.varietiesId = newVariety.id
+      this.addGensForm.varietiesName = newVariety.varietiesName
     }
   },
   methods: {
@@ -82,7 +94,19 @@ export default {
     },
     // 提交
     onSubmit() {
-      console.log('submit!');
+      console.log(this.$store)
+      const { geneName, miceCondition, status, color, area } = this.addGensForm;
+      addNewGenes({
+        varietiesId: this.varietiesId,
+        geneName,
+        miceCondition,
+        status,
+        color,
+        area,
+        userId: this.$store.getters.info.id
+      }).then((res) => {
+        console.log(res)
+      })
     }
   }
 }
