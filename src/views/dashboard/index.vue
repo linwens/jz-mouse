@@ -3,8 +3,8 @@
     <main-box class="home pos-r">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="我的小鼠" name="first">
-          <div>
-            <sum-bar />
+          <div v-if="activeName === 'first'">
+            <sum-bar id="1" :show="activeName === 'first'" />
           </div>
           <div class="mt20 mb12">
             <el-form ref="myMouseForm" :model="myMouseForm" size="small" label-width="95px" label-position="left">
@@ -100,8 +100,8 @@
           </div>
         </el-tab-pane>
         <el-tab-pane label="实验室小鼠" name="second">
-          <div>
-            <sum-bar v-if="activeName === 'second'" />
+          <div v-if="activeName === 'second'">
+            <sum-bar id="2" :show="activeName === 'second'" />
           </div>
           <div class="mt20 mb12">
             <el-form ref="myMouseForm" :model="myMouseForm" size="small" label-width="95px" label-position="left">

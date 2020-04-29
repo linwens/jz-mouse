@@ -1,8 +1,16 @@
 import request from '@/utils/request'
 
-export function fetchList(query) { // 获取列表
+export function fetchList(query) { // 品系管理列表
   return request({
     url: '/micevarieties/page',
+    method: 'get',
+    params: query
+  })
+}
+
+export function varietiesList(query) { // 品系列表
+  return request({
+    url: '/micevarieties/list',
     method: 'get',
     params: query
   })
@@ -16,7 +24,7 @@ export function fetchItemList(query) {
   })
 }
 
-export function addItemObj(obj) { // 新增
+export function addItemObj(obj) { // 新增品系
   return request({
     url: '/micevarieties',
     method: 'post',
@@ -31,9 +39,9 @@ export function getItemObj(id) { // 获取详情
   })
 }
 
-export function delItemObj(id) {
+export function delItemObj(id) { // 删除品系
   return request({
-    url: '/dict/item/' + id,
+    url: '/micevarieties/' + id,
     method: 'delete'
   })
 }
@@ -58,13 +66,6 @@ export function getObj(id) {
   return request({
     url: '/dict/' + id,
     method: 'get'
-  })
-}
-
-export function delObj(row) {
-  return request({
-    url: '/dict/' + row.id,
-    method: 'delete'
   })
 }
 

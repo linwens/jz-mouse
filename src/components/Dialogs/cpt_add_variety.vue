@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { addItemObj } from '@/api/variety'
+
 export default {
   name: 'VarietyEdit',
   props: {
@@ -57,7 +59,16 @@ export default {
         if (valid) {
           this.varietyDialog = false
           // 提交成功后触发done
-          this.$emit('done')
+          const { id: operator, id: userId } = this.$store.getters.info
+          addItemObj({
+            varietiesName: this.addVarietyForm.name,
+            operator,
+            userId
+          }).then((res) => {
+            if (res.data) {
+              this.$emit('done')
+            }
+          })
         } else {
           return false
         }

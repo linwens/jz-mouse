@@ -37,6 +37,7 @@ export default {
     this.initChart()
   },
   beforeDestroy() {
+    console.log('销毁')
     if (!this.chart) {
       return
     }

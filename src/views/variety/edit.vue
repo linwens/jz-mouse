@@ -88,6 +88,12 @@ export default {
       this.addGensForm.varietiesName = newVariety.varietiesName
     }
   },
+  created() {
+    console.log(this.$route.params)
+    if (this.$route.params) {
+      const { varietiesName, geneName, miceCondition, status, color, area } = this.$route.params
+    }
+  },
   methods: {
     goBack() {
       this.$router.back()

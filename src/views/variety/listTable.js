@@ -13,14 +13,14 @@ export const tableOption = {
 
   column: [{
     label: '品系名称',
-    prop: 'name',
+    prop: 'varietiesName',
     overHidden: true
   }, {
     label: '负责人',
-    prop: 'man'
+    prop: 'operatorName'
   }, {
     label: '创建时间',
-    prop: 'create_time',
+    prop: 'createTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }]
 }

@@ -76,7 +76,7 @@
 import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
 import { tableOption } from './listTable'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/variety'
+import { addItemObj, addObj, delItemObj, delObj, fetchItemList, varietiesList, putItemObj, putObj } from '@/api/variety'
 
 export default {
   name: 'DelList',
@@ -144,7 +144,7 @@ export default {
     // 获取列表
     getList() {
       this.tableLoading = true
-      fetchList(Object.assign({
+      varietiesList(Object.assign({
         current: this.page.page,
         size: this.page.limit
       })).then(response => {

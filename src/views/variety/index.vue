@@ -5,7 +5,7 @@
         <div class="df s-jcsb s-aic mt8 mb8">
           <span>品系管理</span>
           <div>
-            <add-variety-btn />
+            <add-variety-btn @done="getList" />
             <el-button type="primary" class="ml10" @click="goGenes()">新增基因型</el-button>
             <el-button type="primary" @click="goList()">查看品系列表</el-button>
           </div>
@@ -20,11 +20,11 @@
             @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
-            <template slot="menu" slot-scope="scope">
+            <template slot="menu" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit()"
+                @click="goEdit(scope.row)"
               >
                 编辑
               </el-button>
@@ -32,7 +32,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
+                @click="rowItemDel(scope.row)"
               >
                 删除
               </el-button>
@@ -65,21 +65,7 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        name: 'RON-234',
-        genes: '基因型xxx',
-        breed_condition: '繁育组XX-XX到了繁育时间',
-        fur_color: '红色',
-        app_domain: '繁育组XX-XX到了繁育时间',
-        man: '张三'
-      }, {
-        name: 'RON-234',
-        genes: '基因型xxx',
-        breed_condition: '繁育组XX-XX到了繁育时间',
-        fur_color: '红色',
-        app_domain: '繁育组XX-XX到了繁育时间',
-        man: '张三'
-      }]
+      tableData: []
     }
   },
   created() {
@@ -93,7 +79,7 @@ export default {
       this.goPage('varietyList', { type: 'list' })
     },
     goEdit(row) {
-      this.goPage('varietyEdit', { id: 1, type: 'edit' })
+      this.goPage('varietyEdit', row)
     },
     goPage(r, obj) {
       this.$router.push({ name: r, params: obj })
@@ -105,21 +91,22 @@ export default {
     addVariety() {},
     // 删除
     rowItemDel: function(row) {
+      console.log(row)
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除品系："' + row.varietiesName + '"?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(function() {
+      }).then(() => {
         return delItemObj(row.id)
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',
           type: 'success'
         })
-      }).catch(function() {
+      }).catch(() => {
       })
     },
     // 获取列表

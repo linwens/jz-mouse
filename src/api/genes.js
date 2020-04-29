@@ -24,6 +24,14 @@ export function addNewGenes(obj) { // 新增基因型
   })
 }
 
+export function editGenes(obj) { // 修改基因型
+  return request({
+    url: '/micegene',
+    method: 'put',
+    data: obj
+  })
+}
+
 export function getItemObj(id) { // 获取详情
   return request({
     url: '/micevarieties/' + id,
