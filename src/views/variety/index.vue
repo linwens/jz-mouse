@@ -48,7 +48,8 @@
 import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
 import { tableOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/variety'
+import { fetchList } from '@/api/variety'
+import { editGenes } from '@/api/genes'
 
 export default {
   name: 'DelList',
@@ -79,6 +80,7 @@ export default {
       this.goPage('varietyList', { type: 'list' })
     },
     goEdit(row) {
+      console.log('row---==', row)
       this.goPage('varietyEdit', row)
     },
     goPage(r, obj) {
@@ -98,7 +100,20 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        return delItemObj(row.id)
+        console.log('del====row', row)
+        const { id, miceGeneId, source, geneName, miceCondition, status, color, area } = row
+        return editGenes({
+          id: miceGeneId,
+          source,
+          varietiesId: id,
+          geneName,
+          miceCondition,
+          status,
+          color,
+          area,
+          state: 1,
+          userId: this.$store.getters.info.id
+        })
       }).then(() => {
         this.getList()
         _this.$message({

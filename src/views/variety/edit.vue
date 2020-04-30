@@ -60,7 +60,7 @@
 
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
-import { addNewGenes } from '@/api/genes'
+import { addNewGenes, editGenes } from '@/api/genes'
 
 export default {
   name: 'VarietyEdit',
@@ -71,6 +71,7 @@ export default {
     return {
       curVariety: null, // 当前选中的品系
       varietiesId: '',
+      optType: 'add', // 操作方式
       addGensForm: {
         varietiesName: '',
         geneName: '',
@@ -85,13 +86,15 @@ export default {
     curVariety(n, o) {
       const newVariety = JSON.parse(n)
       this.varietiesId = newVariety.id
-      this.addGensForm.varietiesName = newVariety.varietiesName
+      this.$set(this, 'addGensForm', newVariety)
     }
   },
   created() {
     console.log(this.$route.params)
     if (this.$route.params) {
-      const { varietiesName, geneName, miceCondition, status, color, area } = this.$route.params
+      this.optType = 'modify'
+      this.curVariety = JSON.stringify(this.$route.params)
+      console.log('addGensForm===', this.addGensForm)
     }
   },
   methods: {
@@ -100,15 +103,18 @@ export default {
     },
     // 提交
     onSubmit() {
-      console.log(this.$store)
-      const { geneName, miceCondition, status, color, area } = this.addGensForm;
-      addNewGenes({
+      const apiType = this.optType === 'modify' ? editGenes : addNewGenes
+      const { id, source, geneName, miceCondition, status, color, area, state } = this.addGensForm
+      apiType({
+        id,
+        source,
         varietiesId: this.varietiesId,
         geneName,
         miceCondition,
         status,
         color,
         area,
+        state,
         userId: this.$store.getters.info.id
       }).then((res) => {
         console.log(res)

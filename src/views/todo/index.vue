@@ -2,8 +2,8 @@
   <div>
     <main-box class="pos-r">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane :label="`未读(${tabsSum[0]})`" name="first">
-          <div class="bd-gray">
+        <el-tab-pane :label="`全部(${tabsSum[0]})`" name="first">
+          <div v-if="activeName === 'first'" class="bd-gray">
             <merge-table
               ref="crud"
               :page="page"
@@ -38,8 +38,8 @@
             </merge-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane :label="`已读(${tabsSum[1]})`" name="second">
-          <div class="bd-gray">
+        <el-tab-pane :label="`未读(${tabsSum[1]})`" name="second">
+          <div v-if="activeName === 'second'" class="bd-gray">
             <merge-table
               ref="crud"
               :page="page"
@@ -74,8 +74,8 @@
             </merge-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane :label="`全部(${tabsSum[2]})`" name="third">
-          <div class="bd-gray">
+        <el-tab-pane :label="`已读(${tabsSum[2]})`" name="third">
+          <div v-if="activeName === 'third'" class="bd-gray">
             <merge-table
               ref="crud"
               :page="page"
@@ -131,7 +131,7 @@ export default {
   data() {
     return {
       activeName: 'first',
-      tabsSum: [10, 22, 123], // 不同信息条数
+      tabsSum: [0, 0, 0], // 不同信息条数 【全部，未读，已读】
       tableOption,
       tableLoading: false,
       page: {
@@ -139,19 +139,7 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        status: 0,
-        type: '繁育组提醒',
-        title: '繁育组XX-XX到了繁育时间',
-        tipsTime: 1587277449395,
-        sendTime: 1587277449395
-      }, {
-        status: 1,
-        type: '繁育组提醒',
-        title: '繁育组XX-XX到了繁育时间',
-        tipsTime: 1587277449395,
-        sendTime: 1587277449395
-      }]
+      tableData: []
     }
   },
   created() {
@@ -166,13 +154,20 @@ export default {
     },
     // 获取列表
     getList() {
+      const STATUS_MAP = {
+        first: [0, null], // index, value
+        second: [1, 1],
+        third: [2, 0]
+      }
       this.tableLoading = true
       fetchList(Object.assign({
+        status: STATUS_MAP[this.activeName][1],
         current: this.page.page,
         size: this.page.limit
       })).then(response => {
         this.tableData = response.data.records
         this.page.total = response.data.total
+        this.tabsSum[STATUS_MAP[this.activeName][0]] = response.data.total
       }).finally(() => {
         this.tableLoading = false
       })

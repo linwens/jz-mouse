@@ -17,7 +17,28 @@ export const tableOption = {
     slot: true
   }, {
     label: '类型',
-    prop: 'type'
+    prop: 'type',
+    dicData: [
+      {
+        label: '繁育组提醒',
+        value: 0
+      }, {
+        label: '小鼠分笼提醒',
+        value: 1
+      }, {
+        label: '小鼠鉴定提醒',
+        value: 2
+      }, {
+        label: '实验组处理提醒',
+        value: 3
+      }, {
+        label: '实验组检测提醒',
+        value: 4
+      }, {
+        label: '鼠笼负责人转移提醒',
+        value: 5
+      }
+    ]
   }, {
     label: '标题',
     prop: 'title',
@@ -25,12 +46,12 @@ export const tableOption = {
   }, {
     width: 200,
     label: '提醒时间',
-    prop: 'tipsTime',
+    prop: 'createTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     width: 200,
     label: '发送时间',
-    prop: 'sendTime',
+    prop: 'sendingTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }]
 }

@@ -18,11 +18,11 @@
             @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
-            <template slot="menu" slot-scope="scope">
+            <template slot="menu" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit()"
+                @click="goEdit(scope.row)"
               >
                 编辑
               </el-button>
@@ -30,7 +30,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
+                @click="rowItemDel(scope.row)"
               >
                 删除
               </el-button>
@@ -46,18 +46,18 @@
       width="433px"
     >
       <div class="mouse__varietyDialog">
-        <el-form ref="addVarietyForm" :model="addVarietyForm" label-position="left" size="mini">
+        <el-form ref="editVarietyForm" :model="editVarietyForm" label-position="left" size="mini">
           <el-form-item
             label="品系名称:"
             label-width="80px"
             class="mb8"
-            prop="name"
+            prop="varietiesName"
             :rules="[
               { required: true, message: '品系名称不能为空'}
             ]"
           >
             <el-input
-              v-model="addVarietyForm.name"
+              v-model="editVarietyForm.varietiesName"
               placeholder="请输入品系名称"
               class="w250"
             />
@@ -76,7 +76,7 @@
 import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
 import { tableOption } from './listTable'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, varietiesList, putItemObj, putObj } from '@/api/variety'
+import { varietiesList, putItemObj, delItemObj } from '@/api/variety'
 
 export default {
   name: 'DelList',
@@ -93,19 +93,9 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        name: 'RON-234',
-        man: '张三',
-        create_time: 1587375335305
-      }, {
-        name: 'RON-234',
-        man: '张三',
-        create_time: 1587375335305
-      }],
+      tableData: [],
       // 编辑品系
-      addVarietyForm: {
-        name: ''
-      },
+      editVarietyForm: {},
       varietyDialog: false
     }
   },
@@ -115,6 +105,9 @@ export default {
   methods: {
     goEdit(row) {
       this.varietyDialog = true
+      const cacheRow = JSON.parse(JSON.stringify(row))
+      this.$set(this, 'editVarietyForm', cacheRow)
+      console.log(this.editVarietyForm)
     },
     goPage(obj) {
       this.$router.push({ name: 'varietyEdit', params: obj })
@@ -124,15 +117,16 @@ export default {
     },
     // 删除
     rowItemDel: function(row) {
+      console.log(row)
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除品系："' + row.varietiesName + '"的数据?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
         return delItemObj(row.id)
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',
@@ -156,9 +150,20 @@ export default {
     },
     // 编辑品系
     doEdit() {
-      this.$refs['addVarietyForm'].validate((valid) => {
+      this.$refs['editVarietyForm'].validate((valid) => {
         if (valid) {
           this.varietyDialog = false
+          const { id, operator, state, varietiesName } = this.editVarietyForm
+          putItemObj({
+            id,
+            operator,
+            state,
+            varietiesName,
+            userId: this.$store.getters.info.id
+          }).then((res) => {
+            console.log(res)
+            this.getList()
+          })
         } else {
           return false
         }
