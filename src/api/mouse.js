@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(query) { // 鼠笼列表
   return request({
     url: '/dict/page',
     method: 'get',
