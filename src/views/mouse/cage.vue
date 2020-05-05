@@ -13,7 +13,16 @@
         <el-button size="small" class="w80">放入</el-button>
         <el-button size="small" class="w80">新增笼位</el-button>
       </div>
-      <div>鼠笼</div>
+      <div class="df">
+        <mouse-cage
+          :cage-id="'1'"
+          :choosed-cage.sync="choosedCage"
+        />
+        <mouse-cage
+          :cage-id="'2'"
+          :choosed-cage.sync="choosedCage"
+        />
+      </div>
       <div class="mouse__cageChoice--btns pos-a w-100 h60 df s-aic">
         <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
       </div>
@@ -22,12 +31,18 @@
 </template>
 
 <script>
+import MouseCage from '@/components/MouseCage'
+
 export default {
   name: 'CageChoice',
+  components: {
+    MouseCage
+  },
   data() {
     return {
       male: 50,
-      female: 50
+      female: 50,
+      choosedCage: '' // 当前选中的鼠笼id
     }
   },
   methods: {

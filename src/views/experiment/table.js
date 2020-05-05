@@ -17,7 +17,7 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '实验组数量',
-    prop: 'num',
+    prop: 'miceTotal',
     overHidden: true
   }, {
     label: '小鼠总数',
@@ -25,22 +25,22 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '开始时间',
-    prop: 'start_time',
+    prop: 'startTime',
     width: 120,
     format: 'yyyy-MM-dd'
   }, {
     label: '结束时间',
-    prop: 'end_time',
+    prop: 'endTime',
     width: 120,
     format: 'yyyy-MM-dd'
   }, {
     label: '最新监测时间',
-    prop: 'check_time',
+    prop: 'newTestTime',
     width: 200,
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     label: '最新处理时间',
-    prop: 'handle_time',
+    prop: 'newHandleTime',
     width: 200,
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {

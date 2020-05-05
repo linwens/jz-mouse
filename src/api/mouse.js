@@ -8,6 +8,14 @@ export function fetchList(query) { // 鼠笼列表
   })
 }
 
+export function recordList(query) { // 记录列表
+  return request({
+    url: '/dict/page',
+    method: 'get',
+    params: query
+  })
+}
+
 export function fetchItemList(query) {
   return request({
     url: '/dict/item/page',

@@ -1,16 +1,16 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(query) { // 实验组分页
   return request({
-    url: '/dict/page',
+    url: '/experiment/page',
     method: 'get',
     params: query
   })
 }
 
-export function fetchItemList(query) {
+export function addTags(query) { // 新增实验组标签表
   return request({
-    url: '/dict/item/page',
+    url: '/experiment/saveExperimentLabels',
     method: 'get',
     params: query
   })

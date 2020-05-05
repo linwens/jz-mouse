@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="w-100 df s-jcc s-aic bg-gray pt10 pb10">
     <div :id="id" :class="className" :style="{height:height,width:width, 'min-height': '500px'}" />
   </div>
 </template>
@@ -21,11 +21,11 @@ export default {
     },
     width: {
       type: String,
-      default: '100%'
+      default: '98%'
     },
     height: {
       type: String,
-      default: '100%'
+      default: '98%'
     }
   },
   data() {
@@ -51,27 +51,15 @@ export default {
       var xData = (() => {
         var data = []
         for (var i = 1; i < 13; i++) {
-          data.push(i + '月份')
+          data.push(i + 'PROTOCOL名称')
         }
         return data
       })()
 
       this.chart.hideLoading()
       this.chart.setOption({
-        backgroundColor: '#344b58',
-        title: {
-          text: '标题统计',
-          subtext: '',
-          x: '4%',
-          textStyle: {
-            color: '#fff',
-            fontSize: '22'
-          },
-          subtextStyle: {
-            color: '#90979c',
-            fontSize: '16'
-          }
-        },
+        backgroundColor: '#fff',
+        title: {},
         tooltip: {
           trigger: 'axis',
           axisPointer: {
@@ -84,7 +72,7 @@ export default {
         grid: {
           borderWidth: 0,
           top: 110,
-          bottom: 95,
+          bottom: 150,
           textStyle: {
             color: '#fff'
           }
@@ -95,7 +83,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['女', '男', '平均']
+          data: ['女', '男']
         },
         calculable: true,
         xAxis: [{
@@ -122,7 +110,10 @@ export default {
         yAxis: [{
           type: 'value',
           splitLine: {
-            show: false
+            show: true,
+            lineStyle: {
+              type: 'dashed'
+            }
           },
           axisLine: {
             lineStyle: {
@@ -173,7 +164,7 @@ export default {
             barGap: '10%',
             itemStyle: {
               normal: {
-                color: 'rgba(255,144,128,1)',
+                color: '#9A68B4',
                 label: {
                   show: true,
                   textStyle: {
@@ -207,7 +198,7 @@ export default {
             stack: '总量',
             itemStyle: {
               normal: {
-                color: 'rgba(0,191,183,1)',
+                color: '#58A2FB',
                 barBorderRadius: 0,
                 label: {
                   show: true,
@@ -231,39 +222,6 @@ export default {
               951,
               381,
               220
-            ]
-          },
-          {
-            name: '总数',
-            type: 'line',
-            symbolSize: 10,
-            symbol: 'circle',
-            itemStyle: {
-              normal: {
-                color: 'rgba(252,230,48,1)',
-                barBorderRadius: 0,
-                label: {
-                  show: true,
-                  position: 'top',
-                  formatter: function(p) {
-                    return p.value > 0 ? (p.value) : ''
-                  }
-                }
-              }
-            },
-            data: [
-              1036,
-              3693,
-              2962,
-              3810,
-              2519,
-              1915,
-              1748,
-              4675,
-              6209,
-              4323,
-              2865,
-              4298
             ]
           }
         ]

@@ -101,7 +101,6 @@
               <el-progress :text-inside="true" :stroke-width="24" :percentage="45" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
-              <el-button size="small" class="w100">设置时间</el-button>
               <el-button type="primary" size="small" class="w100">记录查看</el-button>
             </div>
           </div>
@@ -113,7 +112,7 @@
           <el-button class="w80" size="small">确认添加</el-button>
         </div>
         <div>
-          <mouse-cage />
+          <mouse-cage :shift="false" />
         </div>
       </div>
     </main-box>

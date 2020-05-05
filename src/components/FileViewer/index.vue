@@ -8,7 +8,6 @@
         custom-class="mouse__preview"
         :visible.sync="dialogVisible"
         width="30%"
-        :before-close="handleClose"
       >
         <embed
           :src="fileUrl"
@@ -76,13 +75,6 @@ export default {
         this.type = type
       }
       console.log('type==', this.type)
-    },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="mouse-cage">
+  <div class="mouse-cage pos-r" :class="{'isChoiced': cageId == choosedCage}" @click="disabled ? null : chooseCage()">
     <div class="mouse-cage__header df s-jcsa s-aic">
       <div class="mouse-cage__number df s-jcc">
         <p>01<i>笼位</i></p>
@@ -8,9 +8,9 @@
       </div>
       <div class="mouse-cage__man">
         负责人
-        <el-button size="mini">
+        <el-button size="mini" @click="shift ? chageMan() : null">
           张三
-          <svg-icon icon-class="shift" class="cl-green" />
+          <svg-icon v-if="shift" icon-class="shift" class="cl-green" />
         </el-button>
       </div>
       <div class="mouse-cage__status">
@@ -31,45 +31,123 @@
         </div>
       </div>
       <div class="list__content">
-        <div class="list__content--male df s-jcfs s-aic ofh">
-          <div
-            v-for="item in items"
-            :key="item.id"
-            class="mouse__item ta-c"
-            :class="{'isChoiced': item.id == curId}"
-            @click="taggle(item.id)"
-          >
-            <div class="pos-r">
-              <svg-icon icon-class="mouse" class="fs50" />
-              <p>AD-01</p>
-              <span>fdafdfs</span>
-              <i class="pos-a mouse__item--female">02</i>
+        <el-checkbox-group v-model="checkList" @change="taggleMouse()">
+          <div class="list__content--male df s-jcfs s-aic ofh">
+            <div
+              v-for="item in items"
+              :key="item.id"
+              class="mouse__item ta-c"
+              :class="{'isChoiced': item.id == curId}"
+            >
+              <div class="pos-r">
+                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.id" />
+                <div @click="taggle(item.id)">
+                  <svg-icon icon-class="mouse" class="fs50" />
+                  <p>AD-01</p>
+                  <span>fdafdfs</span>
+                  <i class="pos-a mouse__item--female">02</i>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="list__content--female df s-jcfs s-aic ofh">
-          <div
-            v-for="item in items"
-            :key="item.id"
-            class="mouse__item pos-r ta-c"
-            @click="taggle(item.id)"
-          >
-            <div class="pos-r">
-              <svg-icon icon-class="mouse" class="fs50" />
-              <p>AD-01</p>
-              <span>fdafdfs</span>
-              <i class="pos-a mouse__item--male">02</i>
+          <div class="list__content--female df s-jcfs s-aic ofh">
+            <div
+              v-for="item in items"
+              :key="item.id"
+              class="mouse__item pos-r ta-c"
+            >
+              <div class="pos-r">
+                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.id" />
+                <div @click="taggle(item.id)">
+                  <svg-icon icon-class="mouse" class="fs50" />
+                  <p>AD-01</p>
+                  <span>fdafdfs</span>
+                  <i class="pos-a mouse__item--male">02</i>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </el-checkbox-group>
       </div>
     </div>
+    <!-- 选择笼位时的蒙版 -->
+    <div v-if="isChoosingCage" class="mouse-cage__mark pos-a" />
+    <!-- 更换负责人弹窗 -->
+    <el-dialog
+      title="更换负责人"
+      :visible.sync="manDialog"
+      width="433px"
+    >
+      <div>
+        <p class="cl-black fs14 mb10">当前负责人: {{ '张三' }}</p>
+        <el-form ref="mansForm" :model="mansForm" label-position="left" size="mini">
+          <el-form-item
+            label="更换为:"
+            label-width="80px"
+            class="mb8"
+            prop="name"
+            :rules="[
+              { required: true, message: '新的负责人不能为空', trigger: 'blur' }
+            ]"
+          >
+            <el-input
+              v-model="mansForm.name"
+              placeholder="请输入新的负责人"
+              class="w250"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="manDialog = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="addTag()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 export default {
   name: 'MouseCage',
+  props: {
+    // 鼠笼是否可点击
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    // 是否可切换负责人
+    shift: {
+      type: Boolean,
+      default: true
+    },
+    // 是否在移笼
+    isActive: {
+      type: Boolean,
+      default: false
+    },
+    // 是否在选择笼位
+    isChoosingCage: {
+      type: Boolean,
+      default: false
+    },
+    // 鼠笼id
+    cageId: {
+      type: String,
+      default: ''
+    },
+    // 当前选中的鼠笼id
+    choosedCage: {
+      type: String,
+      default: ''
+    },
+    // 选中的小鼠
+    choicedList: {
+      type: Array,
+      default: function() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       curId: null,
@@ -97,7 +175,16 @@ export default {
         }, {
           id: 11
         }
-      ]
+      ],
+      // 更换负责人
+      manDialog: false,
+      mansForm: {
+        name: ''
+      },
+      // 鼠笼checkbox
+      checkList: [],
+      // 选择笼位
+      choiceCage: false
     }
   },
   methods: {
@@ -108,6 +195,22 @@ export default {
         this.curId = id
       }
       console.log(id, this.curId)
+    },
+    // 切换负责人
+    chageMan() {
+      this.manDialog = true
+    },
+    // 多选框选中小鼠
+    taggleMouse() {
+      this.$emit('update:choicedList', this.checkList)
+    },
+    // 选择鼠笼
+    chooseCage() {
+      if (this.cageId !== this.choosedCage) {
+        console.log('this.cageId', this.cageId)
+        console.log('this.choosedCage', this.choosedCage)
+        this.$emit('update:choosedCage', this.cageId)
+      }
     }
   }
 }
@@ -118,6 +221,15 @@ export default {
     width: 538px;
     height: 280px;
     border: 1px solid #D6D6D6;
+
+    &.isChoiced {
+      border-color: #00CB7C;
+    }
+
+    &+&{
+      margin-left: 16px;
+    }
+
     &__header {
       height: 48px;
       background: #F0F0F0;
@@ -137,6 +249,22 @@ export default {
 
     &__list {
       height: calc( 100% - 48px );
+    }
+
+    &__mark {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.1);
+      z-index: 2;
+      border-width: 2px;
+      border-style: solid;
+      border-color: rgba(0, 0, 0, 0.1);
+
+      &.isChoiced {
+        border-color: #00CB7C;
+      }
     }
 
     .list__title, .list__content {
@@ -168,6 +296,16 @@ export default {
       font-size: 14px;
       color: #333;
       cursor: pointer;
+
+      .mouse__checkbox {
+        position: absolute;
+        left: -12px;
+        top: 0;
+      }
+
+      .el-checkbox__label {
+        display: none;
+      }
 
       &.isChoiced {
         border-color: #00CB7C;

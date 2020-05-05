@@ -1,12 +1,16 @@
 <template>
   <div>
-    <main-box class="home pos-r">
+    <main-box class="home pos-r p0">
+      <div class="home__top-slot df s-jcc s-aic">
+        <p class="df s-jcc s-aic"><i style="background-color: #9A68B4;" />雌鼠</p>
+        <p class="df s-jcc s-aic mr16"><i style="background-color: #58A2FB;" />雄鼠</p>
+      </div>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="我的小鼠" name="first">
-          <div v-if="activeName === 'first'">
+          <div v-if="activeName === 'first'" class="bg-gray">
             <sum-bar id="1" :show="activeName === 'first'" />
           </div>
-          <div class="mt20 mb12">
+          <div class="mt20 mb12 pl16 pr16">
             <el-form ref="myMouseForm" :model="myMouseForm" size="small" label-width="95px" label-position="left">
               <el-button type="primary" size="small" class="w70">重置</el-button>
               <el-select
@@ -75,7 +79,7 @@
             </el-form>
             <p class="mt12 fs14 cl-grey-9">总计：<span class="cl-black">{{ 120 }} 条数据</span></p>
           </div>
-          <div class="bd-gray">
+          <div class="bd-gray ml16 mr16">
             <merge-table
               ref="crud"
               :page="page"
@@ -314,26 +318,50 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.w104{
-  width: 104px;
-}
-.isIdle{
-  &::before {
-    content: '●';
-    color: #F6AC2D
+<style lang="scss">
+  .home {
+    &__top-slot {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 55px;
+      line-height: 55px;
+      font-size: 14px;
+
+      p:nth-child(1) {
+        margin-right: 24px;
+      }
+      i {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+      }
+    }
+    .el-tabs__header {
+      padding: 0 16px;
+    }
+
+    .w104{
+      width: 104px;
+    }
+    .isIdle{
+      &::before {
+        content: '●';
+        color: #F6AC2D
+      }
+    }
+    .isExpt{
+      &::before {
+        content: '●';
+        color: #58A2FB;
+      }
+    }
+    .isBreed{
+      &::before {
+        content: '●';
+        color: #00CB7C;
+      }
+    }
   }
-}
-.isExpt{
-  &::before {
-    content: '●';
-    color: #58A2FB;
-  }
-}
-.isBreed{
-  &::before {
-    content: '●';
-    color: #00CB7C;
-  }
-}
 </style>
