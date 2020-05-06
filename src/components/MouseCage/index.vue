@@ -2,67 +2,67 @@
   <div class="mouse-cage pos-r" :class="{'isChoiced': cageId == choosedCage}" @click="disabled ? null : chooseCage()">
     <div class="mouse-cage__header df s-jcsa s-aic">
       <div class="mouse-cage__number df s-jcc">
-        <p>01<i>笼位</i></p>
-        <p>25<i>房间</i></p>
-        <p>42<i>架号</i></p>
+        <p>{{ allData.cageNo }}<i>笼位</i></p>
+        <p>{{ allData.roomNo }}<i>房间</i></p>
+        <p>{{ allData.shelvesNo }}<i>架号</i></p>
       </div>
       <div class="mouse-cage__man">
         负责人
         <el-button size="mini" @click="shift ? chageMan() : null">
-          张三
+          {{ allData.operator }}
           <svg-icon v-if="shift" icon-class="shift" class="cl-green" />
         </el-button>
       </div>
       <div class="mouse-cage__status">
-        <span class="isIdle">闲置</span>
-        <span class="isExpt">实验</span>
-        <span class="isBreed">繁育</span>
+        <span :class="{'isIdle': isIdle}">闲置</span>
+        <span :class="{'isExpt': isExpt}">实验</span>
+        <span :class="{'isBreed': isBreed}">繁育</span>
       </div>
     </div>
     <div class="mouse-cage__list df s-jcfs">
       <div class="list__title df s-fdc s-aic s-jcfs">
         <div class="list__title--female df s-fdc s-aic s-jcc">
           <svg-icon icon-class="female" class="fs40 mb4" />
-          <span>15只</span>
+          <span>{{ femaleSum.length }}只</span>
         </div>
         <div class="list__title--male df s-fdc s-aic s-jcc">
           <svg-icon icon-class="male" class="fs40 mb4" />
-          <span>15只</span>
+          <span>{{ maleSum.length }}只</span>
         </div>
       </div>
       <div class="list__content">
         <el-checkbox-group v-model="checkList" @change="taggleMouse()">
-          <div class="list__content--male df s-jcfs s-aic ofh">
+          <div v-if="maleSum.length > 0" class="list__content--male df s-jcfs s-aic ofh">
             <div
-              v-for="item in items"
-              :key="item.id"
+              v-for="item in maleSum"
+              :key="item.miceInfoId"
               class="mouse__item ta-c"
-              :class="{'isChoiced': item.id == curId}"
+              :class="{'isChoiced': item.miceInfoId == curId}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.id" />
-                <div @click="taggle(item.id)">
+                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.miceInfoId" />
+                <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
-                  <p>AD-01</p>
-                  <span>fdafdfs</span>
-                  <i class="pos-a mouse__item--female">02</i>
+                  <p>{{ item.genotypes }}</p>
+                  <span>{{ item.sign }}</span>
+                  <i class="pos-a mouse__item--female">{{ item.miceNo }}</i>
                 </div>
               </div>
             </div>
           </div>
-          <div class="list__content--female df s-jcfs s-aic ofh">
+          <div v-if="femaleSum.length > 0" class="list__content--female df s-jcfs s-aic ofh">
             <div
-              v-for="item in items"
-              :key="item.id"
+              v-for="item in femaleSum"
+              :key="item.miceInfoId"
               class="mouse__item pos-r ta-c"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.id" />
-                <div @click="taggle(item.id)">
+                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.miceInfoId" />
+                <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
-                  <p>AD-01</p>
-                  <span>fdafdfs</span>
-                  <i class="pos-a mouse__item--male">02</i>
+                  <p>{{ item.genotypes }}</p>
+                  <span>{{ item.sign }}</span>
+                  <i class="pos-a mouse__item--male">{{ item.miceNo }}</i>
                 </div>
               </div>
             </div>
@@ -110,6 +110,13 @@
 export default {
   name: 'MouseCage',
   props: {
+    // 鼠笼所需所有信息
+    allData: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    },
     // 鼠笼是否可点击
     disabled: {
       type: Boolean,
@@ -132,13 +139,13 @@ export default {
     },
     // 鼠笼id
     cageId: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     },
     // 当前选中的鼠笼id
     choosedCage: {
-      type: String,
-      default: ''
+      type: Number,
+      default: 0
     },
     // 选中的小鼠
     choicedList: {
@@ -150,32 +157,7 @@ export default {
   },
   data() {
     return {
-      curId: null,
-      items: [
-        {
-          id: 1
-        }, {
-          id: 2
-        }, {
-          id: 3
-        }, {
-          id: 4
-        }, {
-          id: 5
-        }, {
-          id: 6
-        }, {
-          id: 7
-        }, {
-          id: 8
-        }, {
-          id: 9
-        }, {
-          id: 10
-        }, {
-          id: 11
-        }
-      ],
+      curId: '',
       // 更换负责人
       manDialog: false,
       mansForm: {
@@ -185,6 +167,43 @@ export default {
       checkList: [],
       // 选择笼位
       choiceCage: false
+    }
+  },
+  computed: {
+    isIdle() {
+      const mouseArr = this.allData.miceInfoByMiceCageQueryVO
+      const isIdle = mouseArr.filter((el) => {
+        return el.miceStatus === 1
+      })
+      return isIdle.length > 0
+    },
+    isExpt() {
+      const mouseArr = this.allData.miceInfoByMiceCageQueryVO
+      const isExpt = mouseArr.filter((el) => {
+        return el.miceStatus === 2
+      })
+      return isExpt.length > 0
+    },
+    isBreed() {
+      const mouseArr = this.allData.miceInfoByMiceCageQueryVO
+      const isBreed = mouseArr.filter((el) => {
+        return el.miceStatus === 3
+      })
+      return isBreed.length > 0
+    },
+    maleSum() { // 雄鼠数量
+      const mouseArr = this.allData.miceInfoByMiceCageQueryVO
+      const males = mouseArr.filter((el) => {
+        return el.gender === 0
+      })
+      return males
+    },
+    femaleSum() { // 雌鼠数量
+      const mouseArr = this.allData.miceInfoByMiceCageQueryVO
+      const females = mouseArr.filter((el) => {
+        return el.gender === 1
+      })
+      return females
     }
   },
   methods: {
@@ -221,14 +240,16 @@ export default {
     width: 538px;
     height: 280px;
     border: 1px solid #D6D6D6;
+    margin-right: 16px;
+    margin-bottom: 16px;
 
     &.isChoiced {
       border-color: #00CB7C;
     }
 
-    &+&{
-      margin-left: 16px;
-    }
+    // &+&{
+    //   margin-left: 16px;
+    // }
 
     &__header {
       height: 48px;
@@ -306,7 +327,6 @@ export default {
       .el-checkbox__label {
         display: none;
       }
-
       &.isChoiced {
         border-color: #00CB7C;
       }
@@ -340,6 +360,12 @@ export default {
       font-size: 50px;
     }
 
+    &__status {
+      span::before {
+        content: '●';
+        color: #D6D6D6
+      }
+    }
     .isIdle{
       &::before {
         content: '●';

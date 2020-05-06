@@ -39,7 +39,7 @@
               </p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">附件:</span>
-                <file-viewer :file-url="fileUrl" />
+                <view-files />
                 <svg-icon icon-class="upload" class="cp" />
               </p>
             </div>
@@ -79,7 +79,7 @@
             <div class="df s-jcsb s-aic mb8">
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">检测试验结果:</span>
-                <file-viewer :file-url="fileUrl" />
+                <view-files />
                 <svg-icon icon-class="upload" />
               </p>
               <p class="mouse__info--p">
@@ -119,21 +119,16 @@
               <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling">编辑</el-button>
               <el-button class="w80" size="small" @click="cancel()">取消</el-button>
             </div>
-            <div class="df">
+            <div class="df s-fwwp">
               <mouse-cage
-                :is-active="isMoving || choosedCage === '1' || isDeling"
-                :disabled="isBuilding&&(choosedCage !== '1')"
+                v-for="(item, index) in cageList"
+                :key="index"
+                :all-data="item"
+                :is-active="isMoving || choosedCage === item.id || isDeling"
+                :disabled="isBuilding&&(choosedCage !== item.id)"
                 :choiced-list.sync="choicedList"
                 :is-choosing-cage="isChoosingCage"
-                :cage-id="'1'"
-                :choosed-cage.sync="choosedCage"
-              />
-              <mouse-cage
-                :is-active="isMoving || choosedCage === '2' || isDeling"
-                :disabled="isBuilding&&(choosedCage !== '2')"
-                :choiced-list.sync="choicedList"
-                :is-choosing-cage="isChoosingCage"
-                :cage-id="'2'"
+                :cage-id="item.id"
                 :choosed-cage.sync="choosedCage"
               />
             </div>
@@ -240,12 +235,13 @@
 <script>
 import MouseCage from '@/components/MouseCage'
 import Guide from '@/components/Guide'
+import ViewFiles from '@/components/Dialogs/ViewFiles'
 import FileViewer from '@/components/FileViewer'
 import FamilyTree from '@/components/Charts/FamilyTree'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import MergeTable from '@/components/MergeTable'
 import { recordOption } from './recordTable'
-import { addTags, addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj, recordList } from '@/api/mouse'
+import { addTags, addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
@@ -255,7 +251,8 @@ export default {
     AddCageBtn,
     Guide,
     FileViewer,
-    FamilyTree
+    FamilyTree,
+    ViewFiles
   },
   data() {
     return {
@@ -313,12 +310,19 @@ export default {
         limit: 10 // 每页显示多少条
       },
       tableLoading: false,
+      // 鼠笼列表
+      cageList: [],
+      cagePage: {
+        total: 0, // 总页数
+        page: 1, // 当前页数
+        limit: 10 // 每页显示多少条
+      },
       // 移笼相关
       moveBtnText: '移笼',
       isMoving: false, // 正在移笼标识
       isChoosingCage: false, // 正在选鼠笼标识
       choicedList: [], // 当前选中的小鼠列表
-      choosedCage: '', // 当前选中的鼠笼id
+      choosedCage: null, // 当前选中的鼠笼id
       // 新建子鼠
       buildBtnText: '新建子鼠',
       isBuilding: false, // 正在新建子鼠标识
@@ -327,6 +331,9 @@ export default {
       isDeling: false // 正在删除小鼠标识
 
     }
+  },
+  created() {
+    this.getCageList()
   },
   methods: {
     // 展示家谱
@@ -381,7 +388,18 @@ export default {
       })
     },
     // 鼠笼列表
-    getCageList() {},
+    getCageList() {
+      this.tableLoading = true
+      fetchCageList(Object.assign({
+        current: this.cagePage.page,
+        size: this.cagePage.limit
+      })).then(response => {
+        this.cageList = response.data.records
+        this.cagePage.total = response.data.total
+      }).finally(() => {
+        this.tableLoading = false
+      })
+    },
     // 移笼操作
     moveCage() {
       console.log(this.choosedCage)
@@ -430,7 +448,7 @@ export default {
 
       this.isChoosingCage = false
       this.choicedList = []
-      this.choosedCage = ''
+      this.choosedCage = null
     },
     // 新增子鼠操作
     goBuild(row) {

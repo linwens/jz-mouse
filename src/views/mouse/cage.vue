@@ -15,11 +15,14 @@
       </div>
       <div class="df">
         <mouse-cage
-          :cage-id="'1'"
-          :choosed-cage.sync="choosedCage"
-        />
-        <mouse-cage
-          :cage-id="'2'"
+          v-for="(item, index) in cageList"
+          :key="index"
+          :all-data="item"
+          :is-active="isMoving || choosedCage === item.id || isDeling"
+          :disabled="isBuilding&&(choosedCage !== item.id)"
+          :choiced-list.sync="choicedList"
+          :is-choosing-cage="isChoosingCage"
+          :cage-id="item.id"
           :choosed-cage.sync="choosedCage"
         />
       </div>
@@ -32,6 +35,7 @@
 
 <script>
 import MouseCage from '@/components/MouseCage'
+import { fetchCageList } from '@/api/mouse'
 
 export default {
   name: 'CageChoice',
@@ -42,13 +46,46 @@ export default {
     return {
       male: 50,
       female: 50,
-      choosedCage: '' // 当前选中的鼠笼id
+      cageList: [], // 鼠笼列表
+      cagePage: {
+        total: 0, // 总页数
+        page: 1, // 当前页数
+        limit: 10 // 每页显示多少条
+      },
+      // 移笼相关
+      moveBtnText: '移笼',
+      isMoving: false, // 正在移笼标识
+      isChoosingCage: false, // 正在选鼠笼标识
+      choicedList: [], // 当前选中的小鼠列表
+      choosedCage: null, // 当前选中的鼠笼id
+      // 新建子鼠
+      buildBtnText: '新建子鼠',
+      isBuilding: false, // 正在新建子鼠标识
+      // 删除小鼠
+      delBtnText: '移除小鼠',
+      isDeling: false // 正在删除小鼠标识
     }
+  },
+  created() {
+    this.getCageList()
   },
   methods: {
     goBack() {
       this.$router.back()
-    }
+    },
+    // 鼠笼列表
+    getCageList() {
+      this.tableLoading = true
+      fetchCageList(Object.assign({
+        current: this.cagePage.page,
+        size: this.cagePage.limit
+      })).then(response => {
+        this.cageList = response.data.records
+        this.cagePage.total = response.data.total
+      }).finally(() => {
+        this.tableLoading = false
+      })
+    },
   }
 }
 </script>

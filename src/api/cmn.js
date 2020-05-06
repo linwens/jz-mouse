@@ -1,16 +1,8 @@
 import request from '@/utils/request'
-
-export function fetchCageList(query) { // 鼠笼列表
+// 一些公共组件的请求
+export function fetchList(query) {
   return request({
-    url: '/micecage/page',
-    method: 'get',
-    params: query
-  })
-}
-
-export function recordList(query) { // 记录列表
-  return request({
-    url: '/dict/page',
+    url: '/micebreed/page',
     method: 'get',
     params: query
   })
@@ -24,9 +16,9 @@ export function fetchItemList(query) {
   })
 }
 
-export function addCage(obj) { // 新增笼位
+export function addItemObj(obj) {
   return request({
-    url: '/micecage',
+    url: '/dict/item',
     method: 'post',
     data: obj
   })

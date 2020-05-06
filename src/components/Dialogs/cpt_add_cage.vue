@@ -18,13 +18,13 @@
             label="笼位号:"
             label-width="80px"
             class="mb8"
-            prop="name"
+            prop="cageNo"
             :rules="[
               { required: true, message: '笼位号不能为空'}
             ]"
           >
             <el-input
-              v-model="addCageForm.name"
+              v-model="addCageForm.cageNo"
               placeholder="请输入笼位号"
               class="w250"
             />
@@ -33,10 +33,10 @@
             label="房间号:"
             label-width="80px"
             class="mb8"
-            prop="room"
+            prop="roomNo"
           >
             <el-input
-              v-model="addCageForm.room"
+              v-model="addCageForm.roomNo"
               placeholder="请输入房间号"
               class="w250"
             />
@@ -45,10 +45,10 @@
             label="架号:"
             label-width="80px"
             class="mb8"
-            prop="shelf"
+            prop="shelvesNo"
           >
             <el-input
-              v-model="addCageForm.shelf"
+              v-model="addCageForm.shelvesNo"
               placeholder="请输入架号"
               class="w250"
             />
@@ -57,14 +57,14 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="cageDialog = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="fillVarity()">确 定</el-button>
+        <el-button type="primary" size="small" @click="addCageSubmit()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { addItemObj } from '@/api/variety'
+import { addCage } from '@/api/mouse'
 
 export default {
   name: 'VarietyEdit',
@@ -81,23 +81,25 @@ export default {
   data() {
     return {
       addCageForm: {
-        name: ''
+        cageNo: '',
+        roomNo: '',
+        shelvesNo: ''
       },
       cageDialog: false
     }
   },
   methods: {
-    fillVarity() {
+    addCageSubmit() {
       this.$refs['addCageForm'].validate((valid) => {
         if (valid) {
           this.cageDialog = false
           // 提交成功后触发done
-          const { id: operator, id: userId } = this.$store.getters.info
-          addItemObj({
-            varietiesName: this.addCageForm.name,
+          const { name: operator, id: userId } = this.$store.getters.info
+          console.log('userinfo===', this.$store.getters.info)
+          addCage(Object.assign(this.addCageForm, {
             operator,
-            userId
-          }).then((res) => {
+            createUser: userId
+          })).then((res) => {
             if (res.data) {
               this.$emit('done')
             }

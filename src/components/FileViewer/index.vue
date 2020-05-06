@@ -1,9 +1,10 @@
 <template>
-  <div>
-    <el-button type="text" @click="dialogVisible = true">查看</el-button>
+  <div class="dib">
+    <el-button type="text" @click="dialogVisible = true">{{ btnText }}</el-button>
     <div v-if="type === 'pdf'">
       <el-dialog
         title="pdf查看"
+        append-to-body
         fullscreen
         custom-class="mouse__preview"
         :visible.sync="dialogVisible"
@@ -45,6 +46,10 @@
 <script>
 export default {
   props: {
+    btnText: {
+      type: String,
+      default: '查看'
+    },
     fileUrl: {
       type: String,
       default: 'http://localhost/test.pdf'

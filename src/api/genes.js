@@ -8,6 +8,14 @@ export function fetchList(query) { // 获取列表
   })
 }
 
+export function getLisByVariety(query) { // 获取品系id下基因列表
+  return request({
+    url: '/micegene/getMiceGeneByVId',
+    method: 'get',
+    params: query
+  })
+}
+
 export function addNewGenes(obj) { // 新增基因型
   return request({
     url: '/micegene',

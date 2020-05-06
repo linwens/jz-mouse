@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/variety'
+import { varietiesList } from '@/api/variety'
 export default {
   name: 'ChoiceVariety',
   data() {
@@ -38,7 +38,7 @@ export default {
     }
   },
   created() {
-    fetchList().then((res) => {
+    varietiesList().then((res) => {
       this.list = res.data.records
     })
   },
