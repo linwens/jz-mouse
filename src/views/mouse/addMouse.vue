@@ -67,21 +67,21 @@
           </el-form-item>
           <el-form-item label="状态数量:" class="mb9">
             <el-input
-              v-model="form.maleMiceNum"
+              v-model.number="form.femaleMiceNum"
               placeholder="0"
               class="w80"
             />
-            <span class="ml8">只(雄)</span>
+            <span class="ml8">只(雌)</span>
             <el-input
-              v-model="form.femaleMiceNum"
+              v-model.number="form.maleMiceNum"
               placeholder="0"
               class="w80 ml16"
             />
-            <span class="ml8">只(雌)</span>
+            <span class="ml8">只(雄)</span>
           </el-form-item>
           <el-form-item label="体重:" class="mb9">
             <el-input
-              v-model="form.weight"
+              v-model.number="form.weight"
               placeholder="请输入体重"
               class="w250"
             />
@@ -122,9 +122,9 @@
                 placeholder="请选择纯/杂合子"
                 class="w250"
               >
-                <el-option label="纯合子" value="0"></el-option>
-                <el-option label="杂合子" value="1"></el-option>
-                <el-option label="未测试" value="2"></el-option>
+                <el-option label="纯合子" :value="0"></el-option>
+                <el-option label="杂合子" :value="1"></el-option>
+                <el-option label="未测试" :value="2"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="显示颜色:" class="mb9">
@@ -137,6 +137,7 @@
                 v-model="form.separateCageRemindTime"
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
+                value-format="timestamp"
                 class="w250"
                 placeholder="选择分笼时间"
               />
@@ -147,8 +148,8 @@
                 placeholder="请选择是否分笼提醒"
                 class="w250"
               >
-                <el-option label="是" value="0"></el-option>
-                <el-option label="否" value="1"></el-option>
+                <el-option label="是" :value="0"></el-option>
+                <el-option label="否" :value="1"></el-option>
               </el-select>
             </el-form-item>
           </div>
@@ -158,6 +159,7 @@
                 v-model="form.phenotypicIdentificationRemindTime"
                 type="datetime"
                 format="yyyy-MM-dd HH:mm"
+                value-format="timestamp"
                 class="w250"
                 placeholder="选择分笼时间"
               />
@@ -168,8 +170,8 @@
                 placeholder="请选择是否表型鉴定提醒"
                 class="w250"
               >
-                <el-option label="是" value="0" />
-                <el-option label="否" value="1" />
+                <el-option label="是" :value="0" />
+                <el-option label="否" :value="1" />
               </el-select>
             </el-form-item>
           </div>
@@ -235,14 +237,21 @@ export default {
         genotypes: null,
         maleMiceNum: 0,
         femaleMiceNum: 0,
-        weight: '',
+        weight: null,
         birthDate: null,
-        pureHeterozygote: '',
+        pureHeterozygote: null,
         color: '#00CB7C',
         separateCageRemindTime: null,
-        separateCageRemindFlag: '0',
+        separateCageRemindFlag: 0,
         phenotypicIdentificationRemindTime: null,
-        phenotypicIdentificationRemindFlag: '0'
+        phenotypicIdentificationRemindFlag: 0,
+        fatherId: 0,
+        motherId: 0,
+        deathStatus: 0,
+        delFlag: 0,
+        miceNo: '',
+        sign: '',
+        status: 1 // 0:无，1：闲置，2：繁育，3：实验,4:手动处死5,实验处死
       },
       // 品系选择
       curVariety: '',
@@ -301,6 +310,17 @@ export default {
       this.fillGenes(newGenes)
     }
   },
+  created() {
+    const cacheMouseInfo = this.$store.getters.cacheMouseInfo
+    if (Object.keys(cacheMouseInfo).length !== 0) {
+      console.log('有缓存的数据')
+      console.log(cacheMouseInfo)
+      this.$set(this, 'form', cacheMouseInfo.common)
+      this.$set(this, 'currentGene', cacheMouseInfo.genes)
+      this.varietiesName = cacheMouseInfo.varietiesName
+      this.varietiesId = cacheMouseInfo.varietiesId
+    }
+  },
   methods: {
     // 选择品系 or 基因型
     chooseVarity() {
@@ -352,6 +372,12 @@ export default {
     goChoose(obj) {
       this.form.vid = this.varietiesId
       if (this.checkForm()) {
+        this.$store.dispatch('app/cacheMouseInfo', {
+          varietiesName: this.varietiesName,
+          varietiesId: this.varietiesId,
+          genes: this.currentGene,
+          common: this.form
+        })
         this.$router.push({ name: 'mouseCage', params: this.form })
       }
     },
@@ -377,7 +403,8 @@ export default {
         this.$message.error('未选择出生日期')
         return false
       }
-      if (!this.form.pureHeterozygote) {
+      if (!this.form.pureHeterozygote && this.form.pureHeterozygote !== 0) {
+        console.log(this.form.pureHeterozygote)
         this.$message.error('未确定纯/杂合子')
         return false
       }

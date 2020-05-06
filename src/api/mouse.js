@@ -32,6 +32,14 @@ export function addCage(obj) { // 新增笼位
   })
 }
 
+export function addMouse(obj) { // 新增小鼠
+  return request({
+    url: '/miceinfo',
+    method: 'post',
+    data: obj
+  })
+}
+
 export function getItemObj(id) {
   return request({
     url: '/dict/item/' + id,

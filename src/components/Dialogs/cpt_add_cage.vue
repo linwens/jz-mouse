@@ -94,10 +94,10 @@ export default {
         if (valid) {
           this.cageDialog = false
           // 提交成功后触发done
-          const { name: operator, id: userId } = this.$store.getters.info
+          const { id: userId } = this.$store.getters.info
           console.log('userinfo===', this.$store.getters.info)
           addCage(Object.assign(this.addCageForm, {
-            operator,
+            operator: userId,
             createUser: userId
           })).then((res) => {
             if (res.data) {

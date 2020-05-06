@@ -1,11 +1,13 @@
 import Cookies from 'js-cookie'
+import { setStorageItem, getStorageItem } from '@/utils/storage'
 
 const state = {
   sidebar: {
     opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
     withoutAnimation: false
   },
-  device: 'desktop'
+  device: 'desktop',
+  cacheMouseInfo: getStorageItem('m-info') || {}
 }
 
 const mutations = {
@@ -25,6 +27,10 @@ const mutations = {
   },
   TOGGLE_DEVICE: (state, device) => {
     state.device = device
+  },
+  SET_M_INFO: (state, info) => {
+    state.info = info
+    setStorageItem('m-info', JSON.stringify(info))
   }
 }
 
@@ -37,6 +43,9 @@ const actions = {
   },
   toggleDevice({ commit }, device) {
     commit('TOGGLE_DEVICE', device)
+  },
+  cacheMouseInfo({ commit }, info) {
+    commit('SET_M_INFO', info)
   }
 }
 

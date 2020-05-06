@@ -61,8 +61,8 @@
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
-                  <span>{{ item.sign }}</span>
-                  <i class="pos-a mouse__item--male">{{ item.miceNo }}</i>
+                  <span>{{ item.miceNo }}</span>
+                  <i class="pos-a mouse__item--male">{{ item.sign }}</i>
                 </div>
               </div>
             </div>
@@ -245,6 +245,7 @@ export default {
 
     &.isChoiced {
       border-color: #00CB7C;
+      border-width: 3px;
     }
 
     // &+&{

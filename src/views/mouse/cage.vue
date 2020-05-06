@@ -4,22 +4,21 @@
       <div class="mb16">
         <p class="mouse__cageChoice--p">
           剩余小鼠: 
-          <span>{{ female }}只 (<i class="cl-purple">雌</i>)</span>
+          <span>{{ mouseData.femaleMiceNum }}只 (<i class="cl-purple">雌</i>)</span>
           /
-          <span>{{ male }}只 (<i class="cl-blue">雄</i>)</span>
+          <span>{{ mouseData.maleMiceNum }}只 (<i class="cl-blue">雄</i>)</span>
         </p>
       </div>
       <div class="mb16">
-        <el-button size="small" class="w80">放入</el-button>
-        <el-button size="small" class="w80">新增笼位</el-button>
+        <el-button size="small" class="w80" @click="putIn()">放入</el-button>
+        <add-cage-btn @done="getCageList" />
       </div>
-      <div class="df">
+      <div class="df s-fwwp mb60">
         <mouse-cage
           v-for="(item, index) in cageList"
           :key="index"
           :all-data="item"
-          :is-active="isMoving || choosedCage === item.id || isDeling"
-          :disabled="isBuilding&&(choosedCage !== item.id)"
+          :is-active="choosedCage === item.id"
           :choiced-list.sync="choicedList"
           :is-choosing-cage="isChoosingCage"
           :cage-id="item.id"
@@ -30,48 +29,89 @@
         <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
       </div>
     </main-box>
+    <!-- 放老鼠弹窗 -->
+    <el-dialog
+      title="放入小鼠"
+      :visible.sync="putInVisible"
+      width="433px"
+    >
+      <div class="mouse__put-in">
+        <el-form ref="putInForm" :model="putInForm" label-position="left" size="mini">
+          <el-form-item
+            label="数量:"
+            class="mb9"
+            :rules="[
+              { required: true, message: '总数量必须大于0'}
+            ]"
+          >
+            <span class="ml8">雌</span>
+            <el-input
+              v-model.number="putInForm.female"
+              placeholder="0"
+              class="w80"
+            />
+            <span class="ml8">雄</span>
+            <el-input
+              v-model.number="putInForm.male"
+              placeholder="0"
+              class="w80"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="putInVisible = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="putInSubmit()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import MouseCage from '@/components/MouseCage'
-import { fetchCageList } from '@/api/mouse'
+import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
+import { fetchCageList, addMouse } from '@/api/mouse'
 
 export default {
   name: 'CageChoice',
   components: {
+    AddCageBtn,
     MouseCage
   },
   data() {
     return {
-      male: 50,
-      female: 50,
       cageList: [], // 鼠笼列表
       cagePage: {
         total: 0, // 总页数
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      // 移笼相关
-      moveBtnText: '移笼',
-      isMoving: false, // 正在移笼标识
       isChoosingCage: false, // 正在选鼠笼标识
       choicedList: [], // 当前选中的小鼠列表
-      choosedCage: null, // 当前选中的鼠笼id
-      // 新建子鼠
-      buildBtnText: '新建子鼠',
-      isBuilding: false, // 正在新建子鼠标识
-      // 删除小鼠
-      delBtnText: '移除小鼠',
-      isDeling: false // 正在删除小鼠标识
+      choosedCage: 0, // 当前选中的鼠笼id
+      putInVisible: false,
+      putInForm: {
+        male: 0,
+        female: 0
+      },
+      mouseData: {} // 新增小鼠信息
     }
   },
   created() {
     this.getCageList()
+    this.$set(this, 'mouseData', this.$route.params)
   },
   methods: {
     goBack() {
-      this.$router.back()
+      
+      this.$confirm(`当前仍有${this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum}只小鼠尚未放入鼠笼，是否继续返回？`, '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$router.back()
+      }).catch(function() {
+      })
     },
     // 鼠笼列表
     getCageList() {
@@ -86,6 +126,57 @@ export default {
         this.tableLoading = false
       })
     },
+    // 放入操作
+    putIn() {
+      console.log(this.choosedCage)
+      if (!this.choosedCage) {
+        this.$message.error('请先选择鼠笼')
+      } else {
+        this.putInVisible = true
+      }
+    },
+    putInSubmit() {
+      if (this.putInForm.male > this.mouseData.maleMiceNum) {
+        this.$message.error(`雄鼠数量不得大于${this.mouseData.maleMiceNum}`)
+        return false
+      }
+      if (this.putInForm.female > this.mouseData.femaleMiceNum) {
+        this.$message.error(`雌鼠数量不得大于${this.mouseData.femaleMiceNum}`)
+        return false
+      }
+      if (this.putInForm.male === 0 && this.putInForm.female === 0) {
+        this.$message.error('总数量必须大于0')
+      } else {
+        const { id: userId } = this.$store.getters.info
+        const params = Object.assign({}, this.mouseData, {
+          createTime: Math.floor(+new Date() / 1000),
+          birthDate: this.mouseData.birthDate / 1000,
+          separateCageRemindTime: this.mouseData.separateCageRemindTime / 1000,
+          phenotypicIdentificationRemindTime: this.mouseData.phenotypicIdentificationRemindTime / 1000,
+          createUser: userId,
+          operator: userId,
+          cid: this.choosedCage,
+          maleMiceNum: this.putInForm.male,
+          femaleMiceNum: this.putInForm.female
+        })
+        addMouse(params).then(res => {
+          // 更新剩余小鼠数量
+          this.mouseData.femaleMiceNum -= this.putInForm.female
+          this.mouseData.maleMiceNum -= this.putInForm.male
+          const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
+          console.log(this.$store.getters.cacheMouseInfo)
+          this.$store.dispatch('app/cacheMouseInfo', {
+            common: this.mouseData,
+            varietiesName,
+            varietiesId,
+            genes
+          })
+          this.$message.success('新增小鼠成功')
+          this.getCageList()
+          this.putInVisible = false
+        })
+      }
+    }
   }
 }
 </script>
@@ -106,6 +197,9 @@ export default {
       padding-left: 40px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(214,214,214,1);
+    }
+    .mb60 {
+      margin-bottom: 60px;
     }
   }
 </style>
