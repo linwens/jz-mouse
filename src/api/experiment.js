@@ -8,6 +8,14 @@ export function fetchList(query) { // 实验组分页
   })
 }
 
+export function getExptRecord(query) { // 实验记录弹窗
+  return request({
+    url: '/experiment/experimentTime/page',
+    method: 'get',
+    params: query
+  })
+}
+
 export function addTags(query) { // 新增实验组标签表
   return request({
     url: '/experiment/saveExperimentLabels',
@@ -31,9 +39,9 @@ export function getItemObj(id) {
   })
 }
 
-export function delItemObj(id) {
+export function delExptObj(id) { // 删除实验记录
   return request({
-    url: '/dict/item/' + id,
+    url: '/experiment/' + id,
     method: 'delete'
   })
 }

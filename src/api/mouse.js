@@ -40,9 +40,16 @@ export function addMouse(obj) { // 新增小鼠
   })
 }
 
-export function getItemObj(id) {
+export function getMouseInfo(id) { // 获取小鼠信息
   return request({
-    url: '/dict/item/' + id,
+    url: '/miceinfo/' + id,
+    method: 'get'
+  })
+}
+
+export function getMouseExpInfo(id) { // 获取小鼠实验组信息
+  return request({
+    url: '/experiment/getMiceExperimentRecord?miceId=' + id,
     method: 'get'
   })
 }
@@ -54,10 +61,10 @@ export function delItemObj(id) {
   })
 }
 
-export function putItemObj(obj) {
+export function transferCage(obj) { // 移笼操作
   return request({
-    url: '/dict/item',
-    method: 'put',
+    url: '/miceinfo/transferCageByMiceId',
+    method: 'post',
     data: obj
   })
 }

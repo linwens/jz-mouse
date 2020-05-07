@@ -6,28 +6,28 @@
           <div>
             <h6 class="mouse__info--h6">品系信息</h6>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">品系:</span><i class="mouse__info--i">A品系</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">品系:</span><i class="mouse__info--i">{{ mouseInfo.varietiesName }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.color }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">饲养条件:</span><i class="mouse__info--i">恒温箱</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">健康</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">饲养条件:</span><i class="mouse__info--i">{{ mouseInfo.miceCondition }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.genotypes }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p w-100"><span class="mouse__info--span">应用领域:</span><i class="mouse__info--i">应用于XXXXXX领域…</i></p>
+              <p class="mouse__info--p w-100"><span class="mouse__info--span">应用领域:</span><i class="mouse__info--i">{{ mouseInfo.area }}</i></p>
             </div>
           </div>
           <div>
             <h6 class="mouse__info--h6">基本信息</h6>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.miceNo }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">周龄:</span><i class="mouse__info--i">2周2天</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.id }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender === 0 ? '雌' : '雄' }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">周龄:</span><i class="mouse__info--i">{{ `${weekAge}周${dayAge}天` }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">标记:</span><i class="mouse__info--i">{{ mouseInfo.sign }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">出生日期:</span><i class="mouse__info--i">{{ mouseInfo.birthDate | timeFormat('yyyy-MM-dd') }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">出生日期:</span><i class="mouse__info--i">{{ mouseInfo.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">体重:</span><i class="mouse__info--i">{{ mouseInfo.weight }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">笼位号:</span><i class="mouse__info--i">10-01</i></p>
             </div>
@@ -35,7 +35,7 @@
               <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">显示颜色:</span>
-                <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.color}" />
+                <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" />
               </p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">附件:</span>
@@ -50,7 +50,7 @@
             <div class="df s-jcfs s-aic">
               <p class="mouse__info--p" style="width: 540px;">
                 <span class="mouse__info--span">更改位置时间:</span>
-                <i class="mouse__info--i">{{ time | timeFormat('yyyy年MM月dd日 14:26:45') }}</i>
+                <i class="mouse__info--i">{{ mouseInfo.miceUpdateTime | timeFormat('yyyy年MM月dd日 hh:mm:ss') }}</i>
               </p>
               <p class="mouse__info--p">
                 <span class="mouse__info--span">小鼠家谱:</span>
@@ -63,15 +63,15 @@
           <div>
             <h6 class="mouse__info--h6">实验信息</h6>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">实验组名称:</span><i class="mouse__info--i">实验组1号</i></p>
-              <p class="mouse__info--p" style="width: 205px;"><span class="mouse__info--span">起止时间:</span><i class="mouse__info--i">2020.3.28-2020.3.30</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">实验组名称:</span><i class="mouse__info--i">{{ mouseExptInfo.experimentName }}</i></p>
+              <p class="mouse__info--p" style="width: 205px;"><span class="mouse__info--span">起止时间:</span><i class="mouse__info--i">{{ mouseExptInfo.startTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }} - {{ mouseExptInfo.endTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">分组名称:</span><i class="mouse__info--i">A小组</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">处理:</span><i class="mouse__info--i">P65-/-</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">分组名称:</span><i class="mouse__info--i">{{ mouseExptInfo.sampleGroupName }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">处理:</span><i class="mouse__info--i">{{ mouseExptInfo.eventName }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p w-100"><span class="mouse__info--span">检测:</span><i class="mouse__info--i">检测方式名称</i></p>
+              <p class="mouse__info--p w-100"><span class="mouse__info--span">检测:</span><i class="mouse__info--i">{{ mouseExptInfo.testName }}</i></p>
             </div>
           </div>
           <div>
@@ -84,11 +84,11 @@
               </p>
               <p class="mouse__info--p">
                 <i class="mouse__info--i mr20">
-                  <svg-icon icon-class="circle" class="fs12 cl-green"></svg-icon>
+                  <svg-icon icon-class="circle" class="fs12 cl-green" />
                   处理时间
                 </i>
                 <i class="mouse__info--i">
-                  <svg-icon icon-class="circle" class="fs12 cl-yellow"></svg-icon>
+                  <svg-icon icon-class="circle" class="fs12 cl-yellow" />
                   检测时间
                 </i>
               </p>
@@ -102,7 +102,7 @@
             </div>
             <div class="df s-jcc s-aic mt30">
               <el-button size="small" class="w100" @click="setTimeDialog = true">设置时间</el-button>
-              <el-button type="primary" size="small" class="w100" @click="showRecord()">记录查看</el-button>
+              <expt-record />
             </div>
           </div>
         </div>
@@ -119,17 +119,19 @@
               <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling">编辑</el-button>
               <el-button class="w80" size="small" @click="cancel()">取消</el-button>
             </div>
-            <div class="df s-fwwp">
+            <div class="df s-fwwp s-jcsa">
               <mouse-cage
                 v-for="(item, index) in cageList"
                 :key="index"
                 :all-data="item"
-                :is-active="isMoving || choosedCage === item.id || isDeling"
+                :is-active="isMoving || isBuilding&&(choosedCage === item.id) || isDeling"
                 :disabled="isBuilding&&(choosedCage !== item.id)"
                 :choiced-list.sync="choicedList"
                 :is-choosing-cage="isChoosingCage"
                 :cage-id="item.id"
                 :choosed-cage.sync="choosedCage"
+                :cur-mouse.sync="mouseInfo"
+                :cur-mouse-expt.sync="mouseExptInfo"
               />
             </div>
           </el-tab-pane>
@@ -159,8 +161,8 @@
               size="small"
               class="w250"
             >
-              <el-option label="检测时间" value="1" />
-              <el-option label="处理时间" value="2" />
+              <el-option label="检测时间" :value="1" />
+              <el-option label="处理时间" :value="2" />
             </el-select>
           </el-form-item>
           <el-form-item
@@ -239,9 +241,10 @@ import ViewFiles from '@/components/Dialogs/ViewFiles'
 import FileViewer from '@/components/FileViewer'
 import FamilyTree from '@/components/Charts/FamilyTree'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
+import ExptRecord from '@/components/Dialogs/ExptRecord'
 import MergeTable from '@/components/MergeTable'
 import { recordOption } from './recordTable'
-import { addTags, addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
+import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
@@ -249,6 +252,7 @@ export default {
     MergeTable,
     MouseCage,
     AddCageBtn,
+    ExptRecord,
     Guide,
     FileViewer,
     FamilyTree,
@@ -256,33 +260,11 @@ export default {
   },
   data() {
     return {
-      mouseInfo: {
-        birthDate: 1587375335305,
-        cid: 1,
-        color: 'red',
-        createTime: 1587375335305,
-        createUser: 111,
-        deathStatus: 2,
-        delFlag: 1,
-        fatherId: 111,
-        gender: 1,
-        genotypes: 2,
-        id: 222,
-        miceNo: 1,
-        motherId: 1,
-        operator: 2,
-        phenotypicIdentificationRemindFlag: 1,
-        phenotypicIdentificationRemindTime: 1587375335305,
-        pureHeterozygote: 1,
-        separateCageRemindFlag: 2,
-        separateCageRemindTime: 1587375335305,
-        sign: 1,
-        status: 1,
-        vid: 1,
-        weight: '1.8g'
+      mouseInfo: {},
+      mouseExptInfo: {
+
       },
       activeName: 'first', // 鼠笼tab
-      time: 1587375335305,
       color: '#C4C4CD',
       // 家谱
       dialogVisible: false,
@@ -332,6 +314,22 @@ export default {
 
     }
   },
+  computed: {
+    // 周龄，不存数据库
+    weekAge() {
+      if (!this.mouseInfo.birthDate) return 0
+      const duration = +new Date() - this.mouseInfo.birthDate * 1000
+      const weeks = duration / 1000 / 60 / 60 / 24 / 7
+      return Math.floor(weeks)
+    },
+    // 天
+    dayAge() {
+      if (!this.mouseInfo.birthDate) return 0
+      const duration = +new Date() - this.mouseInfo.birthDate * 1000
+      const days = duration / 1000 / 60 / 60 / 24 % 7
+      return Math.floor(days)
+    }
+  },
   created() {
     this.getCageList()
   },
@@ -369,24 +367,6 @@ export default {
       }).catch(function() {
       })
     },
-    // 展示记录
-    showRecord() {
-      this.getRecord()
-      this.recordDialog = true
-    },
-    // 获取记录列表
-    getRecord() {
-      this.tableLoading = true
-      recordList(Object.assign({
-        current: this.page.page,
-        size: this.page.limit
-      })).then(response => {
-        this.tableData = response.data.records
-        this.page.total = response.data.total
-      }).finally(() => {
-        this.tableLoading = false
-      })
-    },
     // 鼠笼列表
     getCageList() {
       this.tableLoading = true
@@ -405,6 +385,13 @@ export default {
       console.log(this.choosedCage)
       // 选中了鼠笼后
       if (this.choosedCage) {
+        if (this.choicedList.length === 0) {
+          this.$message({
+            type: 'error',
+            message: '请选择小鼠'
+          })
+          return false
+        }
         this.$confirm('是否确认移笼?', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -416,7 +403,7 @@ export default {
         return
       }
 
-      let noMouse = false
+      const noMouse = this.cageList.length === 0
       if (noMouse) { // 当前没老鼠
         this.$message({
           type: 'error',
@@ -434,8 +421,17 @@ export default {
     },
     // 确定移笼
     doChageCage() {
-      console.log('移笼成功')
-      this.cancel()
+      const ids = this.choicedList.map(el => {
+        return el.miceInfoId
+      })
+      transferCage({
+        cageId: this.choosedCage,
+        miceId: ids
+      }).then((res) => {
+        console.log('移笼成功')
+        this.cancel()
+        this.getCageList()
+      })
     },
     // 取消操作
     cancel() {
@@ -464,7 +460,17 @@ export default {
         // 当前选中了小鼠
         if (this.choicedList.length > 0) {
           console.log(this.choicedList)
-          this.goPage('addChild', { id: 1 })
+          const genders = this.choicedList.map(el => {
+            return el.gender
+          })
+          if (genders.length !== 2 || genders[0] === genders[1]) {
+            this.$message({
+              type: 'error',
+              message: '请选择两只不同性别的小鼠'
+            })
+            return false
+          }
+          this.goPage('addChild', { parents: this.choicedList })
         } else {
           this.$message({
             type: 'error',

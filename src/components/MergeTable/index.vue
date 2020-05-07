@@ -34,7 +34,7 @@
           <slot v-if="item['slot']" :name="item['prop']" :scope="scope" />
           <div v-else>
             <span v-if="item['format']">
-              {{ scope.row[item['prop']] | timeFormat(item['format']) }}
+              {{ scope.row[item['prop']] * 1000 | timeFormat(item['format']) }}
             </span>
             <span v-else-if="item['dicData'] && item['dicData'].length > 0">
               {{ scope.row[item['prop']] | dicLabel(item['dicData']) }}

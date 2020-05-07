@@ -40,7 +40,7 @@
               :class="{'isChoiced': item.miceInfoId == curId}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.miceInfoId" />
+                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item" />
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
@@ -57,7 +57,7 @@
               class="mouse__item pos-r ta-c"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item.miceInfoId" />
+                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item" />
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
@@ -107,6 +107,8 @@
 </template>
 
 <script>
+import { getMouseInfo, getMouseExpInfo } from '@/api/mouse'
+
 export default {
   name: 'MouseCage',
   props: {
@@ -152,6 +154,20 @@ export default {
       type: Array,
       default: function() {
         return []
+      }
+    },
+    // 选中的小鼠信息
+    curMouse: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    },
+    // 选中的小鼠实验信息
+    curMouseExpt: {
+      type: Object,
+      default: function() {
+        return {}
       }
     }
   },
@@ -212,6 +228,15 @@ export default {
         this.curId = null
       } else {
         this.curId = id
+        let params = {}
+        getMouseInfo(this.curId).then((res) => {
+          console.log(res)
+          this.$emit('update:curMouse', res.data)
+        })
+        getMouseExpInfo(this.curId).then((res) => {
+          console.log(res)
+          this.$emit('update:curMouseExpt', res.data[0] || {}) // 取第一条数据
+        })
       }
       console.log(id, this.curId)
     },
@@ -237,15 +262,14 @@ export default {
 
 <style lang="scss">
   .mouse-cage {
-    width: 538px;
+    width: 536px;
     height: 280px;
-    border: 1px solid #D6D6D6;
-    margin-right: 16px;
+    border: 2px solid #D6D6D6;
     margin-bottom: 16px;
 
     &.isChoiced {
       border-color: #00CB7C;
-      border-width: 3px;
+      border-width: 2px;
     }
 
     // &+&{
@@ -300,7 +324,7 @@ export default {
     .list__content {
       padding: 10px 0;
       &--female, &--male {
-        width: 470px;
+        width: 462px;
         overflow-x: scroll;
       }
     }

@@ -245,8 +245,22 @@ export default {
       },
       // 品系选择
       variety_radio: null,
-      varietyDialog: false
+      varietyDialog: false,
+      father: {},
+      mother: {}
     }
+  },
+  created() {
+    const params = this.$route.params.parents
+    if (params.length === 2) {
+      this.father = params.filter((el) => {
+        return el.gender === 0
+      })[0]
+      this.mother = params.filter((el) => {
+        return el.gender === 1
+      })[0]
+    }
+    console.log(this.father, this.mother)
   },
   methods: {
     // 选择品系 or 基因型
