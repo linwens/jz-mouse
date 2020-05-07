@@ -129,15 +129,15 @@
             @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
-            <template slot="mouse" slot-scope="scope">
-              <el-button type="text" @click="setPregTime(scope.scope.row)">查看</el-button>
-              <el-button type="text" @click="setPregTime(scope.scope.row)">添加</el-button>
+            <template slot="mouse" slot-scope="{scope}">
+              <el-button type="text" @click="setPregTime(scope.row)">查看</el-button>
+              <el-button type="text" @click="setPregTime(scope.row)">添加</el-button>
             </template>
-            <template slot="menu" slot-scope="scope">
+            <template slot="menu" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit()"
+                @click="goEdit(scope.row)"
               >
                 编辑
               </el-button>
@@ -145,7 +145,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
+                @click="rowItemDel(scope.row)"
               >
                 删除
               </el-button>
@@ -186,11 +186,13 @@ export default {
         limit: 10 // 每页显示多少条
       },
       tableData: [{
+        id: 1,
         name: 0,
         handle: 1,
         check: 'fdferwerewffsfd',
         sum: '62'
       }, {
+        id: 2,
         name: 0,
         handle: 1,
         check: 'fdferwerewffsfd',
@@ -207,6 +209,10 @@ export default {
     },
     handleRefreshChange() {
       this.getList()
+    },
+    // 编辑实验组
+    goEdit(row) {
+      console.log(row.id)
     },
     // 删除
     rowItemDel: function(row) {

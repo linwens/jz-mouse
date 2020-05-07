@@ -16,6 +16,13 @@ export function getLisByVariety(query) { // 获取品系id下基因列表
   })
 }
 
+export function getLisByGeneId(id) { // 获取基因id对应基因信息
+  return request({
+    url: '/micegene/getMiceGeneById?id=' + id,
+    method: 'get'
+  })
+}
+
 export function addNewGenes(obj) { // 新增基因型
   return request({
     url: '/micegene',

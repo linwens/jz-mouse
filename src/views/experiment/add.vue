@@ -375,17 +375,7 @@ export default {
       },
       // 查看小鼠列表
       mousesDialog: false,
-      mouseList: [{
-        id: 111,
-        num: 0,
-        sex: 0,
-        week: 'XX周Z天',
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        gene: '基因型xxx',
-        fur: '红色',
-        health_status: 1
-      }],
+      mouseList: [],
       mouseListOption,
       page2: {
         total: 0, // 总页数
@@ -446,7 +436,6 @@ export default {
     goEdit(row) {
       const data = JSON.parse(JSON.stringify(row))
       console.log(data)
-      data.tags = data.tags.split(';')
       this.addGroupDialog = true
       this.addGroupForm = data
     },

@@ -15,7 +15,11 @@
           <div v-if="varietiesName" class="mouse__addNew--toggle">
             <div class="mb13 df">
               <genes-choose :id="varietiesId" btn-text="选择" class="mr16" :genes.sync="genes" />
-              <el-button type="primary" size="mini" class="w60" @click="addGenes()">新增</el-button>
+              <add-genes-btn
+                :varieties-id="varietiesId"
+                :varieties-name="varietiesName"
+                :genes-data.sync="genes"
+              />
             </div>
             <div class="df s-jcsb s-aic">
               <el-form-item label="基因型:" label-width="70px" class="mb8">
@@ -181,45 +185,13 @@
         <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
         <el-button type="primary" size="small" @click="goChoose()">下一步(去选笼子)</el-button>
       </div>
-      <!-- 新增基因型弹窗 -->
-      <el-dialog
-        title="新增基因型"
-        :visible.sync="addGenesDialog"
-        width="450px"
-      >
-        <div>
-          <el-form ref="addGensForm" :model="addGensForm" label-position="left" size="mini">
-            <el-form-item label="状态:" label-width="80px" class="mb0">
-              <span>闲置</span>
-            </el-form-item>
-            <el-form-item label="基因型名称:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.geneName" />
-            </el-form-item>
-            <el-form-item label="饲养条件:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.miceCondition" />
-            </el-form-item>
-            <el-form-item label="健康状态:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.status" />
-            </el-form-item>
-            <el-form-item label="毛色:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.color" />
-            </el-form-item>
-            <el-form-item label="应用领域:" label-width="80px" class="mb0">
-              <el-input v-model="addGensForm.area" type="textarea" />
-            </el-form-item>
-          </el-form>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="addGenesDialog = false">取 消</el-button>
-          <el-button type="primary" size="small" @click="doAddGenes()">确 定</el-button>
-        </div>
-      </el-dialog>
     </main-box>
   </div>
 </template>
 
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
+import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
 import GenesChoose from '@/components/Dialogs/GenesChoose'
 import { addNewGenes } from '@/api/genes'
 
@@ -227,6 +199,7 @@ export default {
   name: 'AddMouse',
   components: {
     ChoiceVarietyBtn,
+    AddGenesBtn,
     GenesChoose
   },
   data() {
@@ -267,17 +240,6 @@ export default {
         status: '',
         color: '',
         area: ''
-      },
-      // 新增基因型
-      addGenesDialog: false,
-      // 新增基因型表单
-      addGensForm: {
-        varietiesName: '',
-        geneName: '',
-        miceCondition: '',
-        status: '',
-        color: '',
-        area: ''
       }
     }
   },
@@ -302,7 +264,6 @@ export default {
       const newVariety = JSON.parse(n)
       this.varietiesName = newVariety.varietiesName
       this.varietiesId = newVariety.id
-      this.$set(this, 'addGensForm', newVariety)
     },
     genes(n, o) {
       const newGenes = JSON.parse(n)
@@ -337,25 +298,6 @@ export default {
     // 新增基因型
     addGenes() {
       this.addGenesDialog = true
-    },
-    doAddGenes() {
-      this.addGenesDialog = false
-      // 新增基因型
-      const { source, geneName, miceCondition, status, color, area } = this.addGensForm
-      addNewGenes({
-        area,
-        color,
-        createUser: this.$store.getters.info.id,
-        geneName,
-        miceCondition,
-        source,
-        status,
-        varietiesId: this.varietiesId
-      }).then((res) => {
-        console.log(res)
-        this.form.genotypes = res.id
-        this.fillGenes(this.addGensForm)
-      })
     },
     // 填充基因型信息
     fillGenes(res) {

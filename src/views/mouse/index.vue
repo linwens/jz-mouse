@@ -261,9 +261,7 @@ export default {
   data() {
     return {
       mouseInfo: {},
-      mouseExptInfo: {
-
-      },
+      mouseExptInfo: {},
       activeName: 'first', // 鼠笼tab
       color: '#C4C4CD',
       // 家谱
@@ -470,7 +468,19 @@ export default {
             })
             return false
           }
-          this.goPage('addChild', { parents: this.choicedList })
+          const curCage = this.cageList.filter((el) => {
+            return el.id === this.choosedCage
+          })
+          console.log('curCage==', curCage)
+          const { cageNo, roomNo, shelvesNo } = curCage[0]
+          this.goPage('addChild', {
+            parents: this.choicedList,
+            cage: {
+              cageNo,
+              roomNo,
+              shelvesNo
+            }
+          })
         } else {
           this.$message({
             type: 'error',
