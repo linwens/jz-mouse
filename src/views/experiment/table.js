@@ -16,16 +16,16 @@ export const tableOption = {
     prop: 'name',
     overHidden: true
   }, {
-    label: '实验组数量',
-    prop: 'miceTotal',
+    label: '实验分组数量',
+    prop: 'experimentSampleGroupNum',
     overHidden: true
   }, {
     label: '小鼠总数',
-    prop: 'sum',
+    prop: 'miceTotal',
     overHidden: true
   }, {
     label: '开始时间',
-    prop: 'startTime',
+    prop: 'createTime',
     width: 120,
     format: 'yyyy-MM-dd'
   }, {

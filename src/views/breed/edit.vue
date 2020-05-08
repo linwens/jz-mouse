@@ -251,7 +251,8 @@ export default {
       // 是添加小鼠返回的
       if (from.name === 'experimentAddMouse') {
         vm.type = 'add'
-        vm.$set(vm, 'tableData', JSON.parse(vm.$store.getters.addingMouses))
+        const addingMouses = vm.$store.getters.addingMouses
+        vm.$set(vm, 'tableData', addingMouses ? JSON.parse(addingMouses) : [])
         console.log(vm.tableData)
       }
     })

@@ -118,7 +118,7 @@
             :need-type="needType"
             :all-data="item"
             :is-active="true"
-            :choiced-list.sync="choicedList"
+            :choiced-list.sync="curCageMouseList"
             :is-choosing-cage="isChoosingCage"
             :cage-id="item.id"
             :choosed-cage.sync="choosedCage"
@@ -186,6 +186,8 @@ export default {
         limit: 10 // 每页显示多少条
       },
       isChoosingCage: false, // 正在选鼠笼标识
+      curCageMouseList: {}, // 当前鼠笼中选中小鼠列表
+      cacheChoicedList: [], // 缓存选中鼠笼中小鼠列表
       choicedList: [], // 当前选中的小鼠列表
       choosedCage: 0, // 当前选中的鼠笼id
       needType: null // 区分实验组，繁育组
@@ -207,6 +209,29 @@ export default {
       return Math.floor(days)
     }
   },
+  watch: {
+    // 监听每个鼠笼选中的小鼠，最后合并所有选中小鼠
+    'curCageMouseList.mouses'(n, o) {
+      const _self = this
+      let list = this.cacheChoicedList
+      const hasThis = this.cacheChoicedList.filter((el) => {
+        return el.cid === _self.curCageMouseList.cid
+      }).length > 0
+
+      if (hasThis) {
+        list = this.cacheChoicedList.filter((el) => {
+          return el.cid !== _self.curCageMouseList.cid
+        })
+      }
+      list.push(this.curCageMouseList)
+      this.$set(this, 'cacheChoicedList', list)
+      // 降维数组
+      const allMouses = list.reduce(function(total, val, idx, arr) {
+        return total.concat(val.mouses)
+      }, [])
+      this.choicedList = allMouses
+    }
+  },
   created() {
     this.getCageList()
     console.log(this.$route.params.type)
@@ -223,6 +248,13 @@ export default {
     },
     // 确认添加
     goAdd(row) {
+      if (this.choicedList.length === 0) {
+        this.$message({
+          type: 'error',
+          message: '请选择小鼠'
+        })
+        return false
+      }
       // 添加到繁育组操作
       if (this.needType === 'noBreed') {
         this.add2breed(this.choicedList)
@@ -237,28 +269,29 @@ export default {
       const curCage = this.cageList.filter((el) => {
         return el.id === this.choosedCage
       })
-      console.log(curCageMouse, curCage)
+      console.log('curMouses==', curMouses, 'curCageMouse==', curCageMouse, 'curCage==', curCage)
       // 选中了同一笼内的所有鼠
       if (curCageMouse.length === curCage[0].miceInfoByMiceCageQueryVO.length) {
         this.doAdd(curCageMouse)
+        return false
       }
       // 选中同一鼠笼中部分小鼠
-      if (curCageMouse.length === curMouses.length && curCageMouse.length < curCage[0].miceInfoByMiceCageQueryVO.length) {
-        this.$confirm('您当前所选的小鼠不符合繁育要求，请将选择空闲鼠笼进行移笼？', '警告', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$router.push({
-            name: 'mouseCage',
-            params: {
-              mouses: curCageMouse,
-              type: 'breed'
-            }
-          })
-        }).catch(function() {
+      // if (curCageMouse.length === curMouses.length && curCageMouse.length < curCage[0].miceInfoByMiceCageQueryVO.length) {}
+      // 选择了不同笼内的小鼠
+      this.$confirm('您当前所选的小鼠不符合繁育要求，请将选择空闲鼠笼进行移笼？', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$router.push({
+          name: 'mouseCage',
+          params: {
+            mouses: curMouses,
+            type: 'breed'
+          }
         })
-      }
+      }).catch(function() {
+      })
     },
     // 确认添加
     doAdd(mouseArr) {

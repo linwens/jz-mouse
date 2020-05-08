@@ -18,8 +18,6 @@
           v-for="(item, index) in cageList"
           :key="index"
           :all-data="item"
-          :is-active="choosedCage === item.id"
-          :choiced-list.sync="choicedList"
           :is-choosing-cage="isChoosingCage"
           :cage-id="item.id"
           :choosed-cage.sync="choosedCage"
@@ -48,12 +46,14 @@
             <el-input
               v-model.number="putInForm.female"
               placeholder="0"
+              :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
             />
             <span class="ml8">雄</span>
             <el-input
               v-model.number="putInForm.male"
               placeholder="0"
+              :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
             />
           </el-form-item>
@@ -70,7 +70,7 @@
 <script>
 import MouseCage from '@/components/MouseCage'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
-import { fetchCageList, addMouse } from '@/api/mouse'
+import { fetchCageList, addMouse, transferCage } from '@/api/mouse'
 
 export default {
   name: 'CageChoice',
@@ -88,14 +88,14 @@ export default {
         limit: 10 // 每页显示多少条
       },
       isChoosingCage: false, // 正在选鼠笼标识
-      choicedList: [], // 当前选中的小鼠列表
       choosedCage: 0, // 当前选中的鼠笼id
       putInVisible: false,
       putInForm: {
         male: 0,
         female: 0
       },
-      mouseData: {} // 新增小鼠信息
+      mouseData: {}, // 新增小鼠信息
+      mouses: [] // 添加多个小鼠信息
     }
   },
   created() {
@@ -103,7 +103,21 @@ export default {
       this.$set(this, 'mouseData', this.$route.params)
     } else { // 繁育组进来选笼放笼
       this.optType = this.$route.params.type
-
+      this.mouses = this.$route.params.mouses
+      const male = this.mouses.filter((el) => {
+        return el.gender === 0
+      }).length
+      const female = this.mouses.filter((el) => {
+        return el.gender === 1
+      }).length
+      this.putInForm.female = female
+      this.putInForm.male = male
+      this.mouseData.femaleMiceNum = female
+      this.mouseData.maleMiceNum = male
+      // 选中小鼠id
+      this.ids = this.mouses.map((el) => {
+        return el.miceInfoId
+      })
     }
     this.getCageList()
   },
@@ -124,9 +138,19 @@ export default {
       fetchCageList(Object.assign({
         current: this.cagePage.page,
         size: this.cagePage.limit
-      })).then(response => {
-        this.cageList = response.data.records
-        this.cagePage.total = response.data.total
+      })).then(res => {
+        const { records } = res.data
+        let list = []
+        // 如果是添加繁育组，只展示空笼位
+        if (this.optType === 'breed') {
+          list = records.filter((el) => {
+            return el.miceInfoByMiceCageQueryVO.length === 0
+          })
+        } else {
+          list = records
+        }
+        this.cageList = list
+        this.cagePage.total = res.data.total
       }).finally(() => {
         this.tableLoading = false
       })
@@ -140,6 +164,51 @@ export default {
         this.putInVisible = true
       }
     },
+    // 繁育组添加小鼠
+    doTransferCage() {
+      transferCage({
+        cageId: this.choosedCage,
+        miceId: this.ids
+      }).then((res) => {
+        this.$message.success('放入鼠笼成功')
+        this.mouseData.femaleMiceNum -= this.putInForm.female
+        this.mouseData.maleMiceNum -= this.putInForm.male
+        this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
+        this.putInVisible = false
+        this.$router.back()
+      })
+    },
+    // 添加小鼠
+    doAdd() {
+      const { id: userId } = this.$store.getters.info
+      const params = Object.assign({}, this.mouseData, {
+        createTime: Math.floor(+new Date() / 1000),
+        birthDate: this.mouseData.birthDate / 1000,
+        separateCageRemindTime: this.mouseData.separateCageRemindTime / 1000,
+        phenotypicIdentificationRemindTime: this.mouseData.phenotypicIdentificationRemindTime / 1000,
+        createUser: userId,
+        operator: userId,
+        cid: this.choosedCage,
+        maleMiceNum: this.putInForm.male,
+        femaleMiceNum: this.putInForm.female
+      })
+      addMouse(params).then(res => {
+        // 更新剩余小鼠数量
+        this.mouseData.femaleMiceNum -= this.putInForm.female
+        this.mouseData.maleMiceNum -= this.putInForm.male
+        const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
+        console.log(this.$store.getters.cacheMouseInfo)
+        this.$store.dispatch('app/cacheMouseInfo', {
+          common: this.mouseData,
+          varietiesName,
+          varietiesId,
+          genes
+        })
+        this.$message.success('新增小鼠成功')
+        this.getCageList()
+        this.putInVisible = false
+      })
+    },
     putInSubmit() {
       if (this.putInForm.male > this.mouseData.maleMiceNum) {
         this.$message.error(`雄鼠数量不得大于${this.mouseData.maleMiceNum}`)
@@ -151,36 +220,14 @@ export default {
       }
       if (this.putInForm.male === 0 && this.putInForm.female === 0) {
         this.$message.error('总数量必须大于0')
-      } else {
-        const { id: userId } = this.$store.getters.info
-        const params = Object.assign({}, this.mouseData, {
-          createTime: Math.floor(+new Date() / 1000),
-          birthDate: this.mouseData.birthDate / 1000,
-          separateCageRemindTime: this.mouseData.separateCageRemindTime / 1000,
-          phenotypicIdentificationRemindTime: this.mouseData.phenotypicIdentificationRemindTime / 1000,
-          createUser: userId,
-          operator: userId,
-          cid: this.choosedCage,
-          maleMiceNum: this.putInForm.male,
-          femaleMiceNum: this.putInForm.female
-        })
-        addMouse(params).then(res => {
-          // 更新剩余小鼠数量
-          this.mouseData.femaleMiceNum -= this.putInForm.female
-          this.mouseData.maleMiceNum -= this.putInForm.male
-          const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
-          console.log(this.$store.getters.cacheMouseInfo)
-          this.$store.dispatch('app/cacheMouseInfo', {
-            common: this.mouseData,
-            varietiesName,
-            varietiesId,
-            genes
-          })
-          this.$message.success('新增小鼠成功')
-          this.getCageList()
-          this.putInVisible = false
-        })
+        return false
       }
+
+      if (this.optType === 'breed') { // 添加入繁育组
+        this.doTransferCage()
+        return false
+      }
+      this.doAdd()
     }
   }
 }

@@ -18,6 +18,7 @@
               label="开始时间:"
               class="mr48 mb9"
               prop="startTime"
+              value-format="timestamp"
               :rules="[
                 { required: true, message: '开始时间不能为空'}
               ]"
@@ -34,6 +35,7 @@
               label="结束时间:"
               class="mb9"
               prop="endTime"
+              value-format="timestamp"
               :rules="[
                 { required: true, message: '结束时间不能为空'}
               ]"
@@ -55,7 +57,14 @@
               style="padding-left: 9.44px;"
             >
               <div class="df s-jcsb w250">
-                <el-form-item prop="handleDate" class="mb0">
+                <el-date-picker
+                  v-model="experimentForm.handleTime"
+                  type="datetime"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="timestamp"
+                  placeholder="选择处理时间"
+                />
+                <!-- <el-form-item prop="handleDate" class="mb0">
                   <el-date-picker
                     v-model="experimentForm.handleDate"
                     class="mb0"
@@ -72,7 +81,7 @@
                     size="small"
                     placeholder="选择时间"
                   />
-                </el-form-item>
+                </el-form-item> -->
               </div>
             </el-form-item>
             <el-form-item label="处理时间提醒:" class="mb9">
@@ -81,8 +90,8 @@
                 placeholder="请选择是否处理时间提醒"
                 class="w250"
               >
-                <el-option label="是" value="0" />
-                <el-option label="否" value="1" />
+                <el-option label="是" :value="0" />
+                <el-option label="否" :value="1" />
               </el-select>
             </el-form-item>
           </div>
@@ -94,7 +103,14 @@
               style="padding-left: 9.44px;"
             >
               <div class="df s-jcsb w250">
-                <el-form-item prop="checkDate" class="mb0">
+                <el-date-picker
+                  v-model="experimentForm.testTime"
+                  type="datetime"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="timestamp"
+                  placeholder="选择检测时间"
+                />
+                <!-- <el-form-item prop="checkDate" class="mb0">
                   <el-date-picker
                     v-model="experimentForm.checkDate"
                     class="mb0"
@@ -111,7 +127,7 @@
                     size="small"
                     placeholder="选择时间"
                   />
-                </el-form-item>
+                </el-form-item> -->
               </div>
             </el-form-item>
             <el-form-item label="检测时间提醒:" class="mb9">
@@ -120,8 +136,8 @@
                 placeholder="请选择是否处理时间提醒"
                 class="w250"
               >
-                <el-option label="是" value="1" />
-                <el-option label="否" value="2" />
+                <el-option label="是" :value="0" />
+                <el-option label="否" :value="1" />
               </el-select>
             </el-form-item>
           </div>
@@ -136,8 +152,8 @@
               placeholder="请选择是否处理时间提醒"
               class="w250"
             >
-              <el-option label="处死" value="5" />
-              <el-option label="闲置" value="1" />
+              <el-option label="处死" :value="5" />
+              <el-option label="闲置" :value="1" />
             </el-select>
           </el-form-item>
           <el-form-item
@@ -207,7 +223,7 @@
       </div>
       <div class="addExperiment__btns pos-a w-100 h60 df s-aic">
         <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
-        <el-button type="primary" size="small" @click="goChoose()">确定</el-button>
+        <el-button type="primary" size="small" @click="doAddExpt()">确定</el-button>
       </div>
     </main-box>
     <!-- 添加标签弹窗 -->
@@ -332,7 +348,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
-import { addTags, addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
+import { addTags, addNewExpt, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
 
 export default {
   name: 'MouseEdit',
@@ -342,9 +358,14 @@ export default {
   data() {
     return {
       experimentForm: {
-        name: '繁育组名称',
-        date: 0,
-        time: 1587375335305
+        name: '',
+        startTime: null,
+        endTime: null,
+        handleTime: null,
+        handleTimeFlag: 0,
+        testTime: null,
+        testTimeFlag: 0,
+        endMiceState: 5
       },
       tags: [],
       tagsForm: {
@@ -478,6 +499,18 @@ export default {
     // 获取小鼠列表
     getMouseList(id) {
       console.log(id)
+    },
+    // 新增实验组
+    doAddExpt() {
+      const { startTime, endTime, handleTime, testTime, ...other } = this.experimentForm
+      addNewExpt(Object.assign({}, {
+        startTime: startTime / 1000,
+        endTime: endTime / 1000,
+        handleTime: handleTime / 1000,
+        testTime: testTime / 1000
+      }, other)).then((res) => {
+        this.$message.sucess('新增实验组成功')
+      })
     }
   }
 

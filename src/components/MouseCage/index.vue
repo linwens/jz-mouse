@@ -156,9 +156,9 @@ export default {
     },
     // 选中的小鼠
     choicedList: {
-      type: Array,
+      type: Object,
       default: function() {
-        return []
+        return {}
       }
     },
     // 选中的小鼠信息
@@ -262,19 +262,25 @@ export default {
     },
     // 多选框选中小鼠
     taggleMouse(val) {
+      console.log('cage-11---', this.checkList)
       const newOne = this.checkList[this.checkList.length - 1]
       // 如果是添加繁育组时选择实验组小鼠
       if (this.needType === 'noBreed' && newOne.miceStatus === 3) {
+        const _self = this
         this.$confirm('该小鼠处于实验中，添加进繁育列表后将会从实验组中移除，是否继续操作？', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
         }).catch(function() {
-          this.checkList.pop()
+          _self.checkList.pop()
         })
       }
-      this.$emit('update:choicedList', this.checkList)
+      console.log('cage-22---', this.checkList)
+      this.$emit('update:choicedList', {
+        cid: this.cageId,
+        mouses: this.checkList
+      })
     },
     // 选择鼠笼
     chooseCage() {

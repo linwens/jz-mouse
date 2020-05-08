@@ -24,9 +24,9 @@ export function addTags(query) { // 新增实验组标签表
   })
 }
 
-export function addItemObj(obj) {
+export function addNewExpt(obj) { // 新增实验组
   return request({
-    url: '/dict/item',
+    url: '/experiment',
     method: 'post',
     data: obj
   })

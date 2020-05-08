@@ -126,7 +126,7 @@
                 :all-data="item"
                 :is-active="isMoving || isBuilding&&(choosedCage === item.id) || isDeling"
                 :disabled="isBuilding&&(choosedCage !== item.id)"
-                :choiced-list.sync="choicedList"
+                :choiced-list.sync="curCageMouseList"
                 :is-choosing-cage="isChoosingCage"
                 :cage-id="item.id"
                 :choosed-cage.sync="choosedCage"
@@ -301,6 +301,8 @@ export default {
       moveBtnText: '移笼',
       isMoving: false, // 正在移笼标识
       isChoosingCage: false, // 正在选鼠笼标识
+      curCageMouseList: {}, // 当前鼠笼中选中小鼠列表
+      cacheChoicedList: [], // 缓存选中鼠笼中小鼠列表
       choicedList: [], // 当前选中的小鼠列表
       choosedCage: null, // 当前选中的鼠笼id
       // 新建子鼠
@@ -326,6 +328,29 @@ export default {
       const duration = +new Date() - this.mouseInfo.birthDate * 1000
       const days = duration / 1000 / 60 / 60 / 24 % 7
       return Math.floor(days)
+    }
+  },
+  watch: {
+    // 监听每个鼠笼选中的小鼠，最后合并所有选中小鼠
+    'curCageMouseList.mouses'(n, o) {
+      const _self = this
+      let list = this.cacheChoicedList
+      const hasThis = this.cacheChoicedList.filter((el) => {
+        return el.cid === _self.curCageMouseList.cid
+      }).length > 0
+
+      if (hasThis) {
+        list = this.cacheChoicedList.filter((el) => {
+          return el.cid !== _self.curCageMouseList.cid
+        })
+      }
+      list.push(this.curCageMouseList)
+      this.$set(this, 'cacheChoicedList', list)
+      // 降维数组
+      const allMouses = list.reduce(function(total, val, idx, arr) {
+        return total.concat(val.mouses)
+      }, [])
+      this.choicedList = allMouses
     }
   },
   created() {
