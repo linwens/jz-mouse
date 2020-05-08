@@ -13,18 +13,18 @@ export const tableOption = {
 
   column: [{
     label: '繁育组名称',
-    prop: 'num',
+    prop: 'name',
     overHidden: true
   }, {
     label: '繁育时间',
-    prop: 'borth_time',
+    prop: 'breedTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     label: '小鼠数量',
-    prop: 'weight'
+    prop: 'miceSum'
   }, {
     label: '创建时间',
-    prop: 'borth_time',
+    prop: 'createTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }]
 }

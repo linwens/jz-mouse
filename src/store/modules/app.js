@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import { setStorageItem, getStorageItem } from '@/utils/storage'
+import { setStorageItem, getStorageItem, removeStorageItem } from '@/utils/storage'
 
 const state = {
   sidebar: {
@@ -7,7 +7,8 @@ const state = {
     withoutAnimation: false
   },
   device: 'desktop',
-  cacheMouseInfo: getStorageItem('m-info') || {}
+  cacheMouseInfo: getStorageItem('m-info') || {},
+  addingMouses: getStorageItem('adding-mouse') || ''
 }
 
 const mutations = {
@@ -29,8 +30,16 @@ const mutations = {
     state.device = device
   },
   SET_M_INFO: (state, info) => {
-    state.info = info
+    state.cacheMouseInfo = JSON.stringify(info)
     setStorageItem('m-info', JSON.stringify(info))
+  },
+  CACHE_MOUSES: (state, arr) => {
+    state.addingMouses = JSON.stringify(arr)
+    setStorageItem('adding-mouse', JSON.stringify(arr))
+  },
+  CLEAR_MOUSES: (state) => {
+    state.addingMouses = ''
+    removeStorageItem('adding-mouse')
   }
 }
 
@@ -46,6 +55,12 @@ const actions = {
   },
   cacheMouseInfo({ commit }, info) {
     commit('SET_M_INFO', info)
+  },
+  cacheChoosedMouse({ commit }, arr) {
+    commit('CACHE_MOUSES', arr)
+  },
+  clearMouses({ commit }) {
+    commit('CLEAR_MOUSES')
   }
 }
 

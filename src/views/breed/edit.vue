@@ -21,7 +21,7 @@
             style="padding-left: 9.44px;"
           >
             <div v-if="type==='add'" class="df s-jcsb breed__input--width">
-              <el-form-item prop="date">
+              <!-- <el-form-item prop="date">
                 <el-date-picker
                   v-model="breedForm.date"
                   class="w140 mr3"
@@ -37,9 +37,16 @@
                   size="small"
                   placeholder="选择时间"
                 />
-              </el-form-item>
+              </el-form-item> -->
+              <el-date-picker
+                v-model="breedForm.createTime"
+                type="datetime"
+                format="yyyy-MM-dd HH:mm:ss"
+                value-format="timestamp"
+                placeholder="选择日期时间"
+              />
             </div>
-            <span v-else>{{ breedForm.time | timeFormat('yyyy-MM-dd hh:mm:ss') }}</span>
+            <span v-else>{{ breedForm.createTime | timeFormat('yyyy-MM-dd hh:mm:ss') }}</span>
           </el-form-item>
         </el-form>
       </div>
@@ -53,7 +60,6 @@
           :data="tableData"
           :table-option="tableOption"
           :table-loading="tableLoading"
-          @on-load="getList"
           @refresh-change="handleRefreshChange"
         >
           <template slot="preg_time" slot-scope="scope">
@@ -112,7 +118,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './editTable'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
+import { addBreed, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
 
 export default {
   name: 'DelList',
@@ -123,9 +129,12 @@ export default {
     return {
       type: '',
       breedForm: {
-        name: '繁育组名称',
-        date: 0,
-        time: 1587375335305
+        name: '',
+        breedTime: null,
+        createTime: null,
+        // date: null,
+        // time: null,
+        miceIds: []
       },
       breedTime: {
         date: 0
@@ -138,40 +147,17 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        id: 111,
-        num: 0,
-        sex: 0,
-        week: 'XX周Z天',
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        gene: '基因型xxx',
-        fur: '红色',
-        health_status: 1,
-        preg_time: 1587277449395
-      }, {
-        id: 222,
-        num: 0,
-        sex: 1,
-        week: 'XX周Z天',
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        gene: '基因型xxx',
-        fur: '红色',
-        health_status: 1,
-        borth_time: 1587277449395
-      }]
+      tableData: []
     }
   },
   created() {
-    console.log(this.$route)
     this.$route.meta.title = this.$route.params.type === 'add' ? '新增' : '编辑/查看'
     this.type = this.$route.params.type
   },
   methods: {
     // 添加小鼠
     goAdd(row) {
-      this.goPage('experimentAddMouse', { id: 1, type: 'add' })
+      this.goPage('experimentAddMouse', { type: 'noBreed' })
     },
     goBack() {
       this.$router.back()
@@ -221,12 +207,26 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          console.log(this.breedForm)
+          const ids = this.tableData.map((el) => {
+            return el.miceInfoId
+          })
+          const { id: userId } = this.$store.getters.info
+          addBreed(Object.assign({}, this.breedForm, {
+            breedTime: this.breedForm.breedTime / 1000,
+            createTime: +new Date() / 1000,
+            createUser: userId,
+            miceIds: ids.join(',')
+          })).then((res) => {
+            this.$message.success('新增繁育组成功')
+            this.$store.dispatch('app/clearMouses')
+            this.goBack()
+          })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     // 设置受孕时间
     setPregTime(row) {
@@ -240,10 +240,21 @@ export default {
     handleClose(done) {
       this.$confirm('确认关闭？')
         .then(_ => {
-          done();
+          done()
         })
-        .catch(_ => {});
+        .catch(_ => {})
     }
+  },
+  // 路由守卫，复用的页面，判断来源
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 是添加小鼠返回的
+      if (from.name === 'experimentAddMouse') {
+        vm.type = 'add'
+        vm.$set(vm, 'tableData', JSON.parse(vm.$store.getters.addingMouses))
+        console.log(vm.tableData)
+      }
+    })
   }
 }
 </script>

@@ -13,7 +13,7 @@
         <el-button size="small" class="w80" @click="putIn()">放入</el-button>
         <add-cage-btn @done="getCageList" />
       </div>
-      <div class="df s-fwwp mb60">
+      <div class="df s-fwwp mb60 s-jcsa">
         <mouse-cage
           v-for="(item, index) in cageList"
           :key="index"
@@ -80,6 +80,7 @@ export default {
   },
   data() {
     return {
+      optType: '', // 操作类型
       cageList: [], // 鼠笼列表
       cagePage: {
         total: 0, // 总页数
@@ -98,12 +99,16 @@ export default {
     }
   },
   created() {
+    if (!this.$route.params.type) { // 新增小鼠进来选笼放笼
+      this.$set(this, 'mouseData', this.$route.params)
+    } else { // 繁育组进来选笼放笼
+      this.optType = this.$route.params.type
+
+    }
     this.getCageList()
-    this.$set(this, 'mouseData', this.$route.params)
   },
   methods: {
     goBack() {
-      
       this.$confirm(`当前仍有${this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum}只小鼠尚未放入鼠笼，是否继续返回？`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

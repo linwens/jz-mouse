@@ -40,7 +40,7 @@
               :class="{'isChoiced': item.miceInfoId == curId}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item" />
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
@@ -57,7 +57,7 @@
               class="mouse__item pos-r ta-c"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="!isActive" class="mouse__checkbox" :label="item" />
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
@@ -112,6 +112,11 @@ import { getMouseInfo, getMouseExpInfo } from '@/api/mouse'
 export default {
   name: 'MouseCage',
   props: {
+    // 需要的状态needType
+    needType: {
+      type: String,
+      default: ''
+    },
     // 鼠笼所需所有信息
     allData: {
       type: Object,
@@ -196,14 +201,14 @@ export default {
     isExpt() {
       const mouseArr = this.allData.miceInfoByMiceCageQueryVO
       const isExpt = mouseArr.filter((el) => {
-        return el.miceStatus === 2
+        return el.miceStatus === 3
       })
       return isExpt.length > 0
     },
     isBreed() {
       const mouseArr = this.allData.miceInfoByMiceCageQueryVO
       const isBreed = mouseArr.filter((el) => {
-        return el.miceStatus === 3
+        return el.miceStatus === 2
       })
       return isBreed.length > 0
     },
@@ -223,6 +228,17 @@ export default {
     }
   },
   methods: {
+    // 设置当前小鼠是否可选
+    checkBoxStatus(status) {
+      let noWay = false
+      if (status === 2 && this.needType === 'noBreed') {
+        noWay = true
+      }
+      if (status === 3 && this.needType === 'noExpt') {
+        noWay = true
+      }
+      return !this.isActive || noWay
+    },
     taggle(id) {
       if (this.curId === id) { // 再次点击取消选框
         this.curId = null
@@ -245,7 +261,19 @@ export default {
       this.manDialog = true
     },
     // 多选框选中小鼠
-    taggleMouse() {
+    taggleMouse(val) {
+      const newOne = this.checkList[this.checkList.length - 1]
+      // 如果是添加繁育组时选择实验组小鼠
+      if (this.needType === 'noBreed' && newOne.miceStatus === 3) {
+        this.$confirm('该小鼠处于实验中，添加进繁育列表后将会从实验组中移除，是否继续操作？', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+        }).catch(function() {
+          this.checkList.pop()
+        })
+      }
       this.$emit('update:choicedList', this.checkList)
     },
     // 选择鼠笼

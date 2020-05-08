@@ -389,7 +389,7 @@ export default {
   },
   methods: {
     goAddMouse(row) {
-      this.goPage('experimentAddMouse', { id: 1, type: 'add' })
+      this.goPage('experimentAddMouse', { type: 'noExpt' })
     },
     goPage(r, obj) {
       this.$router.push({ name: r, params: obj })

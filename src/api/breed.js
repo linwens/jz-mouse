@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(query) { // 繁育组列表
   return request({
     url: '/micebreed/page',
     method: 'get',
@@ -16,9 +16,9 @@ export function fetchItemList(query) {
   })
 }
 
-export function addItemObj(obj) {
+export function addBreed(obj) { // 增加繁育组
   return request({
-    url: '/dict/item',
+    url: '/micebreed',
     method: 'post',
     data: obj
   })

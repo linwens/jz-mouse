@@ -59,27 +59,7 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        num: 0,
-        sex: 1,
-        borth_time: 1587277449395,
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        基因型: '基因型xxx',
-        fur: '红色',
-        health_status: 1,
-        type: 2
-      }, {
-        num: 0,
-        sex: 1,
-        borth_time: 1587277449395,
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        基因型: '基因型xxx',
-        fur: '红色',
-        health_status: 1,
-        type: 2
-      }]
+      tableData: []
     }
   },
   created() {
