@@ -58,7 +58,7 @@
       </el-table-column>
     </el-table>
     <div class="df" :style="{'justify-content': pagPos}">
-      <pagination v-show="pageInfo.total>0" :total="pageInfo.total" :page.sync="pageInfo.page" :limit.sync="pageInfo.limit" @pagination="getData" />
+      <pagination v-show="pageInfo.total>0" :total="pageInfo.total" :page.sync="pageInfo.page" :limit.sync="pageInfo.limit" :scroll-dist="tableOption.scrollDist || 0" @pagination="getData" />
     </div>
   </div>
 </template>

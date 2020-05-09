@@ -1,5 +1,6 @@
 <template>
-  <div class="w-100 df s-jcc s-aic bg-gray pt10 pb10">
+  <div class="w-100 df s-jcc s-aic bg-gray pt10 pb10 pos-r">
+    <slot name="posaEle" />
     <div :id="id" :class="className" :style="{height:height,width:width, 'min-height': '500px'}" />
   </div>
 </template>

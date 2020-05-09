@@ -50,14 +50,14 @@ export const mouseListOption = {
     overHidden: true
   }, {
     label: '性别',
-    prop: 'sex',
+    prop: 'gender',
     dicData: [
       {
         label: '雌',
-        value: 0
+        value: 1
       }, {
         label: '雄',
-        value: 1
+        value: 0
       }
     ]
   }, {

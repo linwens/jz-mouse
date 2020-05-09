@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(query) { // 首页列表查询
   return request({
-    url: '/dict/page',
+    url: '/miceinfo/queryMiceInfoByCondition',
     method: 'get',
     params: query
   })
