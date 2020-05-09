@@ -157,7 +157,7 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            label="监测信息:"
+            label="检测信息:"
             class="mb0"
             label-width="85.56px"
             style="padding-left: 9.44px;"
@@ -283,10 +283,10 @@
             label="处理:"
             label-width="80px"
             class="mb8"
-            prop="handle"
+            prop="eventName"
           >
             <el-input
-              v-model="addGroupForm.handle"
+              v-model="addGroupForm.eventName"
               placeholder="请输入处理信息"
               class="w250"
             />
@@ -295,11 +295,11 @@
             label="检测信息:"
             label-width="80px"
             class="mb8"
-            prop="tags"
+            prop="labels"
           >
-            <el-select v-model="addGroupForm.tags" multiple placeholder="请选择">
+            <el-select v-model="addGroupForm.labels" multiple placeholder="请选择">
               <el-option
-                v-for="(item, index) in tags"
+                v-for="(item, index) in labels"
                 :key="index"
                 :label="item"
                 :value="item"
@@ -348,7 +348,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
-import { addTags, addNewExpt, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
+import { addTags, addNewExpt, addNewGroup, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
 
 export default {
   name: 'MouseEdit',
@@ -376,8 +376,8 @@ export default {
       addGroupDialog: false,
       addGroupForm: {
         name: '',
-        handle: '',
-        tags: []
+        eventName: '',
+        labels: []
       },
       tableData: [
         {
@@ -476,9 +476,22 @@ export default {
       this.addGroupDialog = false
       console.log(this.addGroupForm)
       if (!this.addGroupForm.id) { // 不存在id说明是新增
-        this.addListItem(this.addGroupForm)
+        const { id: userId } = this.$store.getters.info
+        addNewGroup(Object.assign({}, this.addGroupForm, {
+          createTime: Math.floor(+new Date() / 1000),
+          operator: userId,
+          createUser: userId,
+          delFlag: 0,
+          eid: 0,
+          miceIds: '', // 新增无小鼠
+          labels: this.addGroupForm.labels.join(',')
+        })).then((res) => {
+          this.$message.success('新建分组成功')
+          this.addListItem(this.addGroupForm)
+        })
       } else {
         // 提交修改
+
       }
     },
     // 新增列表项
@@ -503,13 +516,16 @@ export default {
     // 新增实验组
     doAddExpt() {
       const { startTime, endTime, handleTime, testTime, ...other } = this.experimentForm
+      const { id: userId } = this.$store.getters.info
       addNewExpt(Object.assign({}, {
+        operator: userId,
+        createUser: userId,
         startTime: startTime / 1000,
         endTime: endTime / 1000,
         handleTime: handleTime / 1000,
         testTime: testTime / 1000
       }, other)).then((res) => {
-        this.$message.sucess('新增实验组成功')
+        this.$message.success('新增实验组成功')
       })
     }
   }

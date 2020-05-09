@@ -32,6 +32,14 @@ export function addNewExpt(obj) { // 新增实验组
   })
 }
 
+export function addNewGroup(obj) { // 新增实验分组
+  return request({
+    url: '/experimentSampleGroup',
+    method: 'post',
+    data: obj
+  })
+}
+
 export function getItemObj(id) {
   return request({
     url: '/dict/item/' + id,

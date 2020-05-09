@@ -92,7 +92,7 @@
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './table'
 import { exptOption } from './exptTable'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
+import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
 
 export default {
   name: 'DelList',
