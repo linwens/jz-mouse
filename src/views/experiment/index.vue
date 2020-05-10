@@ -16,36 +16,30 @@
             @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
-            <template slot="operation_check" slot-scope="scope">
-              <el-button type="text" @click="showOperList(scope.scope.row)">查看</el-button>
+            <template slot="operation_check" slot-scope="{scope}">
+              <expt-record :id="scope.row.id" btn-text="查看" type="text" size="medium" />
             </template>
             <template slot="module_rslt" slot-scope="scope">
-              <el-button type="text" @click="setPregTime(scope.scope.row)">查看</el-button>
+              <view-files />
               <el-button
                 type="text"
                 class="btn-text--black"
                 @click="setPregTime(scope.scope.row)"
               >上传</el-button>
             </template>
-            <template slot="menu" slot-scope="scope">
+            <template slot="menu" slot-scope="{scope}">
+              <set-time :id="scope.row.id" btn-text="设置时间" type="text" class="dib" />
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit()"
-              >
-                设置时间
-              </el-button>
-              <el-button
-                type="text"
-                size="mini"
-                @click="goEdit(scope.scope.row)"
+                @click="goEdit(scope.row)"
               >
                 详情
               </el-button>
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit()"
+                @click="doEnd(scope.row.id)"
               >
                 手动结束
               </el-button>
@@ -53,7 +47,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
+                @click="rowItemDel(scope.row)"
               >
                 删除
               </el-button>
@@ -62,42 +56,24 @@
         </div>
       </div>
     </main-box>
-    <!-- 实验记录 -->
-    <el-dialog title="实验记录" :visible.sync="exptRecordVisible">
-      <merge-table
-        ref="crud"
-        :page="exptPage"
-        :data="exptData"
-        :table-option="exptOption"
-        :table-loading="exptLoading"
-        @on-load="getList"
-        @refresh-change="handleRefreshChange"
-      >
-        <template slot="menu" slot-scope="scope">
-          <el-button
-            type="text"
-            size="mini"
-            class="btn-text--danger"
-            @click="rowItemDel(scope.scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </merge-table>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import MergeTable from '@/components/MergeTable'
+import ExptRecord from '@/components/Dialogs/ExptRecord'
+import ViewFiles from '@/components/Dialogs/ViewFiles'
+import SetTime from '@/components/Dialogs/cpt_set_time'
 import { tableOption } from './table'
-import { exptOption } from './exptTable'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
+import { addItemObj, addObj, delExptObj, delObj, fetchItemList, fetchList, putItemObj, endExpt } from '@/api/experiment'
 
 export default {
   name: 'DelList',
   components: {
-    MergeTable
+    MergeTable,
+    ExptRecord,
+    ViewFiles,
+    SetTime
   },
   data() {
     return {
@@ -108,43 +84,7 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        name: 111,
-        num: 1,
-        sum: 1,
-        start_time: 1587277449395,
-        end_time: 1587277449395,
-        check_time: 1587277449395,
-        handle_time: 1587277449395
-      }, {
-        name: 111,
-        num: 1,
-        sum: 1,
-        start_time: 1587277449395,
-        end_time: 1587277449395,
-        check_time: 1587277449395,
-        handle_time: 1587277449395
-      }],
-      // 实验记录表格
-      exptRecordVisible: false,
-      exptOption,
-      exptLoading: false,
-      exptPage: {
-        total: 0, // 总页数
-        page: 1, // 当前页数
-        limit: 10 // 每页显示多少条
-      },
-      exptData: [{
-        type: 111,
-        handle_time: 1587277449395,
-        opr_time: 1587277449395,
-        man: '操作人'
-      }, {
-        type: 111,
-        handle_time: 1587277449395,
-        opr_time: 1587277449395,
-        man: '操作人'
-      }]
+      tableData: []
     }
   },
   created() {
@@ -155,7 +95,8 @@ export default {
       this.goPage('experimentAdd', { type: 'add' })
     },
     goEdit(row) {
-      this.goPage('experimentEdit', { id: 1, type: 'edit' })
+      const id = row.id
+      this.$router.push({ name: 'experimentEdit', params: { id }})
     },
     goPage(r, obj) {
       this.$router.push({ name: r, params: obj })
@@ -166,12 +107,12 @@ export default {
     // 删除
     rowItemDel: function(row) {
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm(`是否确认删除实验组: ${row.name}吗?`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        return delItemObj(row.id)
+        return delExptObj(row.id)
       }).then(() => {
         this.getDictItemList()
         _this.$message({
@@ -195,9 +136,22 @@ export default {
         this.tableLoading = false
       })
     },
-    // 查看操作记录
-    showOperList() {
-      this.exptRecordVisible = true
+    // 手动结束
+    doEnd(id) {
+      const _self = this
+      this.$confirm('是否确认结束当前实验组', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.getList()
+        endExpt({
+          experimentId: id
+        }).then((res) => {
+          _self.$message.success('手动结束实验成功')
+        })
+      }).catch(function() {
+      })
     }
   }
 }

@@ -101,8 +101,8 @@
               <el-progress :text-inside="true" :stroke-width="24" :percentage="45" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
-              <el-button size="small" class="w100" @click="setTimeDialog = true">设置时间</el-button>
-              <expt-record />
+              <set-time :id="mouseExptInfo.id" />
+              <expt-record class="ml16 w100" />
             </div>
           </div>
         </div>
@@ -141,88 +141,6 @@
         </el-tabs>
       </div>
     </main-box>
-    <!-- 设置时间弹窗 -->
-    <el-dialog
-      title="设置时间"
-      :visible.sync="setTimeDialog"
-      width="500px"
-    >
-      <div>
-        <el-form ref="setTimeForm" :model="setTimeForm" label-position="left" size="mini">
-          <el-form-item
-            label="类型:"
-            label-width="80px"
-            class="mb8"
-            prop="tags"
-          >
-            <el-select
-              v-model="setTimeForm.type"
-              placeholder="请选择类型"
-              size="small"
-              class="w250"
-            >
-              <el-option label="检测时间" :value="1" />
-              <el-option label="处理时间" :value="2" />
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            label="时间:"
-            label-width="80px"
-            class="w250"
-          >
-            <div class="df s-jcsb w250">
-              <el-form-item prop="handleDate" class="mb0">
-                <el-date-picker
-                  v-model="setTimeForm.handleDate"
-                  class="mb0"
-                  style="width: 133px;"
-                  size="small"
-                  type="date"
-                  placeholder="选择日期"
-                />
-              </el-form-item>
-              <el-form-item prop="handleTime" class="mb0">
-                <el-time-picker
-                  v-model="setTimeForm.handleTime"
-                  style="width: 113px;"
-                  size="small"
-                  placeholder="选择时间"
-                />
-              </el-form-item>
-            </div>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="setTimeDialog = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="setTime()">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 查看记录弹窗 -->
-    <el-dialog
-      title="查看记录"
-      :visible.sync="recordDialog"
-      width="850px"
-    >
-      <merge-table
-        ref="crud"
-        :page="page"
-        :data="recordList"
-        :table-option="recordOption"
-        :table-loading="tableLoading"
-      >
-        <template slot="menu" slot-scope="{scope}">
-          <el-button
-            type="text"
-            size="mini"
-            class="btn-text--danger"
-            @click="rowItemDel(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </merge-table>
-    </el-dialog>
     <!-- 家谱弹窗 -->
     <el-dialog
       title="提示"
@@ -242,9 +160,9 @@ import FileViewer from '@/components/FileViewer'
 import FamilyTree from '@/components/Charts/FamilyTree'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
+import SetTime from '@/components/Dialogs/cpt_set_time'
 import MergeTable from '@/components/MergeTable'
-import { recordOption } from './recordTable'
-import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
+import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
@@ -253,6 +171,7 @@ export default {
     MouseCage,
     AddCageBtn,
     ExptRecord,
+    SetTime,
     Guide,
     FileViewer,
     FamilyTree,
@@ -268,27 +187,6 @@ export default {
       dialogVisible: false,
       // 附件
       fileUrl: 'http://localhost/test.pdf',
-      // 设置时间
-      setTimeDialog: false,
-      setTimeForm: {
-        type: 1,
-        date: 1587375335305,
-        time: 1587375335305
-      },
-      // 查看记录
-      recordDialog: false,
-      recordList: [{
-        type: 1,
-        checkTime: 1587375335305,
-        handleTime: 1587375335305,
-        name: '张三'
-      }],
-      recordOption,
-      page: {
-        total: 0, // 总页数
-        page: 1, // 当前页数
-        limit: 10 // 每页显示多少条
-      },
       tableLoading: false,
       // 鼠笼列表
       cageList: [],

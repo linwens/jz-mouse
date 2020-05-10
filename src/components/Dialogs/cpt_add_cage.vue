@@ -4,7 +4,7 @@
       class="w80"
       size="small"
       :disabled="disabled"
-      @click="cageDialog = true"
+      @click="clickGetNum()"
     >{{ btnText }}</el-button>
     <!-- 新增笼位弹窗 -->
     <el-dialog
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { addCage } from '@/api/mouse'
+import { addCage, getNewCageNo } from '@/api/mouse'
 
 export default {
   name: 'VarietyEdit',
@@ -89,6 +89,13 @@ export default {
     }
   },
   methods: {
+    // 点击获取初始化笼位号
+    clickGetNum() {
+      getNewCageNo().then((res) => {
+        this.addCageForm.cageNo = res.data
+      })
+      this.cageDialog = true
+    },
     addCageSubmit() {
       this.$refs['addCageForm'].validate((valid) => {
         if (valid) {

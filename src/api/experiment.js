@@ -40,6 +40,14 @@ export function addNewGroup(obj) { // 新增实验分组
   })
 }
 
+export function setExptTime(obj) { // 新增实验组时间
+  return request({
+    url: '/experiment/saveExperimentTime',
+    method: 'post',
+    data: obj
+  })
+}
+
 export function getItemObj(id) {
   return request({
     url: '/dict/item/' + id,
@@ -47,16 +55,23 @@ export function getItemObj(id) {
   })
 }
 
-export function delExptObj(id) { // 删除实验记录
+export function delExptObj(id) { // 删除实验组
   return request({
     url: '/experiment/' + id,
     method: 'delete'
   })
 }
 
-export function putItemObj(obj) {
+export function delExptRecord(id) { // 删除实验记录
   return request({
-    url: '/dict/item',
+    url: '/deleteExperimentRecord/' + id,
+    method: 'delete'
+  })
+}
+
+export function endExpt(obj) { // 手动结束实验
+  return request({
+    url: '/experiment',
     method: 'put',
     data: obj
   })
