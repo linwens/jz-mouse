@@ -3,6 +3,7 @@ const getters = {
   device: state => state.app.device,
   cacheMouseInfo: state => state.app.cacheMouseInfo,
   addingMouses: state => state.app.addingMouses,
+  addingExpt: state => state.app.addingExpt,
   token: state => state.user.token,
   info: state => state.user.info,
   avatar: state => state.user.avatar,

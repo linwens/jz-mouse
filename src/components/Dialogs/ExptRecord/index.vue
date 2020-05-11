@@ -104,7 +104,7 @@ export default {
       }).then(function() {
         return delExptRecord(row.id)
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',

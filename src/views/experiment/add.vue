@@ -5,13 +5,13 @@
         <el-form ref="experimentForm" label-position="left" :model="experimentForm" label-width="95px" size="small" class="mt25">
           <el-form-item
             label="实验组名称:"
-            prop="name"
+            prop="experimentName"
             class="mb9"
             :rules="[
               { required: true, message: '实验组名称不能为空'}
             ]"
           >
-            <el-input v-model="experimentForm.name" size="small" class="w250" />
+            <el-input v-model="experimentForm.experimentName" size="small" class="w250" />
           </el-form-item>
           <div class="df s-jcfs s-aic">
             <el-form-item
@@ -177,7 +177,7 @@
       </div>
       <div class="addExperiment__table">
         <div class="df s-jcfe s-aic mt8 mb8">
-          <el-button type="primary" size="small" class="w100" @click="addGroupDialog = true">新建分组</el-button>
+          <el-button type="primary" size="small" class="w100" @click="addNewGroup()">新建分组</el-button>
         </div>
         <div class="bd-gray">
           <merge-table
@@ -186,10 +186,9 @@
             :data="tableData"
             :table-option="tableOption"
             :table-loading="tableLoading"
-            @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
-            <template slot="mouse" slot-scope="{scope}">
+            <template slot="experimentGroupSelectionMiceIds" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
@@ -198,14 +197,17 @@
               <el-button
                 type="text"
                 size="mini"
-                @click="goAddMouse(scope.row)"
+                @click="goAddMouse(scope)"
               >添加</el-button>
+            </template>
+            <template slot="sum" slot-scope="{scope}">
+              {{ scope.row.experimentGroupSelectionMiceIds ? scope.row.experimentGroupSelectionMiceIds.split(',').length : 0 }}
             </template>
             <template slot="menu" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit(scope.row)"
+                @click="goEdit(scope)"
               >
                 编辑
               </el-button>
@@ -268,13 +270,13 @@
             label="分组名称:"
             label-width="80px"
             class="mb8"
-            prop="name"
+            prop="experimentGroupName"
             :rules="[
               { required: true, message: '分组名称不能为空', trigger: 'blur' }
             ]"
           >
             <el-input
-              v-model="addGroupForm.name"
+              v-model="addGroupForm.experimentGroupName"
               placeholder="请输入分组名称"
               class="w250"
             />
@@ -295,11 +297,11 @@
             label="检测信息:"
             label-width="80px"
             class="mb8"
-            prop="labels"
+            prop="experimentGroupSelectionLabels"
           >
-            <el-select v-model="addGroupForm.labels" multiple placeholder="请选择">
+            <el-select v-model="addGroupForm.experimentGroupSelectionLabels" multiple placeholder="请选择">
               <el-option
-                v-for="(item, index) in labels"
+                v-for="(item, index) in tags"
                 :key="index"
                 :label="item"
                 :value="item"
@@ -348,7 +350,8 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
-import { addTags, addNewExpt, addNewGroup, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/experiment'
+import { addTags, addNewExpt, addNewGroup, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getGroupSampleList } from '@/api/experiment'
+import { getMouseInfoByIds } from '@/api/mouse'
 
 export default {
   name: 'MouseEdit',
@@ -358,7 +361,7 @@ export default {
   data() {
     return {
       experimentForm: {
-        name: '',
+        experimentName: '',
         startTime: null,
         endTime: null,
         handleTime: null,
@@ -375,18 +378,11 @@ export default {
       // 新建分组
       addGroupDialog: false,
       addGroupForm: {
-        name: '',
+        experimentGroupName: '',
         eventName: '',
-        labels: []
+        experimentGroupSelectionLabels: []
       },
-      tableData: [
-        {
-          id: 1,
-          name: 'erwre',
-          handle: 'fsfdsa',
-          tags: ''
-        }
-      ],
+      tableData: [],
       tableOption,
       tableLoading: false,
       page: {
@@ -409,8 +405,8 @@ export default {
 
   },
   methods: {
-    goAddMouse(row) {
-      this.goPage('experimentAddMouse', { type: 'noExpt' })
+    goAddMouse(scope) {
+      this.goPage('experimentAddMouse', { type: 'noExpt', index: scope.$index })
     },
     goPage(r, obj) {
       this.$router.push({ name: r, params: obj })
@@ -443,7 +439,7 @@ export default {
     // 获取列表
     getList() {
       this.tableLoading = true
-      fetchList(Object.assign({
+      getGroupSampleList(Object.assign({
         current: this.page.page,
         size: this.page.limit
       })).then(response => {
@@ -454,11 +450,15 @@ export default {
       })
     },
     // 编辑分组信息
-    goEdit(row) {
-      const data = JSON.parse(JSON.stringify(row))
-      console.log(data)
+    goEdit(scope) {
+      const data = JSON.parse(JSON.stringify(scope.row))
+      const exptLabels = scope.row.experimentGroupSelectionLabels
+      console.log(exptLabels)
+      data.experimentGroupSelectionLabels = exptLabels ? exptLabels.split(';') : []
+      console.log('goEdit====', data)
       this.addGroupDialog = true
       this.addGroupForm = data
+      this.addGroupForm.index = scope.$index
     },
     // 添加标签
     addTag() {
@@ -471,63 +471,110 @@ export default {
     handleClose(tag) {
       this.tags.splice(this.tags.indexOf(tag), 1)
     },
+    // 点击新建分组
+    addNewGroup() {
+      this.addGroupDialog = true
+      for (const key in this.addGroupForm) {
+        this.addGroupForm[key] = null
+      }
+    },
     // 新建分组
     addGroup() {
       this.addGroupDialog = false
-      console.log(this.addGroupForm)
-      if (!this.addGroupForm.id) { // 不存在id说明是新增
-        const { id: userId } = this.$store.getters.info
-        addNewGroup(Object.assign({}, this.addGroupForm, {
-          createTime: Math.floor(+new Date() / 1000),
-          operator: userId,
-          createUser: userId,
-          delFlag: 0,
-          eid: 0,
-          miceIds: '', // 新增无小鼠
-          labels: this.addGroupForm.labels.join(',')
-        })).then((res) => {
-          this.$message.success('新建分组成功')
-          this.addListItem(this.addGroupForm)
-        })
+      // 有编号就是编辑
+      if (typeof this.addGroupForm.index === 'number') {
+        this.editListItem(this.addGroupForm)
       } else {
-        // 提交修改
-
+        this.addListItem(this.addGroupForm)
       }
+      // console.log(this.addGroupForm)
+      // if (!this.addGroupForm.id) { // 不存在id说明是新增
+      //   const { id: userId } = this.$store.getters.info
+      //   addNewGroup(Object.assign({}, this.addGroupForm, {
+      //     createTime: Math.floor(+new Date() / 1000),
+      //     operator: userId,
+      //     createUser: userId,
+      //     delFlag: 0,
+      //     eid: 0,
+      //     miceIds: '', // 新增无小鼠
+      //     labels: this.addGroupForm.labels ? this.addGroupForm.labels.join(',') : ''
+      //   })).then((res) => {
+      //     this.$message.success('新建分组成功')
+      //     this.addListItem(this.addGroupForm)
+      //   })
+      // } else {
+      //   // 提交修改
+
+      // }
     },
     // 新增列表项
     addListItem(data) {
-      const item = data
-      item.tags = data.tags.join(';')
+      const item = JSON.parse(JSON.stringify(data))
+      item.experimentGroupSelectionLabels = data.experimentGroupSelectionLabels ? data.experimentGroupSelectionLabels.join(';') : ''
+      // 小鼠数量新建时候为0
+      item.experimentGroupSelectionMiceIds = ''
+
       const newData = this.tableData
       newData.push(item)
       this.$set(this, 'tableData', newData)
+      this.$store.dispatch('app/cacheExpts', this.tableData)
+    },
+    // 编辑列表项
+    editListItem(data) {
+      console.log('编辑确定')
+      const { index, ...other } = data
+      other.experimentGroupSelectionLabels = other.experimentGroupSelectionLabels ? other.experimentGroupSelectionLabels.join(';') : ''
+
+      this.$set(this.tableData, index, other)
+      this.$store.dispatch('app/cacheExpts', this.tableData)
     },
     // 查看小鼠列表
     showMouses(row) {
-      console.log(row)
-      this.getMouseList(row.id)
+      this.getMouseList(row.experimentGroupSelectionMiceIds)
       this.mousesDialog = true
 
     },
     // 获取小鼠列表
-    getMouseList(id) {
-      console.log(id)
+    getMouseList(ids) {
+      const idArr = ids.split(',')
+      getMouseInfoByIds(idArr).then(res => {
+        this.$set(this, 'mouseList', res.data.records)
+      })
     },
     // 新增实验组
     doAddExpt() {
       const { startTime, endTime, handleTime, testTime, ...other } = this.experimentForm
       const { id: userId } = this.$store.getters.info
+      // 实验分组数据格式整理
+      const cacheTableData = JSON.parse(JSON.stringify(this.tableData))
+      const groupInfo = cacheTableData.map(el => {
+        el.experimentGroupSelectionLabels = el.experimentGroupSelectionLabels ? el.experimentGroupSelectionLabels.split(';') : []
+        return el
+      })
+      console.log(groupInfo)
       addNewExpt(Object.assign({}, {
-        operator: userId,
         createUser: userId,
         startTime: startTime / 1000,
         endTime: endTime / 1000,
         handleTime: handleTime / 1000,
-        testTime: testTime / 1000
+        testTime: testTime / 1000,
+        experimentLabels: this.tags ? this.tags.join(',') : '',
+        experimentGroupInfo: groupInfo
       }, other)).then((res) => {
         this.$message.success('新增实验组成功')
       })
     }
+  },
+  // 路由守卫，复用的页面，判断来源
+  beforeRouteEnter(to, from, next) {
+    console.log('enter====>', to, from)
+    next(vm => {
+      // 是添加小鼠返回的,组装列表项数据
+      if (from.name === 'experimentAddMouse') {
+        const addingExpt = vm.$store.getters.addingExpt
+        vm.$set(vm, 'tableData', addingExpt ? JSON.parse(addingExpt) : [])
+      }
+    })
   }
 
 }

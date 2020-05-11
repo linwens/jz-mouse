@@ -8,6 +8,14 @@ export function fetchList(query) { // 实验组分页
   })
 }
 
+export function getGroupSampleList(query) { // 实验分组列表
+  return request({
+    url: '/experimentSampleGroup/getExperimentSampleGroupPage',
+    method: 'get',
+    params: query
+  })
+}
+
 export function getExptRecord(query) { // 实验记录弹窗
   return request({
     url: '/experiment/experimentTime/page',
@@ -26,7 +34,7 @@ export function addTags(query) { // 新增实验组标签表
 
 export function addNewExpt(obj) { // 新增实验组
   return request({
-    url: '/experiment',
+    url: '/experiment/meanwhileSaveExperimentInfo',
     method: 'post',
     data: obj
   })
@@ -64,7 +72,7 @@ export function delExptObj(id) { // 删除实验组
 
 export function delExptRecord(id) { // 删除实验记录
   return request({
-    url: '/deleteExperimentRecord/' + id,
+    url: '/experiment/deleteExperimentRecord?id=' + id,
     method: 'delete'
   })
 }

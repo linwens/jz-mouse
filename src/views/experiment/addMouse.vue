@@ -21,7 +21,7 @@
           <div>
             <h6 class="mouse__info--h6">基本信息</h6>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.id }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.miceInfoId }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender === 0 ? '雌' : '雄' }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">周龄:</span><i class="mouse__info--i">{{ `${weekAge}周${dayAge}天` }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">标记:</span><i class="mouse__info--i">{{ mouseInfo.sign }}</i></p>
@@ -190,7 +190,8 @@ export default {
       cacheChoicedList: [], // 缓存选中鼠笼中小鼠列表
       choicedList: [], // 当前选中的小鼠列表
       choosedCage: 0, // 当前选中的鼠笼id
-      needType: null // 区分实验组，繁育组
+      needType: null, // 区分实验组，繁育组
+      item_index: null // 实验组的列表项id或者索引值
     }
   },
   computed: {
@@ -234,8 +235,11 @@ export default {
   },
   created() {
     this.getCageList()
-    console.log(this.$route.params.type)
     this.needType = this.$route.params.type
+    console.log('this.$route.params.index===', this.$route.params.index)
+    if (typeof this.$route.params.index === 'number') { // 实验组会带一个列表项的id或者索引
+      this.item_index = this.$route.params.index
+    }
   },
   methods: {
     goBack() {
@@ -258,6 +262,20 @@ export default {
       // 添加到繁育组操作
       if (this.needType === 'noBreed') {
         this.add2breed(this.choicedList)
+      }
+      // 添加到实验组操作
+      if (this.needType === 'noExpt') {
+        const cacheExpt = JSON.parse(this.$store.getters.addingExpt)
+        const curExpt = cacheExpt[this.item_index]
+  
+        const ids = this.choicedList.map(el => {
+          return el.miceInfoId
+        })
+        curExpt.experimentGroupSelectionMiceIds = ids.join(',')
+        console.log(curExpt)
+        cacheExpt[this.item_index] = curExpt
+        this.$store.dispatch('app/cacheExpts', cacheExpt)
+        this.doAdd(this.choicedList)
       }
     },
     // 添加到繁育组

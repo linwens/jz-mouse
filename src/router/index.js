@@ -159,14 +159,14 @@ export const constantRoutes = [
         component: () => import('@/views/experiment/edit'),
         name: 'experimentEdit',
         hidden: true,
-        meta: { title: '编辑', noCache: true }
+        meta: { title: '编辑' }
       },
       {
         path: 'add',
         component: () => import('@/views/experiment/add'),
         name: 'experimentAdd',
         hidden: true,
-        meta: { title: '新增实验组', noCache: true }
+        meta: { title: '新增实验组' }
       },
       {
         path: 'addMouse',
