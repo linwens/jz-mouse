@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="primary" size="small" class="ml16 w100" @click="showList()">{{ btnText }}</el-button>
+    <el-button :type="type" :size="size" @click="showList()">{{ btnText }}</el-button>
     <!-- 文件列表弹窗 -->
     <el-dialog
       title="查看记录"
@@ -32,7 +32,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { recordOption } from './table'
-import { getExptRecord, delExptObj } from '@/api/experiment'
+import { getExptRecord, delExptRecord } from '@/api/experiment'
 
 export default {
   name: 'ExptRecord',
@@ -47,6 +47,14 @@ export default {
     btnText: {
       type: String,
       default: '查看记录'
+    },
+    type: {
+      type: String,
+      default: 'primary'
+    },
+    size: {
+      type: String,
+      default: 'small'
     }
   },
   data() {
@@ -73,6 +81,7 @@ export default {
     getList() {
       this.recordLoading = true
       getExptRecord({
+        experimentId: this.id,
         current: this.page.page,
         size: this.page.limit
       }).then(res => {
@@ -93,8 +102,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        console.log(row)
-        return delExptObj(row.id)
+        return delExptRecord(row.id)
       }).then(() => {
         this.getDictItemList()
         _this.$message({

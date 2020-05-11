@@ -47,6 +47,13 @@ export function getMouseInfo(id) { // 获取小鼠信息
   })
 }
 
+export function getNewCageNo(id) { // 获取最新笼位号
+  return request({
+    url: '/micecage/getNewRoomId',
+    method: 'get'
+  })
+}
+
 export function getMouseExpInfo(id) { // 获取小鼠实验组信息
   return request({
     url: '/experiment/getMiceExperimentRecord?miceId=' + id,

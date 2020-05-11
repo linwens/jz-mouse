@@ -155,7 +155,7 @@ export const constantRoutes = [
         meta: { title: '实验管理', noCache: true, breadcrumb: false }
       },
       {
-        path: 'edit',
+        path: 'edit/:id',
         component: () => import('@/views/experiment/edit'),
         name: 'experimentEdit',
         hidden: true,

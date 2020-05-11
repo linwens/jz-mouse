@@ -9,38 +9,61 @@ export const tableOption = {
   rowClassName: 'mouse__table--stripe',
   align: 'left',
   menu: true,
+  scrollDist: 600, // 点击分页时滚轮上移距离
 
   column: [{
     label: '编号',
-    prop: 'numb'
+    prop: 'id'
   }, {
     label: '负责人',
-    prop: 'man'
+    prop: 'operator'
   }, {
     label: '品系',
-    prop: 'variety',
+    prop: 'varietiesName',
     width: 100
   }, {
     label: '基因型',
-    prop: 'genes',
+    prop: 'geneName',
     width: 100
   }, {
     label: '纯/杂合子',
-    prop: 'pure'
+    prop: 'pureHeterozygote',
+    dicData: [
+      {
+        label: '纯合子',
+        value: 0
+      }, {
+        label: '杂合子',
+        value: 1
+      }, {
+        label: '未测试',
+        value: 2
+      }
+    ]
   }, {
     label: '性别',
-    prop: 'sex'
+    prop: 'gender',
+    dicData: [
+      {
+        label: '雌',
+        value: 1
+      }, {
+        label: '雄',
+        value: 0
+      }
+    ]
   }, {
     label: '周龄',
-    prop: 'week',
-    width: 100
+    prop: 'birthDate',
+    width: 100,
+    slot: true
   }, {
     label: '状态',
     prop: 'status',
     slot: true
   }, {
     label: '笼位号',
-    prop: 'cage',
+    prop: 'cageId',
     width: 100
   }, {
     label: '检测结果',

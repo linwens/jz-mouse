@@ -1,6 +1,6 @@
 <template>
   <div class="dib">
-    <el-button type="text" @click="dialogVisible = true">{{ btnText }}</el-button>
+    <el-button type="text" size="mini" @click="dialogVisible = true">{{ btnText }}</el-button>
     <div v-if="type === 'pdf'">
       <el-dialog
         title="pdf查看"
