@@ -12,28 +12,28 @@ export const tableOption = {
 
   column: [{
     label: '实验组',
-    prop: 'group',
+    prop: 'experimentName',
     align: 'center'
   }, {
     label: '开始时间',
-    prop: 'start',
+    prop: 'startTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     width: 200,
     label: '结束时间',
-    prop: 'end',
+    prop: 'endTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     label: '分组名称',
-    prop: 'name',
+    prop: 'sampleGroupName',
     overHidden: true
   }, {
     label: '处理',
-    prop: 'handle',
+    prop: 'eventName',
     overHidden: true
   }, {
     label: '检测',
-    prop: 'check',
+    prop: 'testName',
     overHidden: true
   }]
 }

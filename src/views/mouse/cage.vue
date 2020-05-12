@@ -101,6 +101,22 @@ export default {
   created() {
     if (!this.$route.params.type) { // 新增小鼠进来选笼放笼
       this.$set(this, 'mouseData', this.$route.params)
+    } else if (this.$route.params.type === 'mouseEdit') { // 编辑小鼠进来
+      this.$set(this, 'mouseData', this.$route.params.mouses)
+      const { gender } = this.$route.params.mouses
+      let female = 0
+      let male = 0
+      if (gender === 0) {
+        female = 0
+        male = 1
+      } else {
+        female = 1
+        male = 0
+      }
+      this.putInForm.female = female
+      this.putInForm.male = male
+      this.mouseData.femaleMiceNum = female
+      this.mouseData.maleMiceNum = male
     } else { // 繁育组进来选笼放笼
       this.optType = this.$route.params.type
       this.mouses = this.$route.params.mouses

@@ -116,7 +116,7 @@
               <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling" @click="goAdd()">新建小鼠</el-button>
               <el-button class="w80" size="small" :disabled="isMoving || isDeling" @click="goBuild()">{{ buildBtnText }}</el-button>
               <el-button class="w80" type="primary" :disabled="isMoving || isBuilding" plain size="small" style="margin-right: 46px;" @click="goDel()">{{ delBtnText }}</el-button>
-              <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling">编辑</el-button>
+              <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling || !curMouseId" @click="goEdit()">编辑</el-button>
               <el-button class="w80" size="small" @click="cancel()">取消</el-button>
             </div>
             <div class="df s-fwwp s-jcsa">
@@ -260,6 +260,11 @@ export default {
     // 展示家谱
     showFamily() {
       this.dialogVisible = true
+    },
+    // 编辑查看小鼠
+    goEdit() {
+      const id = this.curMouseId
+      this.$router.push({ name: 'mouseEdit', params: { id }})
     },
     // 新增小鼠
     goAdd(row) {

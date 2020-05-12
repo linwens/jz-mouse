@@ -121,7 +121,7 @@ export const constantRoutes = [
         meta: { title: '新增子鼠', noCache: true }
       },
       {
-        path: 'edit',
+        path: 'edit/:id',
         component: () => import('@/views/mouse/edit'),
         name: 'mouseEdit',
         hidden: true,

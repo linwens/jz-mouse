@@ -5,35 +5,41 @@
         <el-tab-pane label="小鼠信息" name="first">
           <div class="mouse__edit--pane">
             <div class="df s-jcfs mb16">
-              <p style="margin-right: 44px;">父鼠编号: <span>XX-11</span></p>
-              <p>母鼠编号: <span>XX-45</span></p>
+              <p style="margin-right: 44px;">父鼠编号: <span>{{ form.fatherId }}</span></p>
+              <p>母鼠编号: <span>{{ form.motherId }}</span></p>
             </div>
             <el-form ref="form" :model="form" size="small" label-width="95px" label-position="left">
               <el-form-item label="品系名称:" class="mb17">
                 <el-input
-                  v-model="form.name"
+                  v-model="varietiesName"
                   placeholder="请选择品系名称"
                   class="w250"
                 />
-                <el-button type="primary" @click="chooseVarity()">选择品系</el-button>
+                <choice-variety-btn :variety.sync="curVariety" />
               </el-form-item>
-              <div class="mouse__edit--toggle mb9">
-                <div class="mb13">
-                  <el-button type="primary" size="mini" class="w60" @click="chooseGenes()">选择</el-button>
-                  <el-button type="primary" size="mini" class="w60" @click="addGenes()">新增</el-button>
+              <div v-if="varietiesName" class="mouse__edit--toggle mb9">
+                <div class="mb13 df">
+                  <genes-choose :id="varietiesId" btn-text="选择" class="mr16" :genes.sync="genes" />
+                  <add-genes-btn
+                    :varieties-id="varietiesId"
+                    :varieties-name="varietiesName"
+                    :genes-data.sync="genes"
+                  />
                 </div>
                 <div class="df s-jcsb s-aic">
                   <el-form-item label="基因型:" label-width="70px" class="mb8">
                     <el-input
-                      v-model="form.name"
+                      v-model="currentGene.geneName"
                       placeholder="请输入基因型"
+                      disabled
                       class="w250"
                     />
                   </el-form-item>
                   <el-form-item label="饲养条件:" label-width="70px" class="mb8">
                     <el-input
-                      v-model="form.name"
+                      v-model="currentGene.miceCondition"
                       placeholder="请输入饲养条件"
+                      disabled
                       class="w250"
                     />
                   </el-form-item>
@@ -41,26 +47,33 @@
                 <div class="df s-jcsb s-aic">
                   <el-form-item label="健康状态:" label-width="70px" class="mb8">
                     <el-input
-                      v-model="form.name"
+                      v-model="currentGene.status"
                       placeholder="请输入健康状态"
+                      disabled
                       class="w250"
                     />
                   </el-form-item>
                   <el-form-item label="毛色:" label-width="70px" class="mb8">
                     <el-input
-                      v-model="form.name"
+                      v-model="currentGene.color"
                       placeholder="请输入毛色"
+                      disabled
                       class="w250"
                     />
                   </el-form-item>
                 </div>
-                <el-form-item label="应用领域:" label-width="70px" class="mb0">
-                  <el-input v-model="form.desc" type="textarea" />
+                <el-form-item
+                  label="应用领域:"
+                  disabled
+                  label-width="70px"
+                  class="mb0"
+                >
+                  <el-input v-model="currentGene.area" type="textarea" disabled />
                 </el-form-item>
               </div>
               <div class="df s-jcfs mb16">
-                <p style="margin-right: 44px;">编号: <span>XX-11</span></p>
-                <p>状态: <span>实验</span></p>
+                <p style="margin-right: 44px;">编号: <span>{{ form.miceId }}</span></p>
+                <p>状态: <span>{{ statusLable }}</span></p>
               </div>
               <el-form-item label="标记:" class="mb9">
                 <el-select
@@ -84,19 +97,19 @@
               </el-form-item>
               <div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">性别:</span><i class="mouse__edit--info--i">雌</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">体重:</span><i class="mouse__edit--info--i">10g</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">性别:</span><i class="mouse__edit--info--i">{{ form.gender === 1 ? '雌' : '雄' }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">体重:</span><i class="mouse__edit--info--i">{{ form.weight }}</i></p>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">基因型:</span><i class="mouse__edit--info--i">P65-/-</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">基因型:</span><i class="mouse__edit--info--i">{{ form.geneName }}</i></p>
                   <p class="mouse__edit--info--p">
                     <span class="mouse__edit--info--span">显示颜色:</span>
-                    <i class="mouse__edit--info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': form.color}" />
+                    <i class="mouse__edit--info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': form.miceColor}" />
                   </p>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">出生日期:</span><i class="mouse__edit--info--i">{{ form.time | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">周龄:</span><i class="mouse__edit--info--i">2周2天</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">出生日期:</span><i class="mouse__edit--info--i">{{ form.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">周龄:</span><i class="mouse__edit--info--i">{{ weekAge + '周' + dayAge + '天' }}</i></p>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
                   <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">纯/杂合子:</span><i class="mouse__edit--info--i">待定</i></p>
@@ -151,14 +164,16 @@
                 </div>
               </div>
               <el-form-item label="附件:" class="mb0">
-                <el-button type="text">查看</el-button>
+                <div class="dib">
+                  <view-files />
+                </div>
                 <svg-icon icon-class="upload" class="cp" />
               </el-form-item>
             </el-form>
           </div>
           <div class="mouse__edit--btns pos-a w-100 h60 df s-aic">
             <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
-            <el-button type="primary" size="small" @click="goChoose()">编辑/保存</el-button>
+            <el-button type="primary" size="small" @click="save()">编辑/保存</el-button>
           </div>
         </el-tab-pane>
         <el-tab-pane label="实验记录" name="second">
@@ -169,118 +184,74 @@
               :data="tableData"
               :table-option="tableOption"
               :table-loading="tableLoading"
-              @on-load="getList"
-              @refresh-change="handleRefreshChange"
             />
           </div>
         </el-tab-pane>
       </el-tabs>
-      <!-- 选择品系弹窗 -->
-      <el-dialog
-        title="选择品系"
-        :visible.sync="varietyDialog"
-      >
-        <div class="mouse__varietyDialog">
-          <el-radio v-model="variety_radio" label="1" class="mr0" size="small" border>品系A</el-radio>
-          <el-radio v-model="variety_radio" label="2" class="mr0" size="small" border>品系B</el-radio>
-          <el-radio v-model="variety_radio" label="3" class="mr0" size="small" border>品系C</el-radio>
-          <el-radio v-model="variety_radio" label="4" class="mr0" size="small" border>品系D</el-radio>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="varietyDialog = false">取 消</el-button>
-          <el-button type="primary" size="small" @click="fillVarity()">确 定</el-button>
-        </div>
-      </el-dialog>
-      <!-- 选择基因型弹窗 -->
-      <el-dialog
-        title="选择基因型"
-        :visible.sync="genesDialog"
-      >
-        <div class="mouse__varietyDialog">
-          <el-radio v-model="variety_radio" label="1" class="mr0" size="small" border>品系A</el-radio>
-          <el-radio v-model="variety_radio" label="2" class="mr0" size="small" border>品系B</el-radio>
-          <el-radio v-model="variety_radio" label="3" class="mr0" size="small" border>品系C</el-radio>
-          <el-radio v-model="variety_radio" label="4" class="mr0" size="small" border>品系D</el-radio>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="genesDialog = false">取 消</el-button>
-          <el-button type="primary" size="small" @click="fillGenes()">确 定</el-button>
-        </div>
-      </el-dialog>
-      <!-- 新增基因型弹窗 -->
-      <el-dialog
-        title="新增基因型"
-        :visible.sync="addGenesDialog"
-        width="450px"
-      >
-        <div>
-          <el-form ref="addGensForm" :model="addGensForm" label-position="left" size="mini">
-            <el-form-item label="状态:" label-width="80px" class="mb0">
-              <span>闲置</span>
-            </el-form-item>
-            <el-form-item label="基因型名称:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.name" />
-            </el-form-item>
-            <el-form-item label="饲养条件:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.name" />
-            </el-form-item>
-            <el-form-item label="健康状态:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.name" />
-            </el-form-item>
-            <el-form-item label="毛色:" label-width="80px" class="mb8">
-              <el-input v-model="addGensForm.name" />
-            </el-form-item>
-            <el-form-item label="应用领域:" label-width="80px" class="mb0">
-              <el-input v-model="addGensForm.desc" type="textarea" />
-            </el-form-item>
-          </el-form>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="addGenesDialog = false">取 消</el-button>
-          <el-button type="primary" size="small" @click="doAddGenes()">确 定</el-button>
-        </div>
-      </el-dialog>
     </main-box>
   </div>
 </template>
 
 <script>
+import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
+import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
+import GenesChoose from '@/components/Dialogs/GenesChoose'
+import ViewFiles from '@/components/Dialogs/ViewFiles'
+import { addNewGenes } from '@/api/genes'
+
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './labTable'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/mouse'
+import { getMouseInfo, getMouseExpInfo } from '@/api/mouse'
+import { fetchList } from '@/api/experiment'
 
 export default {
   name: 'MouseEdit',
   components: {
-    MergeTable
+    MergeTable,
+    ChoiceVarietyBtn,
+    AddGenesBtn,
+    ViewFiles,
+    GenesChoose
   },
   data() {
     return {
       activeName: 'first', // 鼠笼tab
       // 总表单
       form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-        defaultColor: '#00CB7C', // 默认颜色
-        time: 1587375335305,
-        color: '#C4C4CD'
+        vid: '',
+        fatherId: null,
+        motherId: null,
+        genotypes: null,
+        maleMiceNum: 0,
+        femaleMiceNum: 0,
+        weight: null,
+        birthDate: null,
+        pureHeterozygote: null,
+        color: '#00CB7C',
+        separateCageRemindTime: null,
+        separateCageRemindFlag: 0,
+        phenotypicIdentificationRemindTime: null,
+        phenotypicIdentificationRemindFlag: 0,
+        deathStatus: 0,
+        delFlag: 0,
+        miceNo: '',
+        sign: '',
+        status: 1 // 0:无，1：闲置，2：繁育，3：实验,4:手动处死5,实验处死
       },
       // 品系选择
-      variety_radio: null,
-      varietyDialog: false,
+      curVariety: '',
+      varietiesName: '',
+      varietiesId: '',
       // 基因型选择
-      genesDialog: false,
-      // 新增基因型
-      addGenesDialog: false,
-      // 新增基因型表单
-      addGensForm: {
-        name: ''
+      genes: '',
+      // 当前选择的基因型
+      currentGene: {
+        varietiesName: '',
+        geneName: '',
+        miceCondition: '',
+        status: '',
+        color: '',
+        area: ''
       },
       // ------------实验记录
       tableOption,
@@ -290,29 +261,87 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        group: 0,
-        name: '繁育组提醒',
-        handle: '繁育组XX-XX到了繁育时间',
-        check: '繁育组XX-XX到了繁育时间',
-        start: 1587277449395,
-        end: 1587277449395
-      }, {
-        group: 0,
-        name: '繁育组提醒',
-        handle: '繁育组XX-XX到了繁育时间',
-        check: '繁育组XX-XX到了繁育时间',
-        start: 1587277449395,
-        end: 1587277449395
-      }]
+      tableData: []
     }
   },
-  methods: {
-    goCage() {
-      this.$router.push({ name: 'mouseCage' })
+  computed: {
+    // 周龄，不存数据库
+    weekAge() {
+      if (!this.form.birthDate) return 0
+      const duration = +new Date() - this.form.birthDate * 1000
+      const weeks = duration / 1000 / 60 / 60 / 24 / 7
+      return Math.floor(weeks)
     },
+    // 天
+    dayAge() {
+      if (!this.form.birthDate) return 0
+      const duration = +new Date() - this.form.birthDate * 1000
+      const days = duration / 1000 / 60 / 60 / 24 % 7
+      return Math.floor(days)
+    },
+    // statusLable
+    statusLable() {
+      const MAP = {
+        0: '无',
+        1: '闲置',
+        2: '繁育',
+        3: '实验',
+        4: '手动处死',
+        5: '实验处死'
+      }
+      return MAP[this.form.status]
+    }
+  },
+  watch: {
+    curVariety(n, o) {
+      const newVariety = JSON.parse(n)
+      this.varietiesName = newVariety.varietiesName
+      this.varietiesId = newVariety.id
+    },
+    genes(n, o) {
+      const newGenes = JSON.parse(n)
+      this.form.genotypes = newGenes.id
+      this.fillGenes(newGenes)
+    }
+  },
+  created() {
+    console.log(this.$route)
+    const id = this.$route.params.id
+    getMouseInfo(id).then((res) => {
+      console.log(res)
+      const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
+      this.varietiesName = varietiesName
+      this.varietiesId = Number(varietiesId)
+      this.$set(this, 'form', other)
+      this.form.varietiesId = Number(varietiesId)
+      this.$set(this, 'currentGene', {
+        varietiesName,
+        geneName,
+        miceCondition,
+        status,
+        color,
+        area
+      })
+    })
+    getMouseExpInfo(id).then((res) => {
+      console.log(res)
+      this.$set(this, 'tableData', res.data)
+    })
+  },
+  methods: {
     handleClick(tab, event) {
       console.log(tab, event)
+      if (tab === 'second') {
+        this.getList()
+      }
+    },
+    doAddGenes() {
+      this.addGenesDialog = false
+      // 新增基因型
+    },
+    // 提交
+    save() {
+      console.log('submit!');
     },
     // 选择品系 or 基因型
     chooseVarity() {
@@ -326,52 +355,103 @@ export default {
     chooseGenes() {
       this.genesDialog = true
     },
-    fillGenes() {
-      this.genesDialog = false
-      // 填充基因型
-    },
     // 新增基因型
     addGenes() {
       this.addGenesDialog = true
     },
-    doAddGenes() {
-      this.addGenesDialog = false
-      // 新增基因型
+    // 填充基因型信息
+    fillGenes(res) {
+      const { geneName, miceCondition, status, color, area } = res
+      this.currentGene.geneName = geneName
+      this.currentGene.miceCondition = miceCondition
+      this.currentGene.status = status
+      this.currentGene.color = color
+      this.currentGene.area = area
     },
     goBack() {
       this.$router.back()
     },
-    goChoose(obj) {
-      this.$router.push({ name: 'mouseCage', params: obj })
+    // 选笼位
+    goCage() {
+      this.form.vid = this.varietiesId
+      if (this.checkForm()) {
+        this.$store.dispatch('app/cacheMouseInfo', {
+          varietiesName: this.varietiesName,
+          varietiesId: this.varietiesId,
+          genes: this.currentGene,
+          common: this.form
+        })
+        this.$router.push({
+          name: 'mouseCage',
+          params: {
+            mouses: this.form,
+            type: 'mouseEdit'
+          }
+        })
+      }
     },
-    // 提交
-    onSubmit() {
-      console.log('submit!');
+    // 校验表单
+    checkForm() {
+      if (!this.form.vid) {
+        this.$message.error('未选择品系')
+        return false
+      }
+      if (!this.form.genotypes) {
+        this.$message.error('未选择基因型')
+        return false
+      }
+      if (!this.form.weight) {
+        this.$message.error('未输入体重')
+        return false
+      }
+      if (!this.form.birthDate) {
+        this.$message.error('未选择出生日期')
+        return false
+      }
+      if (!this.form.pureHeterozygote && this.form.pureHeterozygote !== 0) {
+        console.log(this.form.pureHeterozygote)
+        this.$message.error('未确定纯/杂合子')
+        return false
+      }
+      if (!this.form.color) {
+        this.$message.error('未选择颜色')
+        return false
+      }
+      if (!this.form.separateCageRemindTime) {
+        this.$message.error('未设置分笼时间')
+        return false
+      }
+      if (!this.form.phenotypicIdentificationRemindTime) {
+        this.$message.error('未设置表型鉴定时间')
+        return false
+      }
+      return true
     },
     // --------------------- 实验记录
-    handleRefreshChange() {
-      this.getList()
-    },
-    // 获取列表
-    getList() {
-      this.tableLoading = true
-      fetchList(Object.assign({
-        current: this.page.page,
-        size: this.page.limit
-      })).then(response => {
-        this.tableData = response.data.records
-        this.page.total = response.data.total
-      }).finally(() => {
-        this.tableLoading = false
-      })
-    }
   },
   // 路由守卫，复用的页面，判断来源
   beforeRouteEnter(to, from, next) {
     console.log('enter====>', to, from)
     next(vm => {
-      // 通过 `vm` 访问组件实例
-      console.log('enter===next=>', to, from)
+      // 选择鼠笼后返回,回填数据(请求也获取了数据...)
+      if (from.name === 'mouseCage') {
+        const cacheMouseInfo = vm.$store.getters.cacheMouseInfo
+        const mouseInfo = cacheMouseInfo ? JSON.parse(cacheMouseInfo) : {}
+        const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = mouseInfo
+
+        vm.varietiesName = varietiesName
+        vm.varietiesId = Number(varietiesId)
+        vm.$set(vm, 'form', other)
+        vm.form.varietiesId = Number(varietiesId)
+        vm.$set(vm, 'currentGene', {
+          varietiesName,
+          geneName,
+          miceCondition,
+          status,
+          color,
+          area
+        })
+      }
     })
   }
 }
@@ -426,6 +506,21 @@ export default {
       padding-left: 40px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(214,214,214,1);
+    }
+  }
+  .mouse__varietyDialog {
+    min-height: 254px;
+    .el-radio--small.is-bordered{
+      min-width: 112px;
+      padding: 8px 10px 0;
+      text-align: center;
+    }
+    .el-radio__input{
+      display: none;
+    }
+    .el-radio--small.is-bordered .el-radio__label{
+      padding-left: 0;
+      font-size: 14px;
     }
   }
 </style>
