@@ -354,7 +354,7 @@ import { addTags, addNewExpt, addNewGroup, delItemObj, delObj, fetchItemList, fe
 import { getMouseInfoByIds } from '@/api/mouse'
 
 export default {
-  name: 'MouseEdit',
+  name: 'AddExperiment',
   components: {
     MergeTable
   },
@@ -427,7 +427,6 @@ export default {
       }).then(function() {
         return delItemObj(row.id)
       }).then(() => {
-        this.getDictItemList()
         _this.$message({
           showClose: true,
           message: '删除成功',

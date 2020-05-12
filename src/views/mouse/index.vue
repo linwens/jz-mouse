@@ -130,6 +130,7 @@
                 :is-choosing-cage="isChoosingCage"
                 :cage-id="item.id"
                 :choosed-cage.sync="choosedCage"
+                :cur-mouse-id.sync="curMouseId"
                 :cur-mouse.sync="mouseInfo"
                 :cur-mouse-expt.sync="mouseExptInfo"
               />
@@ -179,6 +180,7 @@ export default {
   },
   data() {
     return {
+      curMouseId: null, // 当前选中小鼠的id
       mouseInfo: {},
       mouseExptInfo: {},
       activeName: 'first', // 鼠笼tab

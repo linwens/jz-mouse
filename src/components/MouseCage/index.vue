@@ -37,7 +37,7 @@
               v-for="item in maleSum"
               :key="item.miceInfoId"
               class="mouse__item ta-c"
-              :class="{'isChoiced': item.miceInfoId == curId}"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
             >
               <div class="pos-r">
                 <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
@@ -55,6 +55,7 @@
               v-for="item in femaleSum"
               :key="item.miceInfoId"
               class="mouse__item pos-r ta-c"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
             >
               <div class="pos-r">
                 <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
@@ -161,6 +162,11 @@ export default {
         return {}
       }
     },
+    // 当前选中小鼠的id
+    curMouseId: {
+      type: Number,
+      default: 0
+    },
     // 选中的小鼠信息
     curMouse: {
       type: Object,
@@ -240,10 +246,14 @@ export default {
       return !this.isActive || noWay
     },
     taggle(id) {
+      console.log(`===11==${id}||||${this.curId}|||${this.curMouseId}`)
+      this.curId = this.curMouseId
       if (this.curId === id) { // 再次点击取消选框
         this.curId = null
+        this.$emit('update:curMouseId', null)
       } else {
         this.curId = id
+        this.$emit('update:curMouseId', id)
         let params = {}
         getMouseInfo(this.curId).then((res) => {
           console.log(res)
@@ -254,7 +264,7 @@ export default {
           this.$emit('update:curMouseExpt', res.data[0] || {}) // 取第一条数据
         })
       }
-      console.log(id, this.curId)
+      console.log(`===22==${id}||||${this.curId}|||${this.curMouseId}`)
     },
     // 切换负责人
     chageMan() {
@@ -285,9 +295,17 @@ export default {
     // 选择鼠笼
     chooseCage() {
       if (this.cageId !== this.choosedCage) {
-        console.log('this.cageId', this.cageId)
-        console.log('this.choosedCage', this.choosedCage)
         this.$emit('update:choosedCage', this.cageId)
+        // 切换鼠笼的时候，取消别的鼠笼的选中小鼠
+        const mouseArr = this.allData.miceInfoByMiceCageQueryVO
+        const ids = mouseArr.map((el) => {
+          return el.miceInfoId
+        })
+        console.log(this.curMouseId)
+        if (ids.indexOf(this.curMouseId) === -1) {
+          this.curId = null
+          this.$emit('update:curMouseId', null)
+        }
       }
     }
   }

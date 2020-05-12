@@ -56,10 +56,19 @@ export function setExptTime(obj) { // 新增实验组时间
   })
 }
 
-export function getItemObj(id) {
+export function getExptInfoById(query) { // 根据id获取实验组信息
   return request({
-    url: '/dict/item/' + id,
-    method: 'get'
+    url: '/experiment/getExperimentInfoById',
+    method: 'get',
+    params: query
+  })
+}
+
+export function updateExptInfo(obj) { // 同步修改实验组，实验分组，实验组标签
+  return request({
+    url: '/experiment/meanwhileUpdateExperimentInfo',
+    method: 'post',
+    data: obj
   })
 }
 
