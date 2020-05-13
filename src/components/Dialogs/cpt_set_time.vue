@@ -118,7 +118,10 @@ export default {
           }).then((res) => {
             this.$message.success('设置时间成功')
             if (res.data) {
-              this.$emit('done')
+              this.$emit('done', {
+                type: this.operationType,
+                time: Math.floor(this.setTimeForm.time / 1000)
+              })
             }
           })
         } else {

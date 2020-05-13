@@ -17,6 +17,10 @@ export default {
       type: String,
       default: 'fTree'
     },
+    miceId: {
+      type: Number,
+      default: 0
+    },
     id: {
       type: String,
       default: 'fTree'

@@ -40,7 +40,7 @@
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">附件:</span>
                 <view-files />
-                <svg-icon icon-class="upload" class="cp" />
+                <upload-btn class="dib" />
               </p>
             </div>
 
@@ -80,7 +80,7 @@
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">检测试验结果:</span>
                 <view-files />
-                <svg-icon icon-class="upload" />
+                <upload-btn class="dib" />
               </p>
               <p class="mouse__info--p">
                 <i class="mouse__info--i mr20">
@@ -96,12 +96,12 @@
           </div>
           <div>
             <div class="pos-r">
-              <svg-icon icon-class="loc-green" class="mouse__progrTag mouse__progrTag--g" :style="{'left': '20px'}" />
-              <svg-icon icon-class="loc-yellow" class="mouse__progrTag mouse__progrTag--y" :style="{'left': '50px'}" />
-              <el-progress :text-inside="true" :stroke-width="24" :percentage="45" color="#58A2FB" />
+              <svg-icon icon-class="loc-green" class="mouse__progrTag mouse__progrTag--g" :style="{'left': handleTimeScale + 'px'}" />
+              <svg-icon icon-class="loc-yellow" class="mouse__progrTag mouse__progrTag--y" :style="{'left': testTimeScale + 'px'}" />
+              <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
-              <set-time :id="mouseExptInfo.id" />
+              <set-time :id="mouseExptInfo.id" @done="setProgress" />
               <expt-record class="ml16 w100" />
             </div>
           </div>
@@ -148,7 +148,7 @@
       :visible.sync="dialogVisible"
       width="30%"
     >
-      <family-tree />
+      <family-tree :mice-id="curMouseId" />
     </el-dialog>
   </div>
 </template>
@@ -160,6 +160,7 @@ import ViewFiles from '@/components/Dialogs/ViewFiles'
 import FileViewer from '@/components/FileViewer'
 import FamilyTree from '@/components/Charts/FamilyTree'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
+import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
 import SetTime from '@/components/Dialogs/cpt_set_time'
 import MergeTable from '@/components/MergeTable'
@@ -176,6 +177,7 @@ export default {
     Guide,
     FileViewer,
     FamilyTree,
+    UploadBtn,
     ViewFiles
   },
   data() {
@@ -228,6 +230,37 @@ export default {
       const duration = +new Date() - this.mouseInfo.birthDate * 1000
       const days = duration / 1000 / 60 / 60 / 24 % 7
       return Math.floor(days)
+    },
+    // 实验进度
+    percentage() {
+      if (!this.mouseExptInfo.startTime || !this.mouseExptInfo.endTime) {
+        return 0
+      }
+      // 总时间间距
+      const start = this.mouseExptInfo.startTime * 1000
+      const end = this.mouseExptInfo.endTime * 1000
+      const duration = end - start
+      const now = +new Date()
+      return ((now - start) / duration).toFixed(3) * 100
+
+    },
+    // 测试时间进度
+    testTimeScale() {
+      // 总时间间距
+      const start = this.mouseExptInfo.startTime * 1000
+      const end = this.mouseExptInfo.endTime * 1000
+      const duration = end - start
+      const scale = (this.mouseExptInfo.testTime * 1000 - start) / duration
+      return scale * 380
+    },
+    // 处理时间进度
+    handleTimeScale() {
+      // 总时间间距
+      const start = this.mouseExptInfo.startTime * 1000
+      const end = this.mouseExptInfo.endTime * 1000
+      const duration = end - start
+      const scale = (this.mouseExptInfo.handleTime * 1000 - start) / duration
+      return scale * 380
     }
   },
   watch: {
@@ -443,6 +476,16 @@ export default {
       } else {
         this.delBtnText = '下一步'
         this.isDeling = true
+      }
+    },
+    // 设置时间后修改进度条
+    setProgress(obj) {
+      console.log(obj)
+
+      if (obj.type === 0) {
+        this.mouseExptInfo.testTime = obj.time
+      } else {
+        this.mouseExptInfo.handleTime = obj.time
       }
     }
   }

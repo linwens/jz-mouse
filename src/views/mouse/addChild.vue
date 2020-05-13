@@ -231,7 +231,7 @@
           </div>
           <el-form-item label="附件:" class="mb0">
             <el-button type="text">查看</el-button>
-            <svg-icon icon-class="upload" class="cp" />
+            <upload-btn class="dib" />
           </el-form-item>
         </el-form>
       </div>
@@ -246,6 +246,7 @@
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
+import UploadBtn from '@/components/Dialogs/cpt_upload'
 import { addMouse } from '@/api/mouse'
 import { getLisByGeneId } from '@/api/genes'
 
@@ -253,6 +254,7 @@ export default {
   name: 'AddChild',
   components: {
     ChoiceVarietyBtn,
+    UploadBtn,
     AddGenesBtn
   },
   data() {

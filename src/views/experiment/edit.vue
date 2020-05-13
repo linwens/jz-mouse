@@ -461,11 +461,11 @@ export default {
       getExptInfoById({
         experimentId: id
       }).then((res) => {
-        const { name: experimentName, experimentLabelList, experimentSampleGroupMiceInfoVOList, startTime, endTime, handleTimeFlag, testTimeFlag, endMiceState } = res.data
+        const { experimentName, experimentLabelList, experimentGroupInfo, startTime, endTime, handleTimeFlag, testTimeFlag, endMiceState } = res.data
         // 实验组标签信息
         this.$set(this, 'tags', experimentLabelList)
         // 分组列表信息
-        this.$set(this, 'tableData', experimentSampleGroupMiceInfoVOList)
+        this.$set(this, 'tableData', experimentGroupInfo)
         // 实验组基础信息
         this.$set(this, 'experimentForm', {
           experimentName,

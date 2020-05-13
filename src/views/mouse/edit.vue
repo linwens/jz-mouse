@@ -167,7 +167,7 @@
                 <div class="dib">
                   <view-files />
                 </div>
-                <svg-icon icon-class="upload" class="cp" />
+                <upload-btn class="dib" />
               </el-form-item>
             </el-form>
           </div>
@@ -195,6 +195,7 @@
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
+import UploadBtn from '@/components/Dialogs/cpt_upload'
 import GenesChoose from '@/components/Dialogs/GenesChoose'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import { addNewGenes } from '@/api/genes'
@@ -211,6 +212,7 @@ export default {
     ChoiceVarietyBtn,
     AddGenesBtn,
     ViewFiles,
+    UploadBtn,
     GenesChoose
   },
   data() {

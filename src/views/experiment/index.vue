@@ -21,11 +21,7 @@
             </template>
             <template slot="module_rslt" slot-scope="scope">
               <view-files />
-              <el-button
-                type="text"
-                class="btn-text--black"
-                @click="setPregTime(scope.scope.row)"
-              >上传</el-button>
+              <upload-btn class="dib" btn-text="上传" />
             </template>
             <template slot="menu" slot-scope="{scope}">
               <set-time :id="scope.row.id" btn-text="设置时间" type="text" class="dib" />
@@ -64,6 +60,7 @@ import MergeTable from '@/components/MergeTable'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import SetTime from '@/components/Dialogs/cpt_set_time'
+import UploadBtn from '@/components/Dialogs/cpt_upload'
 import { tableOption } from './table'
 import { addItemObj, addObj, delExptObj, delObj, fetchItemList, fetchList, putItemObj, endExpt } from '@/api/experiment'
 
@@ -73,6 +70,7 @@ export default {
     MergeTable,
     ExptRecord,
     ViewFiles,
+    UploadBtn,
     SetTime
   },
   data() {

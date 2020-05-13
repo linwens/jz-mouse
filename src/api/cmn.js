@@ -16,9 +16,9 @@ export function fetchItemList(query) {
   })
 }
 
-export function addItemObj(obj) {
+export function saveFiles(obj) { // 存储图片地址
   return request({
-    url: '/dict/item',
+    url: '/sysfile',
     method: 'post',
     data: obj
   })
