@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function fetchList(query) {
+export function fetchList(query) { // 移除小鼠列表
   return request({
-    url: '/dict/page',
+    url: '/miceinfo/del/page',
     method: 'get',
     params: query
   })

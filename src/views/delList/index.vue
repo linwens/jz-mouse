@@ -9,8 +9,6 @@
           :data="tableData"
           :table-option="tableOption"
           :table-loading="tableLoading"
-          @on-load="getList"
-          @refresh-change="handleRefreshChange"
         >
           <template slot="menu" slot-scope="scope">
             <el-button
@@ -48,27 +46,7 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      tableData: [{
-        num: 0,
-        sex: 1,
-        borth_time: 1587277449395,
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        基因型: '基因型xxx',
-        fur: '红色',
-        health_status: 1,
-        type: 2
-      }, {
-        num: 0,
-        sex: 1,
-        borth_time: 1587277449395,
-        weight: '180kg',
-        class_type: '繁育组XX-XX到了繁育时间',
-        基因型: '基因型xxx',
-        fur: '红色',
-        health_status: 1,
-        type: 2
-      }]
+      tableData: []
     }
   },
   created() {
@@ -81,7 +59,7 @@ export default {
     // 删除
     rowItemDel: function(row) {
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除"' + row.miceId + '"小鼠的数据?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

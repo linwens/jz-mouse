@@ -8,7 +8,7 @@ export const tableOption = {
   },
   rowClassName: 'mouse__table--stripe',
   align: 'left',
-  menu: true,
+  menu: false,
   scrollDist: 600, // 点击分页时滚轮上移距离
 
   column: [{
@@ -65,6 +65,10 @@ export const tableOption = {
     label: '笼位号',
     prop: 'cageId',
     width: 100
+  }, {
+    label: '家谱记录',
+    prop: 'family',
+    slot: true
   }, {
     label: '检测结果',
     prop: 'rslt',

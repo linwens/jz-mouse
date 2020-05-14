@@ -54,7 +54,7 @@
               </p>
               <p class="mouse__info--p">
                 <span class="mouse__info--span">小鼠家谱:</span>
-                <el-button type="text" @click="showFamily()">查看</el-button>
+                <show-family v-if="curMouseId" :mice-id="curMouseId" />
               </p>
             </div>
           </div>
@@ -129,14 +129,6 @@
         </div>
       </div>
     </main-box>
-    <!-- 家谱弹窗 -->
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="30%"
-    >
-      <family-tree :mice-id="curMouseId" />
-    </el-dialog>
   </div>
 </template>
 
@@ -144,7 +136,7 @@
 import MouseCage from '@/components/MouseCage'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import FileViewer from '@/components/FileViewer'
-import FamilyTree from '@/components/Charts/FamilyTree'
+import ShowFamily from '@/components/Dialogs/cpt_show_family'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
@@ -160,7 +152,7 @@ export default {
     AddCageBtn,
     ExptRecord,
     FileViewer,
-    FamilyTree,
+    ShowFamily,
     UploadBtn,
     ViewFiles
   },
@@ -171,8 +163,6 @@ export default {
       mouseExptInfo: {},
       activeName: 'first', // 鼠笼tab
       color: '#C4C4CD',
-      // 家谱
-      dialogVisible: false,
       // 附件
       fileUrl: 'http://localhost/test.pdf',
       // 查看记录
@@ -288,10 +278,6 @@ export default {
     goBack() {
       console.log(this.$route)
       this.$router.back()
-    },
-    // 展示家谱
-    showFamily() {
-      this.dialogVisible = true
     },
     // 确认添加
     goAdd(row) {

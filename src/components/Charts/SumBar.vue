@@ -84,7 +84,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['女', '男']
+          data: ['雌', '雄']
         },
         calculable: true,
         xAxis: [{
@@ -104,7 +104,8 @@ export default {
             show: false
           },
           axisLabel: {
-            interval: 0
+            interval: 0,
+            rotate: 50
           },
           data: xData
         }],
@@ -158,7 +159,7 @@ export default {
         }],
         series: [
           {
-            name: '女',
+            name: '雌',
             type: 'bar',
             stack: '总量',
             barMaxWidth: 35,
@@ -194,7 +195,7 @@ export default {
             ]
           },
           {
-            name: '男',
+            name: '雄',
             type: 'bar',
             stack: '总量',
             itemStyle: {

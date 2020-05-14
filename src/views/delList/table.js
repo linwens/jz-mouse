@@ -12,24 +12,24 @@ export const tableOption = {
 
   column: [{
     label: '编号',
-    prop: 'num',
+    prop: 'miceId',
     overHidden: true
   }, {
     label: '性别',
-    prop: 'sex',
+    prop: 'gender',
     dicData: [
       {
-        label: '雌',
+        label: '雄',
         value: 0
       }, {
-        label: '雄',
+        label: '雌',
         value: 1
       }
     ]
   }, {
     width: 200,
     label: '出生时间',
-    prop: 'borth_time',
+    prop: 'birthDate',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     label: '体重',
@@ -37,21 +37,21 @@ export const tableOption = {
   }, {
     width: 200,
     label: '品系',
-    prop: 'class_type'
+    prop: 'varietiesName'
   }, {
     width: 200,
     label: '基因型',
-    prop: 'gene',
+    prop: 'geneName',
     overHidden: true
   }, {
     label: '毛色',
-    prop: 'fur'
+    prop: 'color'
   }, {
     label: '健康状况',
-    prop: 'health_status',
+    prop: 'healthyStatus',
     overHidden: true
   }, {
     label: '类型',
-    prop: 'type'
+    prop: 'miceStatusDesc'
   }]
 }

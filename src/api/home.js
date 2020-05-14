@@ -8,9 +8,9 @@ export function fetchList(query) { // 首页列表查询
   })
 }
 
-export function fetchItemList(query) {
+export function getUsers(query) { // 获取用户列表
   return request({
-    url: '/dict/item/page',
+    url: '/sysuser/operatorList',
     method: 'get',
     params: query
   })

@@ -2,7 +2,7 @@
   <div>
     <el-button size="mini" icon="el-icon-search">查看详情</el-button>
     <span>{{ curMouse }}</span>
-    <div :id="id" :class="className" :style="{height:height,width:width, 'min-height': '500px'}" />
+    <div :id="miceId" :class="className" :style="{height:height,width:width, 'min-height': '500px'}" />
   </div>
 </template>
 
@@ -21,10 +21,6 @@ export default {
       type: Number,
       default: 0
     },
-    id: {
-      type: String,
-      default: 'fTree'
-    },
     width: {
       type: String,
       default: '100%'
@@ -40,6 +36,11 @@ export default {
       curMouse: ''
     }
   },
+  watch: {
+    miceId(n, o) {
+      this.initChart()
+    }
+  },
   mounted() {
     this.initChart()
   },
@@ -52,7 +53,7 @@ export default {
   },
   methods: {
     initChart() {
-      this.chart = echarts.init(document.getElementById(this.id))
+      this.chart = echarts.init(document.getElementById(this.miceId))
       this.chart.showLoading()
       const data = {
         'name': '小鼠',

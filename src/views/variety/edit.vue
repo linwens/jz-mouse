@@ -94,7 +94,6 @@ export default {
     if (this.$route.params) {
       this.optType = 'modify'
       this.curVariety = JSON.stringify(this.$route.params)
-      console.log('addGensForm===', this.addGensForm)
     }
   },
   methods: {
@@ -117,7 +116,8 @@ export default {
         state,
         userId: this.$store.getters.info.id
       }).then((res) => {
-        console.log(res)
+        this.$message.success('编辑成功')
+        this.goBack()
       })
     }
   }
