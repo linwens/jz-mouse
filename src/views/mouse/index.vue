@@ -22,7 +22,7 @@
             <h6 class="mouse__info--h6">基本信息</h6>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.id }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender === 0 ? '雌' : '雄' }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender === 0 ? '雄' : '雌' }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">周龄:</span><i class="mouse__info--i">{{ `${weekAge}周${dayAge}天` }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">标记:</span><i class="mouse__info--i">{{ mouseInfo.sign }}</i></p>
             </div>

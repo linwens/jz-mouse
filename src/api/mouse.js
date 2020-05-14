@@ -16,11 +16,10 @@ export function recordList(query) { // 记录列表
   })
 }
 
-export function fetchItemList(query) {
+export function getCageInfo(id) { // 获取鼠笼信息
   return request({
-    url: '/dict/item/page',
-    method: 'get',
-    params: query
+    url: '/micecage/{cId}' + id,
+    method: 'get'
   })
 }
 

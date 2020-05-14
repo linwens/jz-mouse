@@ -32,24 +32,6 @@
       </div>
       <div class="list__content">
         <el-checkbox-group v-model="checkList" @change="taggleMouse()">
-          <div v-if="maleSum.length > 0" class="list__content--male df s-jcfs s-aic ofh">
-            <div
-              v-for="item in maleSum"
-              :key="item.miceInfoId"
-              class="mouse__item ta-c"
-              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
-            >
-              <div class="pos-r">
-                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
-                <div @click="taggle(item.miceInfoId)">
-                  <svg-icon icon-class="mouse" class="fs50" />
-                  <p>{{ item.genotypes }}</p>
-                  <span>{{ item.sign }}</span>
-                  <i class="pos-a mouse__item--female">{{ item.miceNo }}</i>
-                </div>
-              </div>
-            </div>
-          </div>
           <div v-if="femaleSum.length > 0" class="list__content--female df s-jcfs s-aic ofh">
             <div
               v-for="item in femaleSum"
@@ -63,7 +45,25 @@
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
                   <span>{{ item.miceNo }}</span>
-                  <i class="pos-a mouse__item--male">{{ item.sign }}</i>
+                  <i class="pos-a mouse__item--female">{{ item.sign }}</i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="maleSum.length > 0" class="list__content--male df s-jcfs s-aic ofh">
+            <div
+              v-for="item in maleSum"
+              :key="item.miceInfoId"
+              class="mouse__item ta-c"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
+            >
+              <div class="pos-r">
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
+                <div @click="taggle(item.miceInfoId)">
+                  <svg-icon icon-class="mouse" class="fs50" />
+                  <p>{{ item.genotypes }}</p>
+                  <span>{{ item.sign }}</span>
+                  <i class="pos-a mouse__item--male">{{ item.miceNo }}</i>
                 </div>
               </div>
             </div>

@@ -3,7 +3,7 @@
     <main-box class="mouse__cageChoice fs14 cl-black">
       <div class="mb16">
         <p class="mouse__cageChoice--p">
-          剩余小鼠: 
+          剩余小鼠:
           <span>{{ mouseData.femaleMiceNum }}只 (<i class="cl-purple">雌</i>)</span>
           /
           <span>{{ mouseData.maleMiceNum }}只 (<i class="cl-blue">雄</i>)</span>
@@ -102,6 +102,7 @@ export default {
     if (!this.$route.params.type) { // 新增小鼠进来选笼放笼
       this.$set(this, 'mouseData', this.$route.params)
     } else if (this.$route.params.type === 'mouseEdit') { // 编辑小鼠进来
+      this.optType = this.$route.params.type
       this.$set(this, 'mouseData', this.$route.params.mouses)
       const { gender } = this.$route.params.mouses
       let female = 0
@@ -117,6 +118,8 @@ export default {
       this.putInForm.male = male
       this.mouseData.femaleMiceNum = female
       this.mouseData.maleMiceNum = male
+      // 选中小鼠id, 传数组
+      this.ids = [this.mouseData.miceId]
     } else { // 繁育组进来选笼放笼
       this.optType = this.$route.params.type
       this.mouses = this.$route.params.mouses
@@ -173,7 +176,6 @@ export default {
     },
     // 放入操作
     putIn() {
-      console.log(this.choosedCage)
       if (!this.choosedCage) {
         this.$message.error('请先选择鼠笼')
       } else {
@@ -189,7 +191,14 @@ export default {
         this.$message.success('放入鼠笼成功')
         this.mouseData.femaleMiceNum -= this.putInForm.female
         this.mouseData.maleMiceNum -= this.putInForm.male
-        this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
+        if (this.optType === 'breed') { // 繁育组移笼
+          this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
+        }
+        if (this.optType === 'mouseEdit') { // 编辑小鼠移笼
+          this.$store.dispatch('app/cacheMouseInfo', Object.assign({}, this.mouseData,{
+            cid: this.choosedCage
+          }))
+        }
         this.putInVisible = false
         this.$router.back()
       })
@@ -213,7 +222,7 @@ export default {
         this.mouseData.femaleMiceNum -= this.putInForm.female
         this.mouseData.maleMiceNum -= this.putInForm.male
         const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
-        console.log(this.$store.getters.cacheMouseInfo)
+
         this.$store.dispatch('app/cacheMouseInfo', {
           common: this.mouseData,
           varietiesName,
@@ -240,6 +249,11 @@ export default {
       }
 
       if (this.optType === 'breed') { // 添加入繁育组
+        this.doTransferCage()
+        return false
+      }
+
+      if (this.optType === 'mouseEdit') { // 编辑小鼠选择笼位
         this.doTransferCage()
         return false
       }

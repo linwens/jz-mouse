@@ -64,7 +64,7 @@
             <h6 class="mouse__info--h6">实验信息</h6>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">实验组名称:</span><i class="mouse__info--i">{{ mouseExptInfo.experimentName }}</i></p>
-              <p class="mouse__info--p" style="width: 205px;"><span class="mouse__info--span">起止时间:</span><i class="mouse__info--i">{{ mouseExptInfo.startTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }} - {{ mouseExptInfo.endTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }}</i></p>
+              <p class="mouse__info--p" style="width: 205px;"><span class="mouse__info--span">起止时间:</span><i class="mouse__info--i">{{ mouseExptInfo.startTime * 1000 | timeFormat('yyyy.MM.dd') }}-{{ mouseExptInfo.endTime * 1000 | timeFormat('yyyy.MM.dd') }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">分组名称:</span><i class="mouse__info--i">{{ mouseExptInfo.sampleGroupName }}</i></p>
