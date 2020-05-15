@@ -347,6 +347,11 @@ export default {
     // 确认添加
     doAdd(mouseArr) {
       this.$store.dispatch('app/cacheChoosedMouse', mouseArr)
+      // 填充繁育组信息
+      const cacheBreed = this.$store.getters.addingBreed ? JSON.parse(this.$store.getters.addingBreed) : {} // 繁育组信息
+      // 更新繁育组数据
+      cacheBreed.miceIds = cacheBreed.miceIds.concat(mouseArr)
+      this.$store.dispatch('app/cacheBreed', cacheBreed)
       this.goBack()
     },
     goPage(r, obj) {
@@ -394,6 +399,7 @@ export default {
     next(vm => {
       // 通过 `vm` 访问组件实例
       console.log('enter===next=>', to, from)
+      vm.needType = 'noBreed'
     })
   }
 }

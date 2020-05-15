@@ -294,7 +294,7 @@ export default {
       }
       // 添加到实验组操作
       if (this.needType === 'noExpt') {
-        const cacheExpt = JSON.parse(this.$store.getters.addingExpt)
+        const { table: cacheExpt, form } = JSON.parse(this.$store.getters.addingExpt)
         const curExpt = cacheExpt[this.item_index]
 
         const ids = this.choicedList.map(el => {
@@ -303,7 +303,10 @@ export default {
         curExpt.experimentGroupSelectionMiceIds = ids.join(',')
         console.log(curExpt)
         cacheExpt[this.item_index] = curExpt
-        this.$store.dispatch('app/cacheExpts', cacheExpt)
+        this.$store.dispatch('app/cacheExpts', {
+          form: form,
+          table: cacheExpt
+        })
         this.doAdd(this.choicedList)
       }
     },

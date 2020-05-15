@@ -24,6 +24,14 @@ export function addBreed(obj) { // 增加繁育组
   })
 }
 
+export function editBreed(obj) { // 编辑繁育组
+  return request({
+    url: '/micebreed/editBreedDetailsById',
+    method: 'post',
+    data: obj
+  })
+}
+
 export function getbreedDetail(query) { // 获取繁育组详情
   return request({
     url: '/micebreed/detail',
@@ -32,9 +40,9 @@ export function getbreedDetail(query) { // 获取繁育组详情
   })
 }
 
-export function delItemObj(id) {
+export function delItemObj(id) { // 删除繁育组
   return request({
-    url: '/dict/item/' + id,
+    url: '/micebreed/' + id,
     method: 'delete'
   })
 }

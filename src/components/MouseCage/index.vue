@@ -275,7 +275,7 @@ export default {
       console.log('cage-11---', this.checkList)
       const newOne = this.checkList[this.checkList.length - 1]
       // 如果是添加繁育组时选择实验组小鼠
-      if (this.needType === 'noBreed' && newOne.miceStatus === 3) {
+      if (this.needType === 'noBreed' && newOne && newOne.miceStatus === 3) {
         const _self = this
         this.$confirm('该小鼠处于实验中，添加进繁育列表后将会从实验组中移除，是否继续操作？', '警告', {
           confirmButtonText: '确定',

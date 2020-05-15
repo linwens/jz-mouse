@@ -11,7 +11,7 @@
               { required: true, message: '实验组名称不能为空'}
             ]"
           >
-            <el-input v-model="experimentForm.experimentName" size="small" class="w250" />
+            <el-input :disabled="!canEdit" v-model="experimentForm.experimentName" size="small" class="w250" />
           </el-form-item>
           <div class="df s-jcfs s-aic">
             <el-form-item
@@ -25,6 +25,7 @@
             >
               <el-date-picker
                 v-model="experimentForm.startTime"
+                :disabled="!canEdit"
                 type="date"
                 format="yyyy-MM-dd"
                 class="w250"
@@ -42,6 +43,7 @@
             >
               <el-date-picker
                 v-model="experimentForm.endTime"
+                :disabled="!canEdit"
                 type="date"
                 format="yyyy-MM-dd"
                 class="w250"
@@ -58,6 +60,7 @@
             >
               <el-select
                 v-model="experimentForm.handleTimeFlag"
+                :disabled="!canEdit"
                 placeholder="请选择是否处理时间提醒"
                 class="w250"
               >
@@ -75,6 +78,7 @@
             >
               <el-select
                 v-model="experimentForm.testTimeFlag"
+                :disabled="!canEdit"
                 placeholder="请选择是否处理时间提醒"
                 class="w250"
               >
@@ -91,6 +95,7 @@
           >
             <el-select
               v-model="experimentForm.endMiceState"
+              :disabled="!canEdit"
               placeholder="请选择是否处理时间提醒"
               class="w250"
             >
@@ -104,13 +109,13 @@
             label-width="85.56px"
             style="padding-left: 9.44px;"
           >
-            <el-button type="primary" size="small" class="w100" @click="tagDialog = true">添加</el-button>
+            <el-button v-if="canEdit" type="primary" size="small" class="w100" @click="tagDialog = true">添加</el-button>
             <div>
               <el-tag
                 v-for="(item, index) in tags"
                 :key="index"
                 size="small"
-                closable
+                :closable="canEdit"
                 @close="handleClose(item)"
               >{{ item.label }}</el-tag>
             </div>
@@ -119,7 +124,7 @@
       </div>
       <div class="addExperiment__table">
         <div class="df s-jcfe s-aic mt8 mb8">
-          <el-button type="primary" size="small" class="w100" @click="addNewGroup()">新建分组</el-button>
+          <el-button v-if="canEdit" type="primary" size="small" class="w100" @click="addNewGroup()">新建分组</el-button>
         </div>
         <div class="bd-gray">
           <merge-table
@@ -129,7 +134,7 @@
             :table-option="tableOption"
             :table-loading="tableLoading"
           >
-            <template slot="experimentGroupSelectionMiceIds" slot-scope="{scope}">
+            <template v-if="canEdit" slot="experimentGroupSelectionMiceIds" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
@@ -144,7 +149,7 @@
             <template slot="sum" slot-scope="{scope}">
               {{ scope.row.experimentGroupSelectionMiceIds ? scope.row.experimentGroupSelectionMiceIds.split(',').length : 0 }}
             </template>
-            <template slot="menu" slot-scope="{scope}">
+            <template v-if="canEdit" slot="menu" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
@@ -156,7 +161,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
+                @click="rowItemDel(scope.row)"
               >
                 删除
               </el-button>
@@ -166,7 +171,7 @@
       </div>
       <div class="editExperiment__btns pos-a w-100 h60 df s-aic">
         <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
-        <el-button type="primary" size="small" @click="saveExptInfo()">编辑/确定</el-button>
+        <el-button type="primary" size="small" @click="saveExptInfo()">{{ canEdit ? '确定' : '编辑' }}</el-button>
       </div>
     </main-box>
     <!-- 添加标签弹窗 -->
@@ -301,6 +306,7 @@ export default {
   },
   data() {
     return {
+      canEdit: false, // 是否可编辑
       experimentForm: {
         experimentName: '',
         startTime: null,
@@ -361,7 +367,7 @@ export default {
     // 删除
     rowItemDel: function(row) {
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除实验分组："' + row.name + '"?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -480,6 +486,10 @@ export default {
     },
     // 编辑保存
     saveExptInfo() {
+      if (!this.canEdit) {
+        this.canEdit = true
+        return false
+      }
       const { startTime, endTime, handleTime, testTime, ...other } = this.experimentForm
       const { id: userId } = this.$store.getters.info
       // 实验分组数据格式整理
@@ -490,6 +500,7 @@ export default {
       })
 
       updateExptInfo(Object.assign({}, {
+        experimentId: this.$route.params.id,
         createUser: userId,
         startTime: startTime / 1000,
         endTime: endTime / 1000,

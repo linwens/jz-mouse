@@ -516,7 +516,10 @@ export default {
       const newData = this.tableData
       newData.push(item)
       this.$set(this, 'tableData', newData)
-      this.$store.dispatch('app/cacheExpts', this.tableData)
+      this.$store.dispatch('app/cacheExpts', {
+        form: this.experimentForm,
+        table: this.tableData
+      })
     },
     // 编辑列表项
     editListItem(data) {
@@ -571,7 +574,8 @@ export default {
       // 是添加小鼠返回的,组装列表项数据
       if (from.name === 'experimentAddMouse') {
         const addingExpt = vm.$store.getters.addingExpt
-        vm.$set(vm, 'tableData', addingExpt ? JSON.parse(addingExpt) : [])
+        vm.$set(vm, 'experimentForm', addingExpt ? JSON.parse(addingExpt).form : {})
+        vm.$set(vm, 'tableData', addingExpt ? JSON.parse(addingExpt).table : [])
       }
     })
   }

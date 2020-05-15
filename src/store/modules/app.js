@@ -43,17 +43,17 @@ const mutations = {
     state.addingMouses = ''
     removeStorageItem('adding-mouse')
   },
-  CACHE_EXPTS: (state, arr) => {
-    state.addingExpt = JSON.stringify(arr)
-    setStorageItem('adding-expt', JSON.stringify(arr))
+  CACHE_EXPTS: (state, obj) => {
+    state.addingExpt = JSON.stringify(obj)
+    setStorageItem('adding-expt', JSON.stringify(obj))
   },
   CLEAR_EXPTS: (state) => {
     state.addingExpt = ''
     removeStorageItem('adding-expt')
   },
-  CACHE_BREED: (state, arr) => {
-    state.addingBreed = JSON.stringify(arr)
-    setStorageItem('adding-breed', JSON.stringify(arr))
+  CACHE_BREED: (state, obj) => {
+    state.addingBreed = JSON.stringify(obj)
+    setStorageItem('adding-breed', JSON.stringify(obj))
   },
   CLEAR_BREED: (state) => {
     state.addingBreed = ''
@@ -80,14 +80,14 @@ const actions = {
   clearMouses({ commit }) {
     commit('CLEAR_MOUSES')
   },
-  cacheExpts({ commit }, arr) {
-    commit('CACHE_EXPTS', arr)
+  cacheExpts({ commit }, obj) {
+    commit('CACHE_EXPTS', obj)
   },
   clearExpts({ commit }) {
     commit('CLEAR_EXPTS')
   },
-  cacheBreed({ commit }, arr) {
-    commit('CACHE_BREED', arr)
+  cacheBreed({ commit }, obj) {
+    commit('CACHE_BREED', obj)
   },
   clearBreed({ commit }) {
     commit('CLEAR_BREED')
