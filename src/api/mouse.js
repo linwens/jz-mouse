@@ -97,9 +97,9 @@ export function getObj(id) {
   })
 }
 
-export function delObj(row) {
+export function delMiceByMiceId(data) { // 移除小鼠(可批量)
   return request({
-    url: '/dict/' + row.id,
+    url: '/miceinfo/deleteMiceByMiceId',
     method: 'delete'
   })
 }

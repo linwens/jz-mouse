@@ -1,7 +1,7 @@
 <template>
   <div>
     <main-box>
-      <div class="delList__sum fs14">总计：{{ sum }}条数据</div>
+      <div class="delList__sum fs14">总计：{{ page.total }}条数据</div>
       <div class="bd-gray">
         <merge-table
           ref="crud"
@@ -38,7 +38,6 @@ export default {
   },
   data() {
     return {
-      sum: 1000,
       tableOption,
       tableLoading: false,
       page: {

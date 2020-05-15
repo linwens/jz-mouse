@@ -273,6 +273,10 @@ export default {
     if (typeof this.$route.params.index === 'number') { // 实验组会带一个列表项的id或者索引
       this.item_index = this.$route.params.index
     }
+    // 如果缓存里有小鼠信息了，先清掉
+    if (this.$store.getters.addingMouses) {
+      this.$store.dispatch('app/clearMouses')
+    }
   },
   methods: {
     goBack() {

@@ -31,7 +31,7 @@ export function getItemObj(id) {
   })
 }
 
-export function delItemObj(id) {
+export function delItemObj(id) { // 移除列表移除小鼠
   return request({
     url: '/dict/item/' + id,
     method: 'delete'

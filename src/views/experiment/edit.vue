@@ -355,6 +355,7 @@ export default {
       this.$router.push({ name: r, params: obj })
     },
     goBack() {
+      console.log(this.$route)
       this.$router.back()
     },
     // 删除

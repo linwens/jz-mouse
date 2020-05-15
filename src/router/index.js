@@ -209,11 +209,18 @@ export const constantRoutes = [
         meta: { title: '繁育管理', noCache: true, breadcrumb: false }
       },
       {
-        path: 'edit',
+        path: 'edit/:id',
         component: () => import('@/views/breed/edit'),
         name: 'breedEdit',
         hidden: true,
         meta: { title: '编辑/查看', noCache: true }
+      },
+      {
+        path: 'addMouse',
+        component: () => import('@/views/breed/addMouse'),
+        name: 'breedAddMouse',
+        hidden: true,
+        meta: { title: '繁育组增加小鼠', noCache: true }
       }
     ]
   },

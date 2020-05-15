@@ -16,11 +16,11 @@
             @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
-            <template slot="menu" slot-scope="scope">
+            <template slot="menu" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
-                @click="goEdit()"
+                @click="goEdit(scope.row)"
               >
                 查看详情
               </el-button>
@@ -28,7 +28,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.scope.row)"
+                @click="rowItemDel(scope.row)"
               >
                 删除
               </el-button>
@@ -67,10 +67,11 @@ export default {
   },
   methods: {
     goAdd() {
-      this.goPage({ type: 'add' })
+      this.goPage({ type: 'add', id: 0 })
     },
     goEdit(row) {
-      this.goPage({ id: 1, type: 'edit' })
+      const id = row.id
+      this.goPage({ type: 'edit', id: id })
     },
     goPage(obj) {
       this.$router.push({ name: 'breedEdit', params: obj })

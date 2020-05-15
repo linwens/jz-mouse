@@ -39,37 +39,37 @@
                 />
               </el-form-item> -->
               <el-date-picker
-                v-model="breedForm.createTime"
+                v-model="breedForm.breedTime"
                 type="datetime"
                 format="yyyy-MM-dd HH:mm:ss"
                 value-format="timestamp"
                 placeholder="选择日期时间"
               />
             </div>
-            <span v-else>{{ breedForm.createTime | timeFormat('yyyy-MM-dd hh:mm:ss') }}</span>
+            <span v-else>{{ breedForm.breedTime * 1000 | timeFormat('yyyy-MM-dd hh:mm:ss') }}</span>
           </el-form-item>
         </el-form>
       </div>
       <div class="df s-jcfe mb15">
-        <el-button v-if="type==='add'" type="primary" size="small" class="w100" @click="goAdd()">添加</el-button>
+        <el-button type="primary" size="small" class="w100" @click="goAdd()">添加</el-button>
       </div>
       <div class="bd-gray">
         <merge-table
           ref="crud"
           :page="page"
-          :data="tableData"
+          :data="breedForm.miceIds"
           :table-option="tableOption"
           :table-loading="tableLoading"
           @refresh-change="handleRefreshChange"
         >
-          <template slot="preg_time" slot-scope="scope">
-            <el-button v-if="scope.scope.row.sex === 0" type="text" @click="setPregTime(scope.scope.row)">{{ scope.scope.row.preg_time | timeFormat('yyyy-MM-dd') }}</el-button>
+          <template slot="pregnantTime" slot-scope="{scope}">
+            <el-button v-if="scope.row.gender === 1" type="text" @click="setPregTime(scope.row)">{{ scope.row.pregnantTime | timeFormat('yyyy-MM-dd') }}</el-button>
           </template>
-          <template slot="menu" slot-scope="scope">
+          <template slot="menu" slot-scope="{scope}">
             <el-button
               type="text"
               size="mini"
-              @click="goMouse(scope.scope.row)"
+              @click="goMouse(scope.row)"
             >
               查看
             </el-button>
@@ -77,7 +77,7 @@
               type="text"
               size="mini"
               class="btn-text--danger"
-              @click="rowItemDel(scope.scope.row)"
+              @click="rowItemDel(scope.row)"
             >
               移除
             </el-button>
@@ -94,7 +94,6 @@
       title="设置受孕时间"
       :visible.sync="dialogVisible"
       width="30%"
-      :before-close="handleClose"
     >
       <el-form ref="breedTimeForm" :model="breedTime" class="df s-jcc">
         <el-form-item class="mb0">
@@ -118,7 +117,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './editTable'
-import { addBreed, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
+import { addBreed, getbreedDetail, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
 
 export default {
   name: 'DelList',
@@ -131,7 +130,6 @@ export default {
       breedForm: {
         name: '',
         breedTime: null,
-        createTime: null,
         // date: null,
         // time: null,
         miceIds: []
@@ -151,13 +149,20 @@ export default {
     }
   },
   created() {
-    this.$route.meta.title = this.$route.params.type === 'add' ? '新增' : '编辑/查看'
-    this.type = this.$route.params.type
+    console.log(this.$route)
+    this.type = this.$route.params.id === '0' ? 'add' : 'edit'
+    this.$route.meta.title = this.type === 'add' ? '新增' : '编辑/查看'
+    // 如果是编辑，获取详情
+    if (this.type === 'edit') {
+      const id = this.$route.params.id
+      this.getDetail(id)
+    }
   },
   methods: {
     // 添加小鼠
-    goAdd(row) {
-      this.goPage('experimentAddMouse', { type: 'noBreed' })
+    goAdd() {
+      this.$store.dispatch('app/cacheBreed', this.breedForm)
+      this.goPage('breedAddMouse', { type: 'noBreed' })
     },
     goBack() {
       this.$router.back()
@@ -190,33 +195,47 @@ export default {
       }).catch(function() {
       })
     },
-    // 获取列表
-    getList() {
-      this.tableLoading = true
-      fetchList(Object.assign({
-        current: this.page.page,
-        size: this.page.limit
-      })).then(response => {
-        this.tableData = response.data.records
-        this.page.total = response.data.total
-      }).finally(() => {
-        this.tableLoading = false
+    // 获取繁育组详情
+    getDetail(id) {
+      getbreedDetail({
+        id
+      }).then((res) => {
+        const { miceInfoFromMiceBreedVO: miceIds, ...other } = res.data
+        this.$set(this, 'breedForm', Object.assign({}, miceIds, other))
       })
     },
+    // 获取列表
+    // getList() {
+    //   this.tableLoading = true
+    //   fetchList(Object.assign({
+    //     current: this.page.page,
+    //     size: this.page.limit
+    //   })).then(response => {
+    //     this.tableData = response.data.records
+    //     this.page.total = response.data.total
+    //   }).finally(() => {
+    //     this.tableLoading = false
+    //   })
+    // },
     // 提交
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.breedForm)
-          const ids = this.tableData.map((el) => {
-            return el.miceInfoId
+          if (this.breedForm.miceIds.length === 0) {
+            this.$message.error('请添加小鼠')
+            return false
+          }
+          const miceArr = this.breedForm.miceIds.map((el) => {
+            const { miceInfoId: miceId, pregnantTime } = el
+            return { miceId, pregnantTime }
           })
           const { id: userId } = this.$store.getters.info
           addBreed(Object.assign({}, this.breedForm, {
             breedTime: this.breedForm.breedTime / 1000,
-            createTime: +new Date() / 1000,
+            createTime: Math.floor(+new Date() / 1000),
             createUser: userId,
-            miceIds: ids.join(',')
+            miceInfoInAddMiceBreedDTOList: miceArr
           })).then((res) => {
             this.$message.success('新增繁育组成功')
             this.$store.dispatch('app/clearMouses')
@@ -232,28 +251,26 @@ export default {
     setPregTime(row) {
       console.log(row)
       this.dialogVisible = true
-      this.breedTime.date = row.preg_time
+      this.breedTime.date = row.pregnantTime
     },
     submitPregTime() {
 
-    },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done()
-        })
-        .catch(_ => {})
     }
   },
   // 路由守卫，复用的页面，判断来源
   beforeRouteEnter(to, from, next) {
     next(vm => {
       // 是添加小鼠返回的
-      if (from.name === 'experimentAddMouse') {
-        vm.type = 'add'
-        const addingMouses = vm.$store.getters.addingMouses
-        vm.$set(vm, 'tableData', addingMouses ? JSON.parse(addingMouses) : [])
-        console.log(vm.tableData)
+      console.log('beforeRouteEnter=========', from, vm.$store.getters.addingMouses, vm.$store.getters.addingBreed)
+      if (from.name === 'breedAddMouse') {
+        const addingMouses = vm.$store.getters.addingMouses ? JSON.parse(vm.$store.getters.addingMouses) : [] // 选中小鼠列表
+        const cacheBreed = vm.$store.getters.addingBreed ? JSON.parse(vm.$store.getters.addingBreed) : null // 繁育组信息
+        console.log('添加小鼠后返回', cacheBreed, addingMouses)
+        if (cacheBreed) {
+          cacheBreed.miceIds = addingMouses
+          // 回填信息
+          vm.$set(vm, 'breedForm', cacheBreed)
+        }
       }
     })
   }

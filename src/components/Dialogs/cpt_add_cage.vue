@@ -105,7 +105,8 @@ export default {
           console.log('userinfo===', this.$store.getters.info)
           addCage(Object.assign(this.addCageForm, {
             operator: userId,
-            createUser: userId
+            createUser: userId,
+            state: 0
           })).then((res) => {
             if (res.data) {
               this.$emit('done')

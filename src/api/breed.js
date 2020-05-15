@@ -24,10 +24,11 @@ export function addBreed(obj) { // 增加繁育组
   })
 }
 
-export function getItemObj(id) {
+export function getbreedDetail(query) { // 获取繁育组详情
   return request({
-    url: '/dict/item/' + id,
-    method: 'get'
+    url: '/micebreed/detail',
+    method: 'get',
+    params: query
   })
 }
 

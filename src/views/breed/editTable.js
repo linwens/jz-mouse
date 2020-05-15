@@ -45,7 +45,7 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '毛色',
-    prop: 'miceColor'
+    prop: 'color'
   }, {
     label: '健康状况',
     prop: 'status',
@@ -53,7 +53,7 @@ export const tableOption = {
   }, {
     width: 120,
     label: '受孕时间',
-    prop: 'preg_time',
+    prop: 'pregnantTime',
     slot: true,
     format: 'yyyy-MM-dd hh:mm:ss'
   }]
