@@ -5,6 +5,7 @@
     <el-dialog
       title="设置时间"
       :visible.sync="setTimeDialog"
+      append-to-body
       width="500px"
     >
       <div>

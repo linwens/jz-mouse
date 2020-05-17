@@ -39,8 +39,8 @@
               </p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">附件:</span>
-                <view-files />
-                <upload-btn class="dib" />
+                <view-files v-if="curMouseId" />
+                <upload-btn v-if="curMouseId" class="dib" />
               </p>
             </div>
 
@@ -50,7 +50,7 @@
             <div class="df s-jcfs s-aic">
               <p class="mouse__info--p" style="width: 540px;">
                 <span class="mouse__info--span">更改位置时间:</span>
-                <i class="mouse__info--i">{{ mouseInfo.miceUpdateTime | timeFormat('yyyy年MM月dd日 hh:mm:ss') }}</i>
+                <i class="mouse__info--i">{{ mouseInfo.miceUpdateTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }}</i>
               </p>
               <p class="mouse__info--p">
                 <span class="mouse__info--span">小鼠家谱:</span>
@@ -79,8 +79,8 @@
             <div class="df s-jcsb s-aic mb8">
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">检测试验结果:</span>
-                <view-files />
-                <upload-btn class="dib" />
+                <view-files v-if="curMouseId" />
+                <upload-btn v-if="curMouseId" class="dib" />
               </p>
               <p class="mouse__info--p">
                 <i class="mouse__info--i mr20">
@@ -109,7 +109,7 @@
       </div>
       <div class="mouse__info3 bg-white w-100 mt16">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-          <el-tab-pane label="我的鼠笼" name="first">
+          <el-tab-pane label="我的鼠笼" name="myCage">
             <div class="df mb16">
               <add-cage-btn :disabled="isBuilding || isDeling" @done="getCageList" />
               <el-button class="w80 ml10" size="small" :disabled="isBuilding || isDeling" @click="moveCage()">{{ moveBtnText }}</el-button>
@@ -136,7 +136,7 @@
               />
             </div>
           </el-tab-pane>
-          <el-tab-pane label="其他鼠笼" name="second">
+          <el-tab-pane label="其他鼠笼" name="otherCage">
             其他鼠笼
           </el-tab-pane>
         </el-tabs>
@@ -177,7 +177,7 @@ export default {
       curMouseId: null, // 当前选中小鼠的id
       mouseInfo: {},
       mouseExptInfo: {},
-      activeName: 'first', // 鼠笼tab
+      activeName: 'myCage', // 鼠笼tab
       color: '#C4C4CD',
       // 附件
       fileUrl: 'http://localhost/test.pdf',
@@ -318,6 +318,7 @@ export default {
     getCageList() {
       this.tableLoading = true
       fetchCageList(Object.assign({
+        operator: this.activeName === 'myCage' ? this.$store.getters.info.id : '',
         current: this.cagePage.page,
         size: this.cagePage.limit
       })).then(response => {

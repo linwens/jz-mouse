@@ -90,10 +90,11 @@ export function addObj(obj) {
   })
 }
 
-export function getObj(id) {
+export function getMouseTree(query) { // 获取小鼠家谱树
   return request({
-    url: '/dict/' + id,
-    method: 'get'
+    url: '/miceinfo/relation/tree',
+    method: 'get',
+    params: query
   })
 }
 

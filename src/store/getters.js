@@ -7,6 +7,7 @@ const getters = {
   addingBreed: state => state.app.addingBreed,
   token: state => state.user.token,
   info: state => state.user.info,
+  inputHistory: state => state.user.inputHistory,
   avatar: state => state.user.avatar,
   name: state => state.user.name
 }

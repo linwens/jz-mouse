@@ -44,7 +44,7 @@
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
-                  <span>{{ item.miceNo }}</span>
+                  <span class="item__miceNo dib">打发范德萨范德萨范德萨发</span>
                   <i class="pos-a mouse__item--female">{{ item.sign }}</i>
                 </div>
               </div>
@@ -62,8 +62,8 @@
                 <div @click="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
-                  <span>{{ item.sign }}</span>
-                  <i class="pos-a mouse__item--male">{{ item.miceNo }}</i>
+                  <span class="item__miceNo dib">{{ item.miceNo }}</span>
+                  <i class="pos-a mouse__item--male">{{ item.sign }}</i>
                 </div>
               </div>
             </div>
@@ -416,7 +416,11 @@ export default {
         background-color: #58A2FB;
       }
 
-      span {
+      span.item__miceNo {
+        width: 80px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
         font-size: 12px;
         color: #999;
       }

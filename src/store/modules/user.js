@@ -28,11 +28,32 @@ const mutations = {
     state.info = {}
     removeStorageItem('u-info')
   },
-  SET_INPUT_HISTORY: (state, key, value) => {
+  SET_INPUT_HISTORY: (state, obj) => {
+    console.log(obj)
     const oldAll = state.inputHistory // 大对象
-    const oldValue = oldAll[key] ? oldAll[key] : [] // 每个key下是一个字符串数组
-    oldValue.push(value)
-    oldAll[key] = oldValue
+    // 筛选是否存在
+    function valIsExist(arr, value) {
+      const rslt = arr.filter((el) => {
+        return el.value === value
+      })
+      return rslt.length > 0
+    }
+    for (const [key, value] of Object.entries(obj)) {
+      const oldValue = oldAll[key] ? oldAll[key] : [] // 每个key下是一个字符串数组
+      if (value && !valIsExist(oldValue, value)) {
+        if (oldValue.length >= 8) { // 缓存的数据大于8条删除最旧的一条
+          oldValue.shift()
+          oldValue.push({
+            'value': value
+          })
+        } else {
+          oldValue.push({
+            'value': value
+          })
+        }
+      }
+      oldAll[key] = oldValue
+    }
     setLocalStorageItem('u-history', JSON.stringify(oldAll))
     state.inputHistory = oldAll
   }
@@ -100,8 +121,8 @@ const actions = {
   },
 
   // 添加输入框记录
-  setInputHistory({ commit, state }, key, value) {
-    commit('SET_INPUT_HISTORY', key, value)
+  setInputHistory({ commit, state }, obj) {
+    commit('SET_INPUT_HISTORY', obj)
   }
 }
 

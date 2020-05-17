@@ -253,7 +253,7 @@
 import MergeTable from '@/components/MergeTable'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import { tableOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getUsers } from '@/api/home'
+import { countMice, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getUsers } from '@/api/home'
 import { varietiesList } from '@/api/variety'
 import { getLisByVariety } from '@/api/genes'
 
@@ -337,6 +337,12 @@ export default {
     })
   },
   methods: {
+    // 获取柱状图信息
+    getCountMice() {
+      countMice().then((res) => {
+        
+      })
+    },
     // 获取负责人列表
     getPersons() {
       getUsers().then((res) => {

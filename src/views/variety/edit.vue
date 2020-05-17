@@ -13,37 +13,67 @@
             <choice-variety-btn :variety.sync="curVariety" />
           </el-form-item>
           <el-form-item label="基因型名称:" label-width="80px" class="mb8">
-            <el-input
+            <!-- <el-input
               v-model="addGensForm.geneName"
+              placeholder="请输入基因型名名称"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="addGensForm.geneName"
+              :fetch-suggestions="history('geneName')"
               placeholder="请输入基因型名名称"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="饲养条件:" label-width="80px" class="mb8">
-            <el-input
+            <!-- <el-input
               v-model="addGensForm.miceCondition"
+              placeholder="请输入饲养条件"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="addGensForm.miceCondition"
+              :fetch-suggestions="history('miceCondition')"
               placeholder="请输入饲养条件"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="健康状态:" label-width="80px" class="mb8">
-            <el-input
+            <!-- <el-input
               v-model="addGensForm.status"
+              placeholder="请输入健康状态"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="addGensForm.status"
+              :fetch-suggestions="history('status')"
               placeholder="请输入健康状态"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="毛色:" label-width="80px" class="mb8">
-            <el-input
+            <!-- <el-input
               v-model="addGensForm.color"
+              placeholder="请输入毛色"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="addGensForm.color"
+              :fetch-suggestions="history('color')"
               placeholder="请输入毛色"
               class="w250"
             />
           </el-form-item>
           <el-form-item label="应用领域:" label-width="80px" class="mb0">
-            <el-input
+            <!-- <el-input
               v-model="addGensForm.area"
               type="textarea"
+              placeholder="请输入应用领域"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="addGensForm.area"
+              :fetch-suggestions="history('area')"
               placeholder="请输入应用领域"
               class="w250"
             />
@@ -61,6 +91,7 @@
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import { addNewGenes, editGenes } from '@/api/genes'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'VarietyEdit',
@@ -82,6 +113,11 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'inputHistory'
+    ])
+  },
   watch: {
     curVariety(n, o) {
       const newVariety = JSON.parse(n)
@@ -91,19 +127,26 @@ export default {
   },
   created() {
     console.log(this.$route.params)
-    if (this.$route.params) {
+    if (this.$route.params.miceGeneId) {
       this.optType = 'modify'
       this.curVariety = JSON.stringify(this.$route.params)
     }
   },
   methods: {
+    history(key) {
+      const rslt = this.inputHistory[key]
+      return function(queryString, cb) {
+        cb(rslt)
+      }
+    },
     goBack() {
       this.$router.back()
     },
     // 提交
     onSubmit() {
+      console.log('this.optType', this.optType)
       const apiType = this.optType === 'modify' ? editGenes : addNewGenes
-      const { id, source, geneName, miceCondition, status, color, area, state } = this.addGensForm
+      const { miceGeneId: id, source, geneName, miceCondition, status, color, area, state } = this.addGensForm
       apiType({
         id,
         source,
@@ -117,6 +160,14 @@ export default {
         userId: this.$store.getters.info.id
       }).then((res) => {
         this.$message.success('编辑成功')
+        // 存储输入过的值
+        this.$store.dispatch('user/setInputHistory', {
+          geneName,
+          miceCondition,
+          status,
+          color,
+          area
+        })
         this.goBack()
       })
     }

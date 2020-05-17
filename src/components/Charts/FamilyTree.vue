@@ -9,6 +9,7 @@
 <script>
 import echarts from 'echarts'
 import resize from './mixins/resize'
+import { getMouseTree } from '@/api/mouse'
 
 export default {
   mixins: [resize],
@@ -42,7 +43,14 @@ export default {
     }
   },
   mounted() {
-    this.initChart()
+    if (this.miceId) {
+      getMouseTree({
+        descendant: this.miceId
+      }).then((res) => {
+        console.log(res)
+        this.initChart()
+      })
+    }
   },
   beforeDestroy() {
     if (!this.chart) {

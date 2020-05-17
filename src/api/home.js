@@ -16,11 +16,11 @@ export function getUsers(query) { // 获取用户列表
   })
 }
 
-export function addItemObj(obj) {
+export function countMice(query) { // 柱状图
   return request({
-    url: '/dict/item',
-    method: 'post',
-    data: obj
+    url: '/miceinfo/countMice',
+    method: 'get',
+    params: query
   })
 }
 
