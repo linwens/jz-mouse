@@ -116,7 +116,7 @@
               <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling" @click="goAdd()">新建小鼠</el-button>
               <el-button class="w80" size="small" :disabled="isMoving || isDeling" @click="goBuild()">{{ buildBtnText }}</el-button>
               <el-button class="w80" type="primary" :disabled="isMoving || isBuilding" plain size="small" style="margin-right: 46px;" @click="goDel()">{{ delBtnText }}</el-button>
-              <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling || !curMouseId" @click="goEdit()">编辑</el-button>
+              <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling || (!curMouseId && !choosedCage)" @click="goEdit()">编辑</el-button>
               <el-button class="w80" size="small" @click="cancel()">取消</el-button>
             </div>
             <div class="df s-fwwp s-jcsa">
@@ -125,7 +125,7 @@
                 :key="index"
                 :all-data="item"
                 :is-active="isMoving || isBuilding&&(choosedCage === item.id) || isDeling"
-                :disabled="isBuilding&&(choosedCage !== item.id)"
+                :disabled="(isMoving && transStep < 2 ) || (isBuilding&&(choosedCage !== item.id))"
                 :choiced-list.sync="curCageMouseList"
                 :is-choosing-cage="isChoosingCage"
                 :cage-id="item.id"
@@ -190,6 +190,7 @@ export default {
         limit: 10 // 每页显示多少条
       },
       // 移笼相关
+      transStep: 0, // 移笼步骤操作节点
       moveBtnText: '移笼',
       isMoving: false, // 正在移笼标识
       isChoosingCage: false, // 正在选鼠笼标识
@@ -282,8 +283,14 @@ export default {
   methods: {
     // 编辑查看小鼠
     goEdit() {
-      const id = this.curMouseId
-      this.$router.push({ name: 'mouseEdit', params: { id }})
+      if (!this.curMouseId && this.choosedCage) { // 编辑鼠笼
+        console(this.choosedCage)
+        return
+      }
+      if (this.curMouseId) {
+        const id = this.curMouseId
+        this.$router.push({ name: 'mouseEdit', params: { id }})
+      }
     },
     // 新增小鼠
     goAdd(row) {
@@ -330,16 +337,8 @@ export default {
     },
     // 移笼操作
     moveCage() {
-      console.log(this.choosedCage)
       // 选中了鼠笼后
       if (this.choosedCage) {
-        if (this.choicedList.length === 0) {
-          this.$message({
-            type: 'error',
-            message: '请选择小鼠'
-          })
-          return false
-        }
         this.$confirm('是否确认移笼?', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -358,12 +357,26 @@ export default {
           message: '系统中没有小鼠，请添加小鼠后进行操作'
         })
       } else {
-        this.isMoving = true
-        this.moveBtnText = '下一步'
+        if (this.transStep === 0) {
+          this.isMoving = true
+          this.transStep = 1
+          this.moveBtnText = '下一步'
+          return
+        }
         // 当前选中了小鼠
-        if (this.choicedList.length > 0) {
-          console.log(this.choicedList)
+        if (this.transStep === 1 && this.choicedList.length > 0) {
           this.isChoosingCage = true
+          this.transStep = 2
+          this.$message({
+            type: 'info',
+            message: '请选择鼠笼'
+          })
+        }
+        if (this.transStep === 1 && this.choicedList.length === 0) {
+          this.$message({
+            type: 'error',
+            message: '请选择小鼠'
+          })
         }
       }
     },
@@ -385,6 +398,7 @@ export default {
     cancel() {
       this.moveBtnText = '移笼'
       this.isMoving = false
+      this.transStep = 0
       this.buildBtnText = '新增子鼠'
       this.isBuilding = false
       this.delBtnText = '移除小鼠'
@@ -393,6 +407,7 @@ export default {
       this.isChoosingCage = false
       this.choicedList = []
       this.choosedCage = null
+      this.curMouseId = null
     },
     // 新增子鼠操作
     goBuild(row) {

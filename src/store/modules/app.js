@@ -7,7 +7,7 @@ const state = {
     withoutAnimation: false
   },
   device: 'desktop',
-  cacheMouseInfo: getStorageItem('m-info') || {},
+  cacheMouseInfo: getStorageItem('m-info') || '',
   addingMouses: getStorageItem('adding-mouse') || '',
   addingExpt: getStorageItem('adding-expt') || '',
   addingBreed: getStorageItem('adding-breed') || ''
@@ -32,31 +32,35 @@ const mutations = {
     state.device = device
   },
   SET_M_INFO: (state, info) => {
-    state.cacheMouseInfo = JSON.stringify(info)
+    state.cacheMouseInfo = info
     setStorageItem('m-info', JSON.stringify(info))
   },
+  CLEAR_M_INFO: (state) => {
+    state.cacheMouseInfo = {}
+    removeStorageItem('m-info')
+  },
   CACHE_MOUSES: (state, arr) => {
-    state.addingMouses = JSON.stringify(arr)
+    state.addingMouses = arr
     setStorageItem('adding-mouse', JSON.stringify(arr))
   },
   CLEAR_MOUSES: (state) => {
-    state.addingMouses = ''
+    state.addingMouses = []
     removeStorageItem('adding-mouse')
   },
   CACHE_EXPTS: (state, obj) => {
-    state.addingExpt = JSON.stringify(obj)
+    state.addingExpt = obj
     setStorageItem('adding-expt', JSON.stringify(obj))
   },
   CLEAR_EXPTS: (state) => {
-    state.addingExpt = ''
+    state.addingExpt = {}
     removeStorageItem('adding-expt')
   },
   CACHE_BREED: (state, obj) => {
-    state.addingBreed = JSON.stringify(obj)
+    state.addingBreed = obj
     setStorageItem('adding-breed', JSON.stringify(obj))
   },
   CLEAR_BREED: (state) => {
-    state.addingBreed = ''
+    state.addingBreed = {}
     removeStorageItem('adding-breed')
   }
 }
@@ -73,6 +77,9 @@ const actions = {
   },
   cacheMouseInfo({ commit }, info) {
     commit('SET_M_INFO', info)
+  },
+  clearMouseInfo({ commit }) {
+    commit('CLEAR_M_INFO')
   },
   cacheChoosedMouse({ commit }, arr) {
     commit('CACHE_MOUSES', arr)

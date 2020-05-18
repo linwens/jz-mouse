@@ -274,8 +274,6 @@ export default {
   created() {
     const cacheMouseInfo = this.$store.getters.cacheMouseInfo
     if (Object.keys(cacheMouseInfo).length !== 0) {
-      console.log('有缓存的数据')
-      console.log(cacheMouseInfo)
       this.$set(this, 'form', cacheMouseInfo.common)
       this.$set(this, 'currentGene', cacheMouseInfo.genes)
       this.varietiesName = cacheMouseInfo.varietiesName
@@ -310,6 +308,7 @@ export default {
     },
     goBack() {
       this.$router.back()
+      this.$store.dispatch('app/clearMouseInfo')
     },
     goChoose(obj) {
       this.form.vid = this.varietiesId

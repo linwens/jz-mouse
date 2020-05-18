@@ -142,6 +142,10 @@ export default {
   },
   methods: {
     goBack() {
+      if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
+        this.$router.back()
+        return
+      }
       this.$confirm(`当前仍有${this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum}只小鼠尚未放入鼠笼，是否继续返回？`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -195,7 +199,7 @@ export default {
           this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
         }
         if (this.optType === 'mouseEdit') { // 编辑小鼠移笼
-          this.$store.dispatch('app/cacheMouseInfo', Object.assign({}, this.mouseData,{
+          this.$store.dispatch('app/cacheMouseInfo', Object.assign({}, this.mouseData, {
             cid: this.choosedCage
           }))
         }
@@ -222,7 +226,6 @@ export default {
         this.mouseData.femaleMiceNum -= this.putInForm.female
         this.mouseData.maleMiceNum -= this.putInForm.male
         const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
-
         this.$store.dispatch('app/cacheMouseInfo', {
           common: this.mouseData,
           varietiesName,

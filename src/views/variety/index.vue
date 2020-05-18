@@ -49,7 +49,7 @@ import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
 import { tableOption } from './table'
 import { fetchList } from '@/api/variety'
-import { editGenes } from '@/api/genes'
+import { delGenes } from '@/api/genes'
 
 export default {
   name: 'DelList',
@@ -101,19 +101,8 @@ export default {
         type: 'warning'
       }).then(() => {
         console.log('del====row', row)
-        const { id, miceGeneId, source, geneName, miceCondition, status, color, area } = row
-        return editGenes({
-          id: miceGeneId,
-          source,
-          varietiesId: id,
-          geneName,
-          miceCondition,
-          status,
-          color,
-          area,
-          state: 1,
-          userId: this.$store.getters.info.id
-        })
+        const { miceGeneId } = row
+        return delGenes(miceGeneId)
       }).then(() => {
         this.getList()
         _this.$message({
