@@ -160,7 +160,7 @@ export default {
     this.type = this.$route.params.id == 0 ? 'add' : 'edit'
     this.$route.meta.title = this.type === 'add' ? '新增' : '编辑/查看'
     // 如果是编辑，获取详情
-    const cacheInfo = this.$store.getters.addingBreed ? JSON.parse(this.$store.getters.addingBreed) : null
+    const cacheInfo = this.$store.getters.addingBreed
     if (cacheInfo) {
       this.$set(this, 'breedForm', cacheInfo)
     } else {

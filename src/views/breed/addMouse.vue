@@ -298,7 +298,7 @@ export default {
       }
       // 添加到实验组操作
       if (this.needType === 'noExpt') {
-        const cacheExpt = JSON.parse(this.$store.getters.addingExpt)
+        const cacheExpt = this.$store.getters.addingExpt
         const curExpt = cacheExpt[this.item_index]
 
         const ids = this.choicedList.map(el => {
@@ -348,7 +348,7 @@ export default {
     doAdd(mouseArr) {
       this.$store.dispatch('app/cacheChoosedMouse', mouseArr)
       // 填充繁育组信息
-      const cacheBreed = this.$store.getters.addingBreed ? JSON.parse(this.$store.getters.addingBreed) : {} // 繁育组信息
+      const cacheBreed = this.$store.getters.addingBreed // 繁育组信息
       // 更新繁育组数据
       cacheBreed.miceIds = cacheBreed.miceIds.concat(mouseArr)
       this.$store.dispatch('app/cacheBreed', cacheBreed)

@@ -37,14 +37,14 @@
               v-for="item in femaleSum"
               :key="item.miceInfoId"
               class="mouse__item pos-r ta-c"
-              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId)}"
             >
               <div class="pos-r">
                 <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
-                <div @click="taggle(item.miceInfoId)">
+                <div @click.stop="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
-                  <span class="item__miceNo dib">打发范德萨范德萨范德萨发</span>
+                  <span class="item__miceNo dib">{{ item.miceNo }}</span>
                   <i class="pos-a mouse__item--female">{{ item.sign }}</i>
                 </div>
               </div>
@@ -55,11 +55,11 @@
               v-for="item in maleSum"
               :key="item.miceInfoId"
               class="mouse__item ta-c"
-              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId)}"
             >
               <div class="pos-r">
                 <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
-                <div @click="taggle(item.miceInfoId)">
+                <div @click.stop="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
                   <p>{{ item.genotypes }}</p>
                   <span class="item__miceNo dib">{{ item.miceNo }}</span>

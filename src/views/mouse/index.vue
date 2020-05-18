@@ -142,6 +142,60 @@
         </el-tabs>
       </div>
     </main-box>
+    <!-- 编辑鼠笼 -->
+    <el-dialog
+      title="编辑"
+      :visible.sync="cageDialog"
+      width="433px"
+    >
+      <div class="mouse__cageDialog">
+        <el-form ref="editCageForm" :model="editCageForm" label-position="left" size="mini">
+          <el-form-item
+            label="笼位号:"
+            label-width="80px"
+            class="mb8"
+            prop="cageNo"
+            :rules="[
+              { required: true, message: '笼位号不能为空'}
+            ]"
+          >
+            <el-input
+              v-model="editCageForm.cageNo"
+              placeholder="请输入笼位号"
+              class="w250"
+            />
+          </el-form-item>
+          <el-form-item
+            label="房间号:"
+            label-width="80px"
+            class="mb8"
+            prop="roomNo"
+          >
+            <el-input
+              v-model="editCageForm.roomNo"
+              placeholder="请输入房间号"
+              class="w250"
+            />
+          </el-form-item>
+          <el-form-item
+            label="架号:"
+            label-width="80px"
+            class="mb8"
+            prop="shelvesNo"
+          >
+            <el-input
+              v-model="editCageForm.shelvesNo"
+              placeholder="请输入架号"
+              class="w250"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="cageDialog = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="editCageSubmit()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -156,7 +210,7 @@ import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
 import SetTime from '@/components/Dialogs/cpt_set_time'
 import MergeTable from '@/components/MergeTable'
-import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj } from '@/api/mouse'
+import { transferCage, delItemObj, editCage, delMiceByMiceId, fetchItemList, fetchCageList, putItemObj, putObj } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
@@ -203,8 +257,14 @@ export default {
       isBuilding: false, // 正在新建子鼠标识
       // 删除小鼠
       delBtnText: '移除小鼠',
-      isDeling: false // 正在删除小鼠标识
-
+      isDeling: false, // 正在删除小鼠标识
+      // 编辑鼠笼
+      cageDialog: false,
+      editCageForm: {
+        cageNo: '',
+        roomNo: '',
+        shelvesNo: ''
+      }
     }
   },
   computed: {
@@ -281,10 +341,37 @@ export default {
     this.getCageList()
   },
   methods: {
+    editCageSubmit() {
+      this.$refs['editCageForm'].validate((valid) => {
+        if (valid) {
+          this.cageDialog = false
+          // 提交成功后触发done
+          const { id: userId } = this.$store.getters.info
+          editCage(Object.assign(this.editCageForm, {
+            id: this.choosedCage,
+            operator: userId
+          })).then((res) => {
+            this.$message.success('编辑鼠笼成功')
+          })
+        } else {
+          return false
+        }
+      })
+      // 填充品系
+    },
     // 编辑查看小鼠
     goEdit() {
       if (!this.curMouseId && this.choosedCage) { // 编辑鼠笼
-        console(this.choosedCage)
+        console.log(this.choosedCage)
+        const curCage = this.cageList.filter((el) => {
+          return el.id === this.choosedCage
+        })[0]
+        console.log(curCage)
+        const { cageNo, roomNo, shelvesNo } = curCage
+        this.editCageForm.cageNo = cageNo
+        this.editCageForm.roomNo = roomNo
+        this.editCageForm.shelvesNo = shelvesNo
+        this.cageDialog = true
         return
       }
       if (this.curMouseId) {
@@ -436,7 +523,6 @@ export default {
           const curCage = this.cageList.filter((el) => {
             return el.id === this.choosedCage
           })
-          console.log('curCage==', curCage)
           const { cageNo, roomNo, shelvesNo } = curCage[0]
           this.goPage('addChild', {
             parents: this.choicedList,
@@ -460,12 +546,22 @@ export default {
         // 当前选中了小鼠
         if (this.choicedList.length > 0) {
           console.log(this.choicedList)
+          const miceIds = this.choicedList.map((el) => {
+            return el.miceInfoId
+          })
+          console.log(miceIds)
           this.$confirm('是否确认删除小鼠?', '警告', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
             console.log('提交删除')
+            delMiceByMiceId({
+              miceId: miceIds
+            }).then((res) => {
+              console.log(res)
+              this.$message.success('删除小鼠成功')
+            })
             this.cancel()
           }).catch(function() {
           })

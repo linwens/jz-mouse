@@ -199,9 +199,14 @@ export default {
           this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
         }
         if (this.optType === 'mouseEdit') { // 编辑小鼠移笼
-          this.$store.dispatch('app/cacheMouseInfo', Object.assign({}, this.mouseData, {
-            cid: this.choosedCage
-          }))
+          const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
+          this.mouseData.cageId = this.choosedCage
+          this.$store.dispatch('app/cacheMouseInfo', {
+            common: this.mouseData,
+            varietiesName,
+            varietiesId,
+            genes
+          })
         }
         this.putInVisible = false
         this.$router.back()

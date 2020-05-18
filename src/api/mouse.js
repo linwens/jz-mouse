@@ -18,7 +18,7 @@ export function recordList(query) { // 记录列表
 
 export function getCageInfo(id) { // 获取鼠笼信息
   return request({
-    url: '/micecage/{cId}' + id,
+    url: '/micecage/' + id,
     method: 'get'
   })
 }
@@ -27,6 +27,22 @@ export function addCage(obj) { // 新增笼位
   return request({
     url: '/micecage',
     method: 'post',
+    data: obj
+  })
+}
+
+export function editCage(obj) { // 编辑笼位
+  return request({
+    url: '/micecage',
+    method: 'put',
+    data: obj
+  })
+}
+
+export function editMouse(obj) { // 编辑小鼠信息
+  return request({
+    url: '/miceinfo',
+    method: 'put',
     data: obj
   })
 }
@@ -101,7 +117,8 @@ export function getMouseTree(query) { // 获取小鼠家谱树
 export function delMiceByMiceId(data) { // 移除小鼠(可批量)
   return request({
     url: '/miceinfo/deleteMiceByMiceId',
-    method: 'delete'
+    method: 'delete',
+    data
   })
 }
 

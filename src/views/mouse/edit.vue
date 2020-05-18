@@ -98,7 +98,7 @@
                   style="width: 142px;"
                 />
                 <div v-show="form.position !== 'custom'" class="mouse__edit--img mt8">
-                  <img :src="`http://bllb-animal-test.oss-cn-hangzhou.aliyuncs.com/mice-sign/${form.filePrefix}/${form.sign}.jpg`" alt="">
+                  <img v-if="form.position !== 'custom'" :src="`http://bllb-animal-test.oss-cn-hangzhou.aliyuncs.com/mice-sign/${form.filePrefix}/${form.sign}.jpg`" alt="">
                   <span class="pl16 pr16">示例：</span>
                   <img src="@/assets/test.jpg" alt="">
                 </div>
@@ -110,7 +110,7 @@
                 </div>
                 <div class="df s-jcfs s-aic mb16">
                   <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">基因型:</span><i class="mouse__edit--info--i">{{ form.geneName }}</i></p>
-                  <p class="mouse__edit--info--p">
+                  <p class="mouse__edit--info--p df">
                     <span class="mouse__edit--info--span">显示颜色:</span>
                     <i class="mouse__edit--info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': form.miceColor}" />
                   </p>
@@ -134,8 +134,8 @@
               <div>
                 <el-form-item label="笼位号:" class="mb8">
                   <el-input
-                    v-model="form.name"
-                    placeholder="请选择品系名称"
+                    v-model="cageInfo.cageNo"
+                    placeholder="请选择笼位"
                     class="w250"
                   />
                   <el-button type="primary" @click="goCage()">选择笼位</el-button>
@@ -210,7 +210,7 @@ import { addNewGenes } from '@/api/genes'
 
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './labTable'
-import { getMouseInfo, getMouseExpInfo, getCageInfo } from '@/api/mouse'
+import { getMouseInfo, getMouseExpInfo, getCageInfo, editMouse } from '@/api/mouse'
 import { fetchList } from '@/api/experiment'
 
 export default {
@@ -244,6 +244,9 @@ export default {
         phenotypicIdentificationRemindFlag: 0,
         deathStatus: 0,
         delFlag: 0,
+        cageId: 0,
+        roomNo: 0,
+        shelvesNo: 0,
         miceNo: '',
         position: '',
         sign: '',
@@ -339,7 +342,7 @@ export default {
         default: this.form.filePrefix = ''
       }
     },
-    cid(n, o) {
+    'form.cageId'(n, o) {
       getCageInfo(n).then((res) => {
         this.$set(this, 'cageInfo', res.data)
       })
@@ -347,22 +350,36 @@ export default {
   },
   created() {
     const id = this.$route.params.id
-    getMouseInfo(id).then((res) => {
-      console.log(res)
-      const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
+    console.log(this.$route)
+    const cacheMouseInfo = this.$store.getters.cacheMouseInfo
+    if (cacheMouseInfo) {
+      const mouseInfo = this.$store.getters.cacheMouseInfo
+      const { varietiesName, varietiesId, genes, common } = mouseInfo
+
       this.varietiesName = varietiesName
       this.varietiesId = Number(varietiesId)
-      this.$set(this, 'form', res.data)
-      this.form.varietiesId = Number(varietiesId)
-      this.$set(this, 'currentGene', {
-        varietiesName,
-        geneName,
-        miceCondition,
-        status,
-        color,
-        area
+      this.$set(this, 'form', common)
+      console.log('this.form', this.form)
+      this.$set(this, 'currentGene', genes)
+    } else {
+      getMouseInfo(id).then((res) => {
+        console.log(res)
+        const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
+        this.varietiesName = varietiesName
+        this.varietiesId = Number(varietiesId)
+        this.$set(this, 'form', res.data)
+        this.form.varietiesId = Number(varietiesId)
+        this.$set(this, 'currentGene', {
+          varietiesName,
+          geneName,
+          miceCondition,
+          status,
+          color,
+          area
+        })
       })
-    })
+
+    }
     getMouseExpInfo(id).then((res) => {
       console.log(res)
       this.$set(this, 'tableData', res.data)
@@ -381,7 +398,10 @@ export default {
     },
     // 提交
     save() {
-      console.log('submit!');
+      editMouse(this.form).then((res)=> {
+        this.$message.success('修改小鼠信息成功')
+        this.$store.dispatch('app/clearMouseInfo')
+      })
     },
     // 选择品系 or 基因型
     chooseVarity() {
@@ -454,23 +474,14 @@ export default {
     next(vm => {
       // 选择鼠笼后返回,回填数据(请求也获取了数据...)
       if (from.name === 'mouseCage') {
-        const cacheMouseInfo = vm.$store.getters.cacheMouseInfo
-        const mouseInfo = cacheMouseInfo ? JSON.parse(cacheMouseInfo) : {}
-        const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, cid, ...other } = mouseInfo
+        const mouseInfo = vm.$store.getters.cacheMouseInfo
+        const { varietiesName, varietiesId, genes, common } = mouseInfo
 
-        vm.cid = cid
         vm.varietiesName = varietiesName
         vm.varietiesId = Number(varietiesId)
-        vm.$set(vm, 'form', other)
-        vm.form.varietiesId = Number(varietiesId)
-        vm.$set(vm, 'currentGene', {
-          varietiesName,
-          geneName,
-          miceCondition,
-          status,
-          color,
-          area
-        })
+        vm.$set(vm, 'form', common)
+        console.log('vm.form', vm.form)
+        vm.$set(vm, 'currentGene', genes)
       }
     })
   }
@@ -512,7 +523,6 @@ export default {
           width: 405px;
         }
         font-size: 14px;
-        display: inline-block;
       }
       &--span {
         margin-right: 5px;
