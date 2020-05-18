@@ -2,8 +2,21 @@
   <div>
     <main-box class="variety__addGenes mt25 cl-black fs14">
       <div>
-        <el-form ref="addGensForm" :model="addGensForm" label-position="left" size="mini">
-          <el-form-item label="品系名称:" label-width="80px" class="mb8">
+        <el-form
+          ref="addGensForm"
+          :model="addGensForm"
+          label-position="left"
+          label-width="90px"
+          size="mini"
+        >
+          <el-form-item
+            label="品系名称:"
+            class="mb18"
+            prop="varietiesName"
+            :rules="[
+              { required: true, message: '品系名称不能为空', trigger: 'change' }
+            ]"
+          >
             <el-input
               v-model="addGensForm.varietiesName"
               disabled
@@ -12,7 +25,14 @@
             />
             <choice-variety-btn :variety.sync="curVariety" />
           </el-form-item>
-          <el-form-item label="基因型名称:" label-width="80px" class="mb8">
+          <el-form-item
+            label="基因型名称:"
+            class="mb18"
+            prop="geneName"
+            :rules="[
+              { required: true, message: '基因型名称不能为空', trigger: 'change' }
+            ]"
+          >
             <!-- <el-input
               v-model="addGensForm.geneName"
               placeholder="请输入基因型名名称"
@@ -21,11 +41,16 @@
             <el-autocomplete
               v-model="addGensForm.geneName"
               :fetch-suggestions="history('geneName')"
-              placeholder="请输入基因型名名称"
+              placeholder="请输入基因型名称"
               class="w250"
             />
           </el-form-item>
-          <el-form-item label="饲养条件:" label-width="80px" class="mb8">
+          <el-form-item
+            label="饲养条件:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb18"
+          >
             <!-- <el-input
               v-model="addGensForm.miceCondition"
               placeholder="请输入饲养条件"
@@ -38,7 +63,12 @@
               class="w250"
             />
           </el-form-item>
-          <el-form-item label="健康状态:" label-width="80px" class="mb8">
+          <el-form-item
+            label="健康状态:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb18"
+          >
             <!-- <el-input
               v-model="addGensForm.status"
               placeholder="请输入健康状态"
@@ -51,7 +81,12 @@
               class="w250"
             />
           </el-form-item>
-          <el-form-item label="毛色:" label-width="80px" class="mb8">
+          <el-form-item
+            label="毛色:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb18"
+          >
             <!-- <el-input
               v-model="addGensForm.color"
               placeholder="请输入毛色"
@@ -64,7 +99,12 @@
               class="w250"
             />
           </el-form-item>
-          <el-form-item label="应用领域:" label-width="80px" class="mb0">
+          <el-form-item
+            label="应用领域:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb0"
+          >
             <!-- <el-input
               v-model="addGensForm.area"
               type="textarea"
@@ -147,28 +187,34 @@ export default {
       console.log('this.optType', this.optType)
       const apiType = this.optType === 'modify' ? editGenes : addNewGenes
       const { miceGeneId: id, source, geneName, miceCondition, status, color, area, state } = this.addGensForm
-      apiType({
-        id,
-        source,
-        varietiesId: this.varietiesId,
-        geneName,
-        miceCondition,
-        status,
-        color,
-        area,
-        state,
-        userId: this.$store.getters.info.id
-      }).then((res) => {
-        this.$message.success('编辑成功')
-        // 存储输入过的值
-        this.$store.dispatch('user/setInputHistory', {
-          geneName,
-          miceCondition,
-          status,
-          color,
-          area
-        })
-        this.goBack()
+      this.$refs['addGensForm'].validate((valid) => {
+        if (valid) {
+          apiType({
+            id,
+            source,
+            varietiesId: this.varietiesId,
+            geneName,
+            miceCondition,
+            status,
+            color,
+            area,
+            state,
+            userId: this.$store.getters.info.id
+          }).then((res) => {
+            this.$message.success('编辑成功')
+            // 存储输入过的值
+            this.$store.dispatch('user/setInputHistory', {
+              geneName,
+              miceCondition,
+              status,
+              color,
+              area
+            })
+            this.goBack()
+          })
+        } else {
+          return false
+        }
       })
     }
   }

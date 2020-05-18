@@ -13,14 +13,14 @@ export const tableOption = {
 
   column: [{
     label: '分组名称',
-    prop: 'experimentGroupName',
+    prop: 'name',
     overHidden: true
   }, {
     label: '处理',
     prop: 'eventName'
   }, {
     label: '检测',
-    prop: 'experimentGroupSelectionLabels'
+    prop: 'testName'
   }, {
     label: '小鼠',
     prop: 'experimentGroupSelectionMiceIds',

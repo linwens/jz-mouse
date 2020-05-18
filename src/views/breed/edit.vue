@@ -63,7 +63,7 @@
           @refresh-change="handleRefreshChange"
         >
           <template slot="pregnantTime" slot-scope="{scope}">
-            <el-button v-if="scope.row.gender === 1" type="text" @click="setPregTime(scope.row)">{{ scope.row.pregnantTime | timeFormat('yyyy-MM-dd') }}</el-button>
+            <el-button v-if="scope.row.gender === 1" type="text" @click="setPregTime(scope.row)">{{ scope.row.pregnantTime ? (scope.row.pregnantTime | timeFormat('yyyy-MM-dd')) : '设置受孕时间' }}</el-button>
           </template>
           <template v-if="disabled" slot="menu" slot-scope="{scope}">
             <el-button
@@ -136,7 +136,7 @@ export default {
         miceIds: []
       },
       breedTime: {
-        date: 0
+        date: ''
       },
       dialogVisible: false,
       tableOption,
@@ -181,7 +181,7 @@ export default {
       this.$router.back()
     },
     goMouse(row) {
-      this.goPage('mouseEdit', { id: row.id })
+      this.goPage('mouseEdit', { id: row.miceInfoId })
     },
     goPage(r, obj) {
       this.$router.push({ name: r, params: obj })
@@ -279,7 +279,7 @@ export default {
     setPregTime(row) {
       console.log(row)
       this.dialogVisible = true
-      this.breedTime.date = row.pregnantTime
+      this.breedTime.date = row.pregnantTime === 0 ? null : row.pregnantTime
     },
     submitPregTime() {
 

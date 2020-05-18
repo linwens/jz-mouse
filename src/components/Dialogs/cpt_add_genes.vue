@@ -8,23 +8,29 @@
       width="450px"
     >
       <div>
-        <el-form ref="addGensForm" :model="addGensForm" label-position="left" size="mini">
-          <el-form-item label="品系名称:" label-width="80px" class="mb0">
+        <el-form ref="addGensForm" :model="addGensForm" label-width="90px" label-position="left" size="mini">
+          <el-form-item label="品系名称:" label-width="80.56px" style="padding-left: 9.44px;" class="mb0">
             <span>{{ varietiesName }}</span>
           </el-form-item>
-          <el-form-item label="基因型名称:" label-width="80px" class="mb8">
+          <el-form-item
+            label="基因型名称:"
+            prop="geneName"
+            class="mb18"
+            :rules="[
+              { required: true, message: '基因型名称不能为空', trigger: 'change' }
+            ]">
             <el-input v-model="addGensForm.geneName" />
           </el-form-item>
-          <el-form-item label="饲养条件:" label-width="80px" class="mb8">
+          <el-form-item label="饲养条件:" label-width="80.56px" style="padding-left: 9.44px;" class="mb18">
             <el-input v-model="addGensForm.miceCondition" />
           </el-form-item>
-          <el-form-item label="健康状态:" label-width="80px" class="mb8">
+          <el-form-item label="健康状态:" label-width="80.56px" style="padding-left: 9.44px;" class="mb18">
             <el-input v-model="addGensForm.status" />
           </el-form-item>
-          <el-form-item label="毛色:" label-width="80px" class="mb8">
+          <el-form-item label="毛色:" label-width="80.56px" style="padding-left: 9.44px;" class="mb18">
             <el-input v-model="addGensForm.color" />
           </el-form-item>
-          <el-form-item label="应用领域:" label-width="80px" class="mb0">
+          <el-form-item label="应用领域:" label-width="80.56px" style="padding-left: 9.44px;" class="mb0">
             <el-input v-model="addGensForm.area" type="textarea" />
           </el-form-item>
         </el-form>

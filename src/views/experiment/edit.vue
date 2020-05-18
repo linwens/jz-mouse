@@ -286,7 +286,7 @@
         </template>
       </merge-table>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="tagDialog = false">取 消</el-button>
+        <el-button size="small" @click="mousesDialog = false">取 消</el-button>
         <el-button type="primary" size="small" @click="addTag()">确 定</el-button>
       </div>
     </el-dialog>
@@ -297,7 +297,7 @@
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
 import { addItemObj, addObj, delItemObj, getExptInfoById, fetchItemList, fetchList, updateExptInfo, putObj } from '@/api/experiment'
-import { getMouseInfoByIds } from '@/api/mouse'
+import { getMouseInfoByIds, getMiceInfoByIds } from '@/api/mouse'
 
 export default {
   name: 'EditExperiment',
@@ -351,10 +351,20 @@ export default {
   },
   created() {
     console.log(this.$route)
-    this.getExptInfoById(this.$route.params.id)
+    if (this.$store.getters.addingExpt) {
+      const addingExpt = this.$store.getters.addingExpt
+      this.$set(this, 'experimentForm', addingExpt.form)
+      this.$set(this, 'tableData', addingExpt.table)
+    } else {
+      this.getExptInfoById(this.$route.params.id)
+    }
   },
   methods: {
     goAddMouse(scope) {
+      this.$store.dispatch('app/cacheExpts', {
+        form: this.experimentForm,
+        table: this.tableData
+      })
       this.goPage('experimentAddMouse', { type: 'noExpt', index: scope.$index })
     },
     goPage(r, obj) {
@@ -439,7 +449,10 @@ export default {
       const newData = this.tableData
       newData.push(item)
       this.$set(this, 'tableData', newData)
-      this.$store.dispatch('app/cacheExpts', this.tableData)
+      this.$store.dispatch('app/cacheExpts', {
+        form: this.experimentForm,
+        table: this.tableData
+      })
     },
     // 编辑列表项
     editListItem(data) {
@@ -448,18 +461,25 @@ export default {
       other.experimentGroupSelectionLabels = other.experimentGroupSelectionLabels ? other.experimentGroupSelectionLabels.join(';') : ''
 
       this.$set(this.tableData, index, other)
-      this.$store.dispatch('app/cacheExpts', this.tableData)
+      this.$store.dispatch('app/cacheExpts', {
+        form: this.experimentForm,
+        table: this.tableData
+      })
     },
     // 查看小鼠列表
     showMouses(row) {
-      this.getMouseList(row.experimentGroupSelectionMiceIds)
-      this.mousesDialog = true
-
+      const idArr = row.experimentGroupSelectionMiceIds ? row.experimentGroupSelectionMiceIds.split(',') : []
+      console.log(idArr)
+      if (idArr.length === 0) {
+        this.$message.warning('没有小鼠')
+      } else {
+        this.getMouseList(idArr)
+        this.mousesDialog = true
+      }
     },
     // 获取小鼠列表
     getMouseList(ids) {
-      const idArr = ids.split(',')
-      getMouseInfoByIds(idArr).then(res => {
+      getMiceInfoByIds(ids).then(res => {
         this.$set(this, 'mouseList', res.data.records)
       })
     },
@@ -520,7 +540,9 @@ export default {
       // 是添加小鼠返回的,组装列表项数据
       if (from.name === 'experimentAddMouse') {
         const addingExpt = vm.$store.getters.addingExpt
-        vm.$set(vm, 'tableData', addingExpt ? JSON.parse(addingExpt) : [])
+        vm.$set(vm, 'experimentForm', addingExpt ? addingExpt.form : {})
+        vm.$set(vm, 'tableData', addingExpt ? addingExpt.table : [])
+        vm.canEdit = true
       }
     })
   }

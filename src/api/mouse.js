@@ -69,6 +69,14 @@ export function getMouseInfoByIds(id) { // 获取小鼠信息
   })
 }
 
+export function getMiceInfoByIds(data) { // 通过小鼠id集合查询小鼠信息（通过小鼠id集合查询小鼠信息）
+  return request({
+    url: '/miceinfo/getMiceInfoByIds',
+    method: 'post',
+    data
+  })
+}
+
 export function getNewCageNo(id) { // 获取最新笼位号
   return request({
     url: '/micecage/getNewRoomId',

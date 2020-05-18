@@ -294,7 +294,8 @@ export default {
       }
       // 添加到实验组操作
       if (this.needType === 'noExpt') {
-        const { table: cacheExpt, form } = JSON.parse(this.$store.getters.addingExpt)
+        console.log(11111111)
+        const { table: cacheExpt, form } = this.$store.getters.addingExpt
         const curExpt = cacheExpt[this.item_index]
 
         const ids = this.choicedList.map(el => {

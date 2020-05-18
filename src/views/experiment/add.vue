@@ -406,6 +406,10 @@ export default {
   },
   methods: {
     goAddMouse(scope) {
+      this.$store.dispatch('app/cacheExpts', {
+        form: this.experimentForm,
+        table: this.tableData
+      })
       this.goPage('experimentAddMouse', { type: 'noExpt', index: scope.$index })
     },
     goPage(r, obj) {
@@ -528,7 +532,10 @@ export default {
       other.experimentGroupSelectionLabels = other.experimentGroupSelectionLabels ? other.experimentGroupSelectionLabels.join(';') : ''
 
       this.$set(this.tableData, index, other)
-      this.$store.dispatch('app/cacheExpts', this.tableData)
+      this.$store.dispatch('app/cacheExpts', {
+        form: this.experimentForm,
+        table: this.tableData
+      })
     },
     // 查看小鼠列表
     showMouses(row) {
@@ -574,8 +581,8 @@ export default {
       // 是添加小鼠返回的,组装列表项数据
       if (from.name === 'experimentAddMouse') {
         const addingExpt = vm.$store.getters.addingExpt
-        vm.$set(vm, 'experimentForm', addingExpt ? JSON.parse(addingExpt).form : {})
-        vm.$set(vm, 'tableData', addingExpt ? JSON.parse(addingExpt).table : [])
+        vm.$set(vm, 'experimentForm', addingExpt ? addingExpt.form : {})
+        vm.$set(vm, 'tableData', addingExpt ? addingExpt.table : [])
       }
     })
   }
