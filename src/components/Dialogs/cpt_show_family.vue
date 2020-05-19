@@ -3,7 +3,7 @@
     <el-button type="text" @click="showFamily()">查看</el-button>
     <!-- 家谱弹窗 -->
     <el-dialog
-      title="提示"
+      title="家谱记录"
       :visible.sync="dialogVisible"
       width="30%"
     >

@@ -62,6 +62,13 @@ export function getMouseInfo(id) { // 获取小鼠信息
   })
 }
 
+export function getMouseState(id) { // 获取小鼠状态
+  return request({
+    url: '/miceinfo/state/' + id,
+    method: 'get'
+  })
+}
+
 export function getMouseInfoByIds(id) { // 获取小鼠信息
   return request({
     url: '/miceinfo/getById?ids=' + id,

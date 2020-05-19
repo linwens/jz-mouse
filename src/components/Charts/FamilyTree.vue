@@ -1,7 +1,15 @@
 <template>
   <div>
-    <el-button size="mini" icon="el-icon-search">查看详情</el-button>
-    <span>{{ curMouse }}</span>
+    <el-select
+      v-model="treeType"
+      placeholder="请选择类型"
+      size="mini"
+      class="w100"
+    >
+      <el-option label="父母记录" :value="0" />
+      <el-option label="子鼠记录" :value="1" />
+    </el-select>
+    <el-button size="mini" icon="el-icon-search" @click="goDetail()">查看详情</el-button>
     <div :id="miceId" :class="className" :style="{height:height,width:width, 'min-height': '500px'}" />
   </div>
 </template>
@@ -9,7 +17,37 @@
 <script>
 import echarts from 'echarts'
 import resize from './mixins/resize'
-import { getMouseTree } from '@/api/mouse'
+import { getMouseTree, getMouseState } from '@/api/mouse'
+
+// 根据当前后端返回的数据结构，递归家谱树
+function recur(data, parent) { // data是对象
+  if (data.children.length === 0 && parent) {
+    if (parent.fatherId === data.id) {
+      return {
+        name: `父鼠${data.id}`,
+        value: data.id
+      }
+    }
+    if (parent.motherId === data.id) {
+      return {
+        name: `母鼠${data.id}`,
+        value: data.id
+      }
+    }
+  } else {
+    for (let i = 0; i < data.children.length; i++) {
+      data.children[i] = recur(data.children[i], data)
+    }
+  }
+  if (!parent) { // 最外层节点设置(最外层没有parent)
+    data = {
+      name: `小鼠 ${data.id}`,
+      value: data.id,
+      children: data.children
+    }
+  }
+  return data
+}
 
 export default {
   mixins: [resize],
@@ -34,22 +72,19 @@ export default {
   data() {
     return {
       chart: null,
-      curMouse: ''
+      curMouse: '',
+      curMouseStatus: null, // 小鼠是否删除
+      treeType: 0 // 查看那种家谱树
     }
   },
   watch: {
     miceId(n, o) {
-      this.initChart()
+      this.getTreeData()
     }
   },
   mounted() {
     if (this.miceId) {
-      getMouseTree({
-        descendant: this.miceId
-      }).then((res) => {
-        console.log(res)
-        this.initChart()
-      })
+      this.getTreeData()
     }
   },
   beforeDestroy() {
@@ -60,10 +95,32 @@ export default {
     this.chart = null
   },
   methods: {
-    initChart() {
+    // 查看小鼠详情
+    goDetail() {
+      if (this.curMouse) {
+        if (this.curMouseStatus) {
+          this.$message.warning('小鼠已删除')
+        } else {
+          this.$router.push({ name: 'mouseEdit', params: { id: this.curMouse }})
+        }
+      } else {
+        this.$message.warning('请先点击小鼠')
+      }
+    },
+    getTreeData() {
+      getMouseTree({
+        descendant: this.miceId
+      }).then((res) => {
+        const { data } = res
+        // 计算结果
+        const rslt = recur(data[0])
+        this.initChart(rslt)
+      })
+    },
+    initChart(data) {
       this.chart = echarts.init(document.getElementById(this.miceId))
       this.chart.showLoading()
-      const data = {
+      /* const data = {
         'name': '小鼠',
         'value': 'ee444',
         'children': [
@@ -116,7 +173,7 @@ export default {
               }]
             }]
           }]
-      }
+      } */
       this.chart.hideLoading()
       this.chart.setOption({
         tooltip: {
@@ -176,8 +233,10 @@ export default {
       this.chart.on('click', {
         seriesName: 'familyTree'
       }, function(e) {
-        console.log(e, e.name)
-        self.curMouse = e.name
+        self.curMouse = e.value
+        getMouseState(e.value).then((res)=>{
+          this.curMouseStatus = res.data
+        })
       })
     }
   }

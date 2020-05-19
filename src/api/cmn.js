@@ -8,11 +8,20 @@ export function fetchList(query) {
   })
 }
 
-export function fetchItemList(query) {
+// export function getUploadParams(query) { // 获取OSS上传参数
+//   return request({
+//     baseURL: process.env.VUE_APP_FILE_API,
+//     url: '/api/fileManage/uploadParam',
+//     method: 'get',
+//     params: query
+//   })
+// }
+
+export function uploadFiles(obj) { // 图片批量上传
   return request({
-    url: '/dict/item/page',
-    method: 'get',
-    params: query
+    url: '/sysfile/uploadFiles',
+    method: 'post',
+    data: obj
   })
 }
 

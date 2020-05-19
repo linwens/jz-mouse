@@ -227,6 +227,7 @@
               :data="tableData"
               :table-option="tableOption"
               :table-loading="tableLoading"
+              :on-load="getList"
             >
               <template slot="status" slot-scope="{scope}">
                 <span v-if="scope.row.status === 0" class="isIdle">闲置</span>
@@ -354,7 +355,7 @@ export default {
       this.getList()
     },
     handleRefreshChange() {
-      // this.getList()
+      this.getList()
     },
     // 获取列表
     getList() {

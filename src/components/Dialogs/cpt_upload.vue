@@ -3,7 +3,7 @@
     <!-- 上传 -->
     <el-upload
       class="upload-demo"
-      action="https://jsonplaceholder.typicode.com/posts/"
+      :action="actionUrl"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :before-remove="beforeRemove"
@@ -11,7 +11,6 @@
       :limit="5"
       :on-exceed="handleExceed"
       :on-success="handleSuccess"
-      :file-list="fileList"
     >
       <el-button
         v-if="btnText"
@@ -24,7 +23,7 @@
 </template>
 
 <script>
-import { saveFiles } from '@/api/cmn'
+import { getUploadParams, saveFiles } from '@/api/cmn'
 
 export default {
   name: 'UploadFile',
@@ -44,10 +43,21 @@ export default {
   },
   data() {
     return {
+      actionUrl: `/sysfile/uploadFiles`,
       fileList: []
     }
   },
+  created() {
+    // this.getParams()
+  },
   methods: {
+    // getParams() {
+    //   getUploadParams({
+    //     attachType: this.attachType
+    //   }).then((res) => {
+    //     console.log(res)
+    //   })
+    // },
     handleRemove(file, fileList) {
       console.log(file, fileList)
     },
