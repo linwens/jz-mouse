@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 // 一些公共组件的请求
-export function fetchList(query) {
+export function getFilesList(data) { // 请求文件列表
+  const { bizType, bizId, ...other } = data
   return request({
-    url: '/micebreed/page',
+    url: `/sysfile/${bizType}/${bizId}`,
     method: 'get',
-    params: query
+    params: other
   })
 }
 
@@ -40,9 +41,9 @@ export function getItemObj(id) {
   })
 }
 
-export function delItemObj(id) {
+export function delFile(id) { // 删除文件
   return request({
-    url: '/dict/item/' + id,
+    url: '/sysfile/' + id,
     method: 'delete'
   })
 }

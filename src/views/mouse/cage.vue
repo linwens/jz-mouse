@@ -199,13 +199,14 @@ export default {
           this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
         }
         if (this.optType === 'mouseEdit') { // 编辑小鼠移笼
-          const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
+          const { varietiesName, varietiesId, genes, files } = this.$store.getters.cacheMouseInfo
           this.mouseData.cageId = this.choosedCage
           this.$store.dispatch('app/cacheMouseInfo', {
             common: this.mouseData,
             varietiesName,
             varietiesId,
-            genes
+            genes,
+            files
           })
         }
         this.putInVisible = false
@@ -230,12 +231,13 @@ export default {
         // 更新剩余小鼠数量
         this.mouseData.femaleMiceNum -= this.putInForm.female
         this.mouseData.maleMiceNum -= this.putInForm.male
-        const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
+        const { varietiesName, varietiesId, genes, files } = this.$store.getters.cacheMouseInfo
         this.$store.dispatch('app/cacheMouseInfo', {
           common: this.mouseData,
           varietiesName,
           varietiesId,
-          genes
+          genes,
+          files
         })
         this.$message.success('新增小鼠成功')
         this.getCageList()

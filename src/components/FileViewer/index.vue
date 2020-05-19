@@ -17,11 +17,20 @@
       </el-dialog>
     </div>
     <div v-if="type === 'img'">
-      <el-image
-        style="width: 100px; height: 100px"
-        :src="fileUrl"
-        :preview-src-list="[fileUrl]"
-      />
+      <el-dialog
+        title="pdf查看"
+        append-to-body
+        fullscreen
+        custom-class="mouse__preview"
+        :visible.sync="dialogVisible"
+        width="30%"
+      >
+        <el-image
+          style="width: 100px; height: 100px"
+          :src="fileUrl"
+          :preview-src-list="[fileUrl]"
+        />
+      </el-dialog>
     </div>
     <div v-if="type === 'office'">
       <el-dialog
@@ -52,7 +61,7 @@ export default {
     },
     fileUrl: {
       type: String,
-      default: 'http://localhost/test.pdf'
+      default: ''
     }
   },
   data() {
@@ -68,7 +77,8 @@ export default {
   methods: {
     // 获取类型
     getType(url) {
-      const type = url.match(/\.[^\.]+$/g)[0].slice(1)
+      const URL = url.match(/[^\?]*\?+/g)[0].slice(1)
+      const type = URL.match(/\.[^\.]+$/g)[0].slice(1)
       const pattImg = new RegExp(/(jpg|png|jpeg)/g)
       const pattOffice = new RegExp(/(docx|xlsx|pptx)/g)
       if (pattImg.test(type)) {

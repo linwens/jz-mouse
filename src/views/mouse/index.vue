@@ -39,8 +39,8 @@
               </p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">附件:</span>
-                <view-files v-if="curMouseId" />
-                <upload-btn v-if="curMouseId" class="dib" />
+                <view-files v-if="curMouseId" :id="curMouseId" biz-type="mice" />
+                <upload-btn v-if="curMouseId" :id="curMouseId" biz-type="mice" class="dib" />
               </p>
             </div>
 
@@ -79,8 +79,8 @@
             <div class="df s-jcsb s-aic mb8">
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">检测试验结果:</span>
-                <view-files v-if="curMouseId" />
-                <upload-btn v-if="curMouseId" class="dib" />
+                <view-files v-if="curMouseId" :id="curMouseId" biz-type="experiment" />
+                <upload-btn v-if="curMouseId" :id="curMouseId" biz-type="experiment" class="dib" />
               </p>
               <p class="mouse__info--p">
                 <i class="mouse__info--i mr20">

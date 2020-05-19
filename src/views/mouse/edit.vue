@@ -172,10 +172,10 @@
                 </div>
               </div>
               <el-form-item label="附件:" class="mb0">
-                <div class="dib">
-                  <view-files />
+                <div class="df">
+                  <view-files :id="curMouseId" biz-type="mice" />
+                  <upload-btn :id="curMouseId" biz-type="mice" class="dib" @done="fillFilesUrl" />
                 </div>
-                <upload-btn class="dib" />
               </el-form-item>
             </el-form>
           </div>
@@ -226,6 +226,7 @@ export default {
   data() {
     return {
       activeName: 'first', // 鼠笼tab
+      curMouseId: 0,
       // 总表单
       form: {
         vid: '',
@@ -253,6 +254,7 @@ export default {
         filePrefix: '',
         status: 1 // 0:无，1：闲置，2：繁育，3：实验,4:手动处死5,实验处死
       },
+      cacheFilesList: [],
       // 品系选择
       curVariety: '',
       varietiesName: '',
@@ -349,20 +351,21 @@ export default {
     }
   },
   created() {
-    const id = this.$route.params.id
+    this.curMouseId = Number(this.$route.params.id)
     console.log(this.$route)
     const cacheMouseInfo = this.$store.getters.cacheMouseInfo
     if (cacheMouseInfo) {
       const mouseInfo = this.$store.getters.cacheMouseInfo
-      const { varietiesName, varietiesId, genes, common } = mouseInfo
+      const { varietiesName, varietiesId, genes, common, files } = mouseInfo
 
       this.varietiesName = varietiesName
       this.varietiesId = Number(varietiesId)
       this.$set(this, 'form', common)
+      this.$set(this, 'cacheFilesList', files)
       console.log('this.form', this.form)
       this.$set(this, 'currentGene', genes)
     } else {
-      getMouseInfo(id).then((res) => {
+      getMouseInfo(this.curMouseId).then((res) => {
         console.log(res)
         const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
         this.varietiesName = varietiesName
@@ -378,14 +381,29 @@ export default {
           area
         })
       })
-
     }
-    getMouseExpInfo(id).then((res) => {
+    getMouseExpInfo(this.curMouseId).then((res) => {
       console.log(res)
       this.$set(this, 'tableData', res.data)
     })
   },
   methods: {
+    // 上传成功回填url
+    fillFilesUrl(data, fileList) {
+      this.$set(this.form, 'files', data)
+      // 填充文件查看列表
+      const list = []
+      for (let i = 0; i < data.length; i++) {
+        const { name: fileName, type: bizType } = fileList[i].raw
+        list.push({
+          fileName,
+          bizType,
+          path: data[i]
+        })
+      }
+      console.log('list', list)
+      this.$set(this, 'cacheFilesList', list)
+    },
     handleClick(tab, event) {
       console.log(tab, event)
       if (tab === 'second') {
@@ -439,6 +457,7 @@ export default {
           varietiesName: this.varietiesName,
           varietiesId: this.varietiesId,
           genes: this.currentGene,
+          files: this.cacheFilesList,
           common: this.form
         })
         this.$router.push({
@@ -475,11 +494,12 @@ export default {
       // 选择鼠笼后返回,回填数据(请求也获取了数据...)
       if (from.name === 'mouseCage') {
         const mouseInfo = vm.$store.getters.cacheMouseInfo
-        const { varietiesName, varietiesId, genes, common } = mouseInfo
+        const { varietiesName, varietiesId, genes, common, files } = mouseInfo
 
         vm.varietiesName = varietiesName
         vm.varietiesId = Number(varietiesId)
         vm.$set(vm, 'form', common)
+        vm.$set(vm, 'cacheFilesList', files)
         console.log('vm.form', vm.form)
         vm.$set(vm, 'currentGene', genes)
       }

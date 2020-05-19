@@ -179,6 +179,12 @@
               </el-select>
             </el-form-item>
           </div>
+          <el-form-item label="附件:" class="mb0">
+            <div class="df">
+              <view-files :cache-list="cacheFilesList" />
+              <upload-btn class="dib" @done="fillFilesUrl" />
+            </div>
+          </el-form-item>
         </el-form>
       </div>
       <div class="mouse__addNew--btns pos-a w-100 h60 df s-aic">
@@ -193,6 +199,8 @@
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
 import GenesChoose from '@/components/Dialogs/GenesChoose'
+import ViewFiles from '@/components/Dialogs/ViewFiles'
+import UploadBtn from '@/components/Dialogs/cpt_upload'
 import { addNewGenes } from '@/api/genes'
 
 export default {
@@ -200,7 +208,9 @@ export default {
   components: {
     ChoiceVarietyBtn,
     AddGenesBtn,
-    GenesChoose
+    GenesChoose,
+    ViewFiles,
+    UploadBtn
   },
   data() {
     return {
@@ -219,6 +229,7 @@ export default {
         phenotypicIdentificationRemindTime: null,
         phenotypicIdentificationRemindFlag: 0,
         fatherId: 0,
+        files: [],
         motherId: 0,
         deathStatus: 0,
         delFlag: 0,
@@ -226,6 +237,7 @@ export default {
         sign: '',
         status: 1 // 0:无，1：闲置，2：繁育，3：实验,4:手动处死5,实验处死
       },
+      cacheFilesList: [],
       // 品系选择
       curVariety: '',
       varietiesName: '',
@@ -275,12 +287,29 @@ export default {
     const cacheMouseInfo = this.$store.getters.cacheMouseInfo
     if (Object.keys(cacheMouseInfo).length !== 0) {
       this.$set(this, 'form', cacheMouseInfo.common)
+      this.$set(this, 'cacheFilesList', cacheMouseInfo.files)
       this.$set(this, 'currentGene', cacheMouseInfo.genes)
       this.varietiesName = cacheMouseInfo.varietiesName
       this.varietiesId = cacheMouseInfo.varietiesId
     }
   },
   methods: {
+    // 上传成功回填url
+    fillFilesUrl(data, fileList) {
+      this.$set(this.form, 'files', data)
+      // 填充文件查看列表
+      const list = []
+      for (let i = 0; i < data.length; i++) {
+        const { name: fileName, type: bizType } = fileList[i].raw
+        list.push({
+          fileName,
+          bizType,
+          path: data[i]
+        })
+      }
+      console.log('list', list)
+      this.$set(this, 'cacheFilesList', list)
+    },
     // 选择品系 or 基因型
     chooseVarity() {
       this.varietyDialog = true
@@ -317,6 +346,7 @@ export default {
           varietiesName: this.varietiesName,
           varietiesId: this.varietiesId,
           genes: this.currentGene,
+          files: this.cacheFilesList,
           common: this.form
         })
         this.$router.push({ name: 'mouseCage', params: this.form })
