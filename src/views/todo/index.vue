@@ -49,24 +49,24 @@
               @on-load="getList"
               @refresh-change="handleRefreshChange"
             >
-              <template slot="status" slot-scope="scope">
-                <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
+              <template slot="status" slot-scope="{scope}">
+                <svg-icon v-if="scope.row.status === 1" icon-class="noRead" class="fs30" />
                 <svg-icon v-else icon-class="isReaded" class="fs30" />
               </template>
-              <template slot="menu" slot-scope="scope">
+              <template slot="menu" slot-scope="{scope}">
                 <el-button
                   type="text"
                   size="mini"
                   class="btn-text--danger"
-                  @click="rowItemDel(scope.scope.row)"
+                  @click="rowItemDel(scope.row)"
                 >
                   删除
                 </el-button>
                 <el-button
-                  v-if="scope.scope.row.status === 1"
+                  v-if="scope.row.status === 1"
                   type="text"
                   size="mini"
-                  @click="markReaded(scope.scope.row)"
+                  @click="markReaded(scope.row)"
                 >
                   标为已读
                 </el-button>
@@ -121,7 +121,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/todo'
+import { markReaded, allReaded, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/todo'
 
 export default {
   name: 'Todo',
@@ -192,17 +192,26 @@ export default {
       })
     },
     // 标为已读
-    markReaded() {
-
+    markReaded(row) {
+      markReaded(row.id).then((res) => {
+        this.$message.success('标记为已读')
+        this.getList()
+      })
     },
     // 一键已读
     allReaded() {
+      const _self = this
       this.$confirm('是否确认标记所有信息为已读?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log('确认标记')
+        const ids = this.tableData.map((el) => {
+          return el.id
+        })
+        allReaded(ids).then((res) => {
+          _self.getList()
+        })
       }).catch(function() {
       })
     }

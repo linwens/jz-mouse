@@ -14,22 +14,39 @@
 <script>
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
+import { fetchList } from '@/api/todo'
 
 export default {
   components: {
     Breadcrumb
   },
+  data() {
+    return {
+      hasMsg: false
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ]),
-    // 是否有消息
-    hasMsg() {
-      return true
-    }
+    ])
+  },
+  created() {
+    this.getUnRead()
   },
   methods: {
+    // 获取是否有未读消息
+    getUnRead() {
+      fetchList({
+        status: 1,
+        current: 1,
+        size: 10
+      }).then((res) => {
+        if (res.data.total > 0) {
+          this.hasMsg = true
+        }
+      })
+    },
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)

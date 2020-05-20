@@ -38,6 +38,21 @@ export function delItemObj(id) { // 删除待办事项
   })
 }
 
+export function allReaded(obj) { // 一键已读操作
+  return request({
+    url: '/sysremind/batch',
+    method: 'post',
+    data: obj
+  })
+}
+
+export function markReaded(id) { // 已读操作
+  return request({
+    url: '/sysremind/' + id,
+    method: 'post'
+  })
+}
+
 export function putItemObj(obj) { // 修改待办事项
   return request({
     url: '/sysremind',
