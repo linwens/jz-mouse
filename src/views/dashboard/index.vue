@@ -12,9 +12,10 @@
           </div>
           <div class="mt20 mb12 pl16 pr16">
             <el-form ref="myMouseForm" :model="myMouseForm" size="small" label-width="95px" label-position="left">
-              <el-button type="primary" size="small" class="w70">重置</el-button>
+              <el-button type="primary" size="small" class="w70" @click="reset">重置</el-button>
               <el-select
                 v-model="myMouseForm.operator"
+                clearable
                 placeholder="负责人"
                 size="small"
                 class="w104"
@@ -28,6 +29,7 @@
               </el-select>
               <el-select
                 v-model="myMouseForm.varietiesId"
+                clearable
                 placeholder="品系"
                 size="small"
                 class="w104"
@@ -41,6 +43,7 @@
               </el-select>
               <el-select
                 v-model="myMouseForm.genotypes"
+                clearable
                 placeholder="基因型"
                 size="small"
                 class="w104"
@@ -54,6 +57,7 @@
               </el-select>
               <el-select
                 v-model="myMouseForm.pureHeterozygote"
+                clearable
                 placeholder="纯/杂合子"
                 size="small"
                 class="w104"
@@ -64,6 +68,7 @@
               </el-select>
               <el-select
                 v-model="myMouseForm.gender"
+                clearable
                 placeholder="性别"
                 size="small"
                 class="w80"
@@ -73,6 +78,7 @@
               </el-select>
               <el-select
                 v-model="myMouseForm.status"
+                clearable
                 placeholder="状态"
                 size="small"
                 class="w80"
@@ -85,13 +91,18 @@
                 <el-option label="实验处死" :value="5" />
               </el-select>
               <el-select
-                v-model="myMouseForm.man"
+                v-model="weekRange"
+                clearable
                 placeholder="周龄"
                 size="small"
                 class="w104"
+                @change="selectWeekRange"
               >
-                <el-option label="张三" value="1" />
-                <el-option label="李四" value="2" />
+                <el-option label="4周以下" :value="[null, 4]" />
+                <el-option label="4-8周" :value="[4, 8]" />
+                <el-option label="8-12周" :value="[8, 12]" />
+                <el-option label="12周以上" :value="[12, null]" />
+                <el-option label="自定义" value="custom" />
               </el-select>
             </el-form>
             <p class="mt12 fs14 cl-grey-9">总计：<span class="cl-black">{{ page.total }} 条数据</span></p>
@@ -136,7 +147,7 @@
           </div>
           <div class="mt20 mb12 pl16 pr16">
             <el-form ref="exptMouseForm" :model="exptMouseForm" size="small" label-width="95px" label-position="left">
-              <el-button type="primary" size="small" class="w70">重置</el-button>
+              <el-button type="primary" size="small" class="w70" @click="reset">重置</el-button>
               <el-select
                 v-model="exptMouseForm.operator"
                 placeholder="负责人"
@@ -245,7 +256,35 @@
         </el-tab-pane>
       </el-tabs>
     </main-box>
-
+    <!-- 自定义周龄 -->
+    <el-dialog
+      title="选择周龄"
+      :visible.sync="weekRangeDialog"
+      append-to-body
+      width="500px"
+    >
+      <div>
+        <el-form ref="weekRangeForm" :model="weekRangeForm" label-position="left" size="mini">
+          <el-form-item label="周龄:" class="mb9">
+            <el-input
+              v-model="weekRangeForm.startWeek"
+              placeholder="0周"
+              class="w80"
+            />
+            <span class="ml8">至</span>
+            <el-input
+              v-model="weekRangeForm.endWeek"
+              placeholder="0周"
+              class="w80"
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="weekRangeDialog = false">取 消</el-button>
+        <el-button type="primary" size="small" @click="okRange()">确 定</el-button>
+      </div>
+    </el-dialog>
     <guide :text="'展示引导'" />
   </div>
 </template>
@@ -276,6 +315,13 @@ export default {
   },
   data() {
     return {
+      // 关于周龄
+      weekRange: [],
+      weekRangeDialog: false,
+      weekRangeForm: {
+        startWeek: 0,
+        endWeek: 0
+      },
       // 筛选条件
       myMouseForm: { // 我的小鼠
         gender: null,
@@ -321,11 +367,57 @@ export default {
   watch: {
     'myMouseForm.varietiesId'(n, o) {
       // 基因型列表
+      if (!n) {
+        this.genesOpts = []
+        return
+      }
       getLisByVariety({
         id: n
       }).then((res) => {
         this.genesOpts = res.data
       })
+    },
+    'myMouseForm.gender'(n, o) {
+      this.getList()
+    },
+    'myMouseForm.pureHeterozygote'(n, o) {
+      this.getList()
+    },
+    'myMouseForm.status'(n, o) {
+      this.getList()
+    },
+    'myMouseForm.operator'(n, o) {
+      this.getList()
+    },
+    'myMouseForm.genotypes'(n, o) {
+      this.getList()
+    },
+    'exptMouseForm.varietiesId'(n, o) {
+      // 基因型列表
+      if (!n) {
+        this.genesOpts = []
+        return
+      }
+      getLisByVariety({
+        id: n
+      }).then((res) => {
+        this.genesOpts = res.data
+      })
+    },
+    'exptMouseForm.gender'(n, o) {
+      this.getList()
+    },
+    'exptMouseForm.pureHeterozygote'(n, o) {
+      this.getList()
+    },
+    'exptMouseForm.status'(n, o) {
+      this.getList()
+    },
+    'exptMouseForm.operator'(n, o) {
+      this.getList()
+    },
+    'exptMouseForm.genotypes'(n, o) {
+      this.getList()
     }
   },
   created() {
@@ -339,6 +431,53 @@ export default {
     })
   },
   methods: {
+    // 重置筛选条件
+    reset() {
+      const MAP = {
+        mine: 'myMouseForm',
+        expt: 'exptMouseForm'
+      }
+      const obj = this[MAP[this.activeName]]
+      for (const key of Object.keys(obj)) {
+        if (this.activeName === 'mine' && key !== 'operator') {
+          obj[key] = null
+        }
+        if (this.activeName === 'expt' && key !== 'status') {
+          obj[key] = null
+        }
+      }
+    },
+    // 选择周龄范围
+    selectWeekRange(val) {
+      const MAP = {
+        mine: 'myMouseForm',
+        expt: 'exptMouseForm'
+      }
+      console.log(val)
+      if (val === 'custom') {
+        this.weekRangeDialog = true
+      } else {
+        // 注意周龄是到今天算的，所以后面的值算开始时间
+        this[MAP[this.activeName]].startTime = val[1] ? val[1] : 0
+        this[MAP[this.activeName]].endTime = val[0] ? val[0] : 0
+        this.getList()
+      }
+    },
+    // 确定周龄范围
+    okRange() {
+      const MAP = {
+        mine: 'myMouseForm',
+        expt: 'exptMouseForm'
+      }
+      if (!this.weekRangeForm.startWeek && this.weekRangeForm.endWeek) {
+        this.$message.error('至少输入一个值')
+      } else {
+        const { startWeek, endWeek } = this.weekRangeForm
+        this[MAP[this.activeName]].startTime = endWeek
+        this[MAP[this.activeName]].endTime = startWeek
+        this.getList()
+      }
+    },
     // 获取负责人列表
     getPersons() {
       getUsers().then((res) => {
