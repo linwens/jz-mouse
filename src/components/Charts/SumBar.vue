@@ -8,6 +8,7 @@
 <script>
 import echarts from 'echarts'
 import resize from './mixins/resize'
+import { countMice } from '@/api/home'
 
 export default {
   mixins: [resize],
@@ -19,6 +20,10 @@ export default {
     id: {
       type: String,
       default: 'sumBar'
+    },
+    type: {
+      type: String,
+      default: ''
     },
     width: {
       type: String,
@@ -34,8 +39,13 @@ export default {
       chart: null
     }
   },
+  watch: {
+    type(n, o) {
+      this.getCountMice()
+    }
+  },
   mounted() {
-    this.initChart()
+    this.getCountMice()
   },
   beforeDestroy() {
     console.log('销毁')
@@ -46,16 +56,33 @@ export default {
     this.chart = null
   },
   methods: {
-    initChart() {
+    // 获取柱状图信息
+    getCountMice() {
+      countMice(this.type).then((res) => {
+        console.log(res)
+        const { data } = res
+        this.initChart(data)
+      })
+    },
+    initChart(data) {
       this.chart = echarts.init(document.getElementById(this.id))
       this.chart.showLoading()
-      var xData = (() => {
-        var data = []
-        for (var i = 1; i < 13; i++) {
-          data.push(i + 'PROTOCOL名称')
-        }
-        return data
-      })()
+      const femaleSum = []
+      const maleSum = []
+      const xData = []
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i]
+        femaleSum.push(item.femaleNum)
+        maleSum.push(item.maleNum)
+        xData.push(item.name)
+      }
+      // var xData = (() => {
+      //   var list = []
+      //   for (var i = 1; i < 13; i++) {
+      //     list.push(data.name)
+      //   }
+      //   return list
+      // })()
 
       this.chart.hideLoading()
       this.chart.setOption({
@@ -179,20 +206,7 @@ export default {
                 }
               }
             },
-            data: [
-              709,
-              1917,
-              2455,
-              2610,
-              1719,
-              1433,
-              1544,
-              3285,
-              5208,
-              3372,
-              2484,
-              4078
-            ]
+            data: femaleSum
           },
           {
             name: '雄',
@@ -211,20 +225,7 @@ export default {
                 }
               }
             },
-            data: [
-              327,
-              1776,
-              507,
-              1200,
-              800,
-              482,
-              204,
-              1390,
-              1001,
-              951,
-              381,
-              220
-            ]
+            data: maleSum
           }
         ]
       })

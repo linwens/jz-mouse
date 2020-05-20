@@ -129,6 +129,14 @@ export function getMouseTree(query) { // 获取小鼠家谱树
   })
 }
 
+export function getMouseChildrenTree(query) { // 获取小鼠子鼠树
+  return request({
+    url: '/miceinfo/subRelation/tree',
+    method: 'get',
+    params: query
+  })
+}
+
 export function delMiceByMiceId(data) { // 移除小鼠(可批量)
   return request({
     url: '/miceinfo/deleteMiceByMiceId',

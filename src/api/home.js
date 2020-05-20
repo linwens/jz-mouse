@@ -16,11 +16,10 @@ export function getUsers(query) { // 获取用户列表
   })
 }
 
-export function countMice(query) { // 柱状图
+export function countMice(action) { // 柱状图
   return request({
-    url: '/miceinfo/countMice',
-    method: 'get',
-    params: query
+    url: `/stat/${action}`,
+    method: 'get'
   })
 }
 

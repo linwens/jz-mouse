@@ -3,7 +3,7 @@
     <el-button type="text" size="mini" @click="dialogVisible = true">{{ btnText }}</el-button>
     <div v-if="type === 'pdf'">
       <el-dialog
-        title="pdf查看"
+        title="pdf文件查看"
         append-to-body
         fullscreen
         custom-class="mouse__preview"
@@ -18,7 +18,7 @@
     </div>
     <div v-if="type === 'img'">
       <el-dialog
-        title="pdf查看"
+        title="图片查看"
         append-to-body
         fullscreen
         custom-class="mouse__preview"
@@ -34,7 +34,7 @@
     </div>
     <div v-if="type === 'office'">
       <el-dialog
-        title="office查看"
+        title="office文件查看"
         fullscreen
         :visible.sync="dialogVisible"
         width="30%"
@@ -77,7 +77,8 @@ export default {
   methods: {
     // 获取类型
     getType(url) {
-      const URL = url.match(/[^\?]*\?+/g)[0].slice(1)
+      let URL = url.match(/[^/?]*\?+/g)[0] // 渠道url里 最后一个 / 与 ? 之间的值
+      URL = URL.slice(0, URL.length - 1)
       const type = URL.match(/\.[^\.]+$/g)[0].slice(1)
       const pattImg = new RegExp(/(jpg|png|jpeg)/g)
       const pattOffice = new RegExp(/(docx|xlsx|pptx)/g)

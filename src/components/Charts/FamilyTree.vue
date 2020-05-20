@@ -17,7 +17,7 @@
 <script>
 import echarts from 'echarts'
 import resize from './mixins/resize'
-import { getMouseTree, getMouseState } from '@/api/mouse'
+import { getMouseTree, getMouseChildrenTree, getMouseState } from '@/api/mouse'
 
 // 根据当前后端返回的数据结构，递归家谱树
 function recur(data, parent) { // data是对象
@@ -35,15 +35,15 @@ function recur(data, parent) { // data是对象
       }
     }
   } else {
-    for (let i = 0; i < data.children.length; i++) {
-      data.children[i] = recur(data.children[i], data)
-    }
-  }
-  if (!parent) { // 最外层节点设置(最外层没有parent)
     data = {
       name: `小鼠 ${data.id}`,
       value: data.id,
+      fatherId: data.fatherId,
+      motherId: data.motherId,
       children: data.children
+    }
+    for (let i = 0; i < data.children.length; i++) {
+      data.children[i] = recur(data.children[i], data)
     }
   }
   return data
@@ -80,6 +80,13 @@ export default {
   watch: {
     miceId(n, o) {
       this.getTreeData()
+    },
+    treeType(n, o) {
+      if (n === 0) {
+        this.getTreeData()
+      } else {
+        this.getChildrenData()
+      }
     }
   },
   mounted() {
@@ -107,6 +114,16 @@ export default {
         this.$message.warning('请先点击小鼠')
       }
     },
+    // 获取子集鼠信息
+    getChildrenData() {
+      getMouseChildrenTree({
+        descendant: this.miceId
+      }).then((res) => {
+        const { data } = res
+        console.log(data)
+      })
+    },
+    // 获取父级鼠信息
     getTreeData() {
       getMouseTree({
         descendant: this.miceId
@@ -114,6 +131,7 @@ export default {
         const { data } = res
         // 计算结果
         const rslt = recur(data[0])
+        console.log(rslt)
         this.initChart(rslt)
       })
     },

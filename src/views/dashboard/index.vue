@@ -8,7 +8,7 @@
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="我的小鼠" name="mine">
           <div v-if="activeName === 'mine'" class="bg-gray">
-            <sum-bar id="1" :show="activeName === 'mine'" />
+            <sum-bar id="1" :show="activeName === 'mine'" :type="barType" />
           </div>
           <div class="mt20 mb12 pl16 pr16">
             <el-form ref="myMouseForm" :model="myMouseForm" size="small" label-width="95px" label-position="left">
@@ -126,11 +126,11 @@
             </merge-table>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="实验室小鼠" name="expt">
+        <el-tab-pane :label="`实验室${barTypeBtn === '人员' ? '小鼠' : '人员'}`" name="expt">
           <div v-if="activeName === 'expt'">
-            <sum-bar id="2" :show="activeName === 'expt'">
+            <sum-bar id="2" :show="activeName === 'expt'" :type="barType">
               <template slot="posaEle">
-                <el-button type="primary" size="mini" class="pos-a home__sum-bar-btn" @click="changeMan()">人员</el-button>
+                <el-button type="primary" size="mini" class="pos-a home__sum-bar-btn" @click="changeMan()">{{ barTypeBtn }}</el-button>
               </template>
             </sum-bar>
           </div>
@@ -254,7 +254,7 @@
 import MergeTable from '@/components/MergeTable'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import { tableOption } from './table'
-import { countMice, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getUsers } from '@/api/home'
+import { addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getUsers } from '@/api/home'
 import { varietiesList } from '@/api/variety'
 import { getLisByVariety } from '@/api/genes'
 
@@ -298,7 +298,8 @@ export default {
         endTime: null
       },
       activeName: 'mine',
-      tabsSum: [10, 22, 123], // 不同信息条数
+      barType: 'currentVarieties',
+      barTypeBtn: '人员',
       tableOption,
       tableLoading: false,
       page: {
@@ -338,12 +339,6 @@ export default {
     })
   },
   methods: {
-    // 获取柱状图信息
-    getCountMice() {
-      countMice().then((res) => {
-        
-      })
-    },
     // 获取负责人列表
     getPersons() {
       getUsers().then((res) => {
@@ -352,6 +347,7 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, this.activeName)
+      this.barType = this.activeName === 'mine' ? 'currentVarieties' : 'allVarieties'
       this.getList()
     },
     handleRefreshChange() {
@@ -383,7 +379,10 @@ export default {
       return `${weeks}周${days}天`
     },
     // 实验小鼠柱状图，切换负责人
-    changeMan() {}
+    changeMan() {
+      this.barTypeBtn = this.barTypeBtn === '人员' ? '小鼠' : '人员'
+      this.barType = this.barType === 'operator' ? 'allVarieties' : 'operator'
+    }
   }
 }
 </script>

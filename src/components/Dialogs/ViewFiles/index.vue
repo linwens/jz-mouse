@@ -116,7 +116,7 @@ export default {
     // 删除
     rowItemDel: function(scope) {
       const _this = this
-      this.$confirm('是否确认删除数据为"' + scope.row.fileName + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除数据为"' + scope.row.fileName + '"的文件吗?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

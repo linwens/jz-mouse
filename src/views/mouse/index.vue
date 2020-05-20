@@ -79,8 +79,8 @@
             <div class="df s-jcsb s-aic mb8">
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">检测试验结果:</span>
-                <view-files v-if="curMouseId" :id="curMouseId" biz-type="experiment" />
-                <upload-btn v-if="curMouseId" :id="curMouseId" biz-type="experiment" class="dib" />
+                <view-files v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" biz-type="experiment" />
+                <upload-btn v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" biz-type="experiment" class="dib" />
               </p>
               <p class="mouse__info--p">
                 <i class="mouse__info--i mr20">
@@ -291,12 +291,12 @@ export default {
       const start = this.mouseExptInfo.startTime * 1000
       const end = this.mouseExptInfo.endTime * 1000
       const duration = end - start
-      const now = +new Date()
+      const now = +new Date() > end ? end : +new Date()
       return ((now - start) / duration).toFixed(3) * 100
-
     },
     // 测试时间进度
     testTimeScale() {
+      console.log('=-#########=====', this.mouseExptInfo)
       // 总时间间距
       const start = this.mouseExptInfo.startTime * 1000
       const end = this.mouseExptInfo.endTime * 1000
@@ -306,6 +306,7 @@ export default {
     },
     // 处理时间进度
     handleTimeScale() {
+      console.log('=-=-=-=====', this.mouseExptInfo)
       // 总时间间距
       const start = this.mouseExptInfo.startTime * 1000
       const end = this.mouseExptInfo.endTime * 1000
@@ -388,25 +389,6 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event)
-    },
-    // 删除
-    rowItemDel: function(row) {
-      const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(function() {
-        return delItemObj(row.id)
-      }).then(() => {
-        this.getDictItemList()
-        _this.$message({
-          showClose: true,
-          message: '删除成功',
-          type: 'success'
-        })
-      }).catch(function() {
-      })
     },
     // 鼠笼列表
     getCageList() {
