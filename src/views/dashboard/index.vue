@@ -469,7 +469,7 @@ export default {
         mine: 'myMouseForm',
         expt: 'exptMouseForm'
       }
-      if (!this.weekRangeForm.startWeek && this.weekRangeForm.endWeek) {
+      if (!this.weekRangeForm.startWeek && !this.weekRangeForm.endWeek) {
         this.$message.error('至少输入一个值')
       } else {
         const { startWeek, endWeek } = this.weekRangeForm

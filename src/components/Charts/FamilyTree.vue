@@ -120,8 +120,18 @@ export default {
         descendant: this.miceId
       }).then((res) => {
         const { data } = res
-        console.log(data)
-        this.initChart(data, 'radial')
+        const rslt = {
+          name: `小鼠${this.miceId}`,
+          children: []
+        }
+        if (data && data.children && data.children.length > 0) {
+          for (let i = 0; i < data.children.length; i++) {
+            rslt.children.push({
+              name: `子鼠${data.children[i]}`
+            })
+          }
+        }
+        this.initChart(rslt, 'radial')
       })
     },
     // 获取父级鼠信息

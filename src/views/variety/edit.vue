@@ -131,13 +131,14 @@
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import { addNewGenes, editGenes } from '@/api/genes'
-import { mapGetters } from 'vuex'
+import { inputRemenber } from '@/components/Mixins/history'
 
 export default {
   name: 'VarietyEdit',
   components: {
     ChoiceVarietyBtn
   },
+  mixins: [inputRemenber],
   data() {
     return {
       curVariety: null, // 当前选中的品系
@@ -152,11 +153,6 @@ export default {
         area: ''
       }
     }
-  },
-  computed: {
-    ...mapGetters([
-      'inputHistory'
-    ])
   },
   watch: {
     curVariety(n, o) {
@@ -173,12 +169,6 @@ export default {
     }
   },
   methods: {
-    history(key) {
-      const rslt = this.inputHistory[key]
-      return function(queryString, cb) {
-        cb(rslt)
-      }
-    },
     goBack() {
       this.$router.back()
     },

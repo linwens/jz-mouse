@@ -56,8 +56,14 @@
               { required: true, message: '品系名称不能为空'}
             ]"
           >
-            <el-input
+            <!-- <el-input
               v-model="editVarietyForm.varietiesName"
+              placeholder="请输入品系名称"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="editVarietyForm.varietiesName"
+              :fetch-suggestions="history('varietiesName')"
               placeholder="请输入品系名称"
               class="w250"
             />
@@ -77,6 +83,7 @@ import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
 import { tableOption } from './listTable'
 import { varietiesList, putItemObj, delItemObj } from '@/api/variety'
+import { inputRemenber } from '@/components/Mixins/history'
 
 export default {
   name: 'DelList',
@@ -84,6 +91,7 @@ export default {
     MergeTable,
     AddVarietyBtn
   },
+  mixins: [inputRemenber],
   data() {
     return {
       tableOption,
@@ -162,13 +170,16 @@ export default {
             userId: this.$store.getters.info.id
           }).then((res) => {
             console.log(res)
+            // 存储输入过的值
+            this.$store.dispatch('user/setInputHistory', {
+              varietiesName
+            })
             this.getList()
           })
         } else {
           return false
         }
       })
-      // 填充品系
     }
   }
 }
