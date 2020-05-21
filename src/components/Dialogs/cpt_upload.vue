@@ -84,11 +84,13 @@ export default {
       this.$message.success('文件上传成功')
       console.log(response, file, fileList)
       if (!this.id && response.data.length > 0) {
+        console.log(this.cacheUrl, fileList)
         // 因为设计稿只有一个上传按钮，所以没法做手动上传，就无法一次性传多张图，只能多次传单张图，为了确保done调用获得的data是全部
-        if (response.data.length < fileList.length) {
+        if (response.data.length <= fileList.length) {
           this.cacheUrl.push(response.data[0])
         }
         if (this.cacheUrl.length === fileList.length) {
+          console.log('触发done')
           this.$emit('done', this.cacheUrl, fileList)
         }
       }

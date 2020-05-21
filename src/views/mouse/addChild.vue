@@ -437,6 +437,8 @@ export default {
         phenotypicIdentificationRemindTime: this.form.phenotypicIdentificationRemindTime / 1000,
         createUser: userId,
         operator: userId,
+        fatherId: this.father.miceInfoId,
+        motherId: this.mother.miceInfoId,
         cid: this.father.cid,
         vid: this.varietiesId
       })

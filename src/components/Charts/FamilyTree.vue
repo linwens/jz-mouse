@@ -121,6 +121,7 @@ export default {
       }).then((res) => {
         const { data } = res
         console.log(data)
+        this.initChart(data, 'radial')
       })
     },
     // 获取父级鼠信息
@@ -135,63 +136,9 @@ export default {
         this.initChart(rslt)
       })
     },
-    initChart(data) {
+    initChart(data, layoutType) {
       this.chart = echarts.init(document.getElementById(this.miceId))
       this.chart.showLoading()
-      /* const data = {
-        'name': '小鼠',
-        'value': 'ee444',
-        'children': [
-          {
-            'name': '父鼠A',
-            'value': 'fds333',
-            'children': [{
-              'name': '父鼠B',
-              'value': 'fds333',
-              'children': [{
-                'name': '父鼠C',
-                'value': 'fds333'
-              }, {
-                'name': '母鼠C',
-                'value': 'fds333'
-              }]
-            }, {
-              'name': '母鼠B',
-              'value': 'fds333',
-              'children': [{
-                'name': '父鼠C',
-                'value': 'fds333'
-              }, {
-                'name': '母鼠C',
-                'value': 'fds333'
-              }]
-            }]
-          }, {
-            'name': '母鼠A',
-            'value': 'fds333',
-            'children': [{
-              'name': '父鼠B',
-              'value': 'fds333',
-              'children': [{
-                'name': '父鼠C',
-                'value': 'fds333'
-              }, {
-                'name': '母鼠C',
-                'value': 'fds333'
-              }]
-            }, {
-              'name': '母鼠B',
-              'value': 'fds333',
-              'children': [{
-                'name': '父鼠C',
-                'value': 'fds333'
-              }, {
-                'name': '母鼠C',
-                'value': 'fds333'
-              }]
-            }]
-          }]
-      } */
       this.chart.hideLoading()
       this.chart.setOption({
         tooltip: {
@@ -202,6 +149,7 @@ export default {
         series: [
           {
             type: 'tree',
+            layout: layoutType || 'orthogonal',
             name: 'familyTree',
             data: [data],
 

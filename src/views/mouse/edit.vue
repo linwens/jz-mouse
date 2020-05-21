@@ -354,7 +354,8 @@ export default {
     this.curMouseId = Number(this.$route.params.id)
     console.log(this.$route)
     const cacheMouseInfo = this.$store.getters.cacheMouseInfo
-    if (cacheMouseInfo) {
+    console.log(cacheMouseInfo)
+    if (Object.keys(cacheMouseInfo).length > 0) {
       const mouseInfo = this.$store.getters.cacheMouseInfo
       const { varietiesName, varietiesId, genes, common, files } = mouseInfo
 
