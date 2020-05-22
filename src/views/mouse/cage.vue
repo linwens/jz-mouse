@@ -46,6 +46,7 @@
             <el-input
               v-model.number="putInForm.female"
               placeholder="0"
+              min="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
             />
@@ -53,6 +54,7 @@
             <el-input
               v-model.number="putInForm.male"
               placeholder="0"
+              min="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
             />
@@ -242,6 +244,10 @@ export default {
         this.$message.success('新增小鼠成功')
         this.getCageList()
         this.putInVisible = false
+        if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
+          this.$router.back()
+          return
+        }
       })
     },
     putInSubmit() {

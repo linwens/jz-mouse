@@ -7,9 +7,9 @@
             <h6 class="mouse__info--h6">品系信息</h6>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">品系:</span><i class="mouse__info--i">{{ mouseInfo.varietiesName }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.color }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.geneColor }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">饲养条件:</span><i class="mouse__info--i">{{ mouseInfo.miceCondition }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.geneStatus }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.genotypes }}</i></p>
@@ -32,7 +32,7 @@
               <p class="mouse__info--p"><span class="mouse__info--span">笼位号:</span><i class="mouse__info--i">10-01</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.miceStatusDesc }}</i></p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">显示颜色:</span>
                 <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" />
@@ -101,8 +101,8 @@
               <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
-              <set-time :id="mouseExptInfo.id" @done="setProgress" />
-              <expt-record class="ml16 w100" />
+              <set-time :id="mouseExptInfo.experimentId" @done="setProgress" />
+              <expt-record :id="mouseExptInfo.experimentId" class="ml16 w100" />
             </div>
           </div>
         </div>
@@ -231,6 +231,8 @@ export default {
       curMouseId: null, // 当前选中小鼠的id
       mouseInfo: {},
       mouseExptInfo: {},
+      testTimeScale: 0, // 测试时间标记
+      handleTimeScale: 0, // 处理时间标记
       activeName: 'myCage', // 鼠笼tab
       color: '#C4C4CD',
       // 附件
@@ -292,9 +294,9 @@ export default {
       const end = this.mouseExptInfo.endTime * 1000
       const duration = end - start
       const now = +new Date() > end ? end : +new Date()
-      return ((now - start) / duration).toFixed(3) * 100
-    },
-    // 测试时间进度
+      return (((now - start) / duration) * 100).toFixed(2)
+    }
+    /* // 测试时间进度
     testTimeScale() {
       console.log('=-#########=====', this.mouseExptInfo)
       // 总时间间距
@@ -313,9 +315,14 @@ export default {
       const duration = end - start
       const scale = (this.mouseExptInfo.handleTime * 1000 - start) / duration
       return scale * 380
-    }
+    } */
   },
   watch: {
+    'mouseExptInfo.experimentId'(n, o) {
+      console.log('id变化了', n)
+      this.setTestTimeScale()
+      this.setHandleTimeScale()
+    },
     // 监听每个鼠笼选中的小鼠，最后合并所有选中小鼠
     'curCageMouseList.mouses'(n, o) {
       const _self = this
@@ -342,6 +349,24 @@ export default {
     this.getCageList()
   },
   methods: {
+    setHandleTimeScale() {
+      console.log('watch===handleTime')
+      const start = this.mouseExptInfo.startTime * 1000
+      const end = this.mouseExptInfo.endTime * 1000
+      const duration = end - start
+      const scale = (this.mouseExptInfo.handleTime * 1000 - start) / duration
+      this.handleTimeScale = (scale * 380).toFixed(2)
+      console.log(this.handleTimeScale)
+    },
+    setTestTimeScale() {
+      console.log('watch===testTime')
+      const start = this.mouseExptInfo.startTime * 1000
+      const end = this.mouseExptInfo.endTime * 1000
+      const duration = end - start
+      const scale = (this.mouseExptInfo.testTime * 1000 - start) / duration
+      this.testTimeScale = (scale * 380).toFixed(2)
+      console.log(this.testTimeScale)
+    },
     editCageSubmit() {
       this.$refs['editCageForm'].validate((valid) => {
         if (valid) {
@@ -564,8 +589,10 @@ export default {
 
       if (obj.type === 0) {
         this.mouseExptInfo.testTime = obj.time
+        this.setTestTimeScale()
       } else {
         this.mouseExptInfo.handleTime = obj.time
+        this.setHandleTimeScale()
       }
     }
   }

@@ -7,9 +7,9 @@
             <h6 class="mouse__info--h6">品系信息</h6>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">品系:</span><i class="mouse__info--i">{{ mouseInfo.varietiesName }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.color }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.geneColor }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">饲养条件:</span><i class="mouse__info--i">{{ mouseInfo.miceCondition }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.geneStatus }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.genotypes }}</i></p>
@@ -32,7 +32,7 @@
               <p class="mouse__info--p"><span class="mouse__info--span">笼位号:</span><i class="mouse__info--i">10-01</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.miceStatusDesc }}</i></p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">显示颜色:</span>
                 <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" />
@@ -246,6 +246,13 @@ export default {
   watch: {
     // 监听每个鼠笼选中的小鼠，最后合并所有选中小鼠
     'curCageMouseList.mouses'(n, o) {
+      const { table: cacheExpt } = this.$store.getters.addingExpt
+      const curExpt = cacheExpt[this.item_index]
+      console.log('选中的小鼠===', n, cacheExpt, curExpt, this.item_index)
+      if (n[0] && (curExpt.experimentGroupSelectionMiceIds.indexOf(n[0].miceInfoId + '') > -1)) {
+        this.$message.warning('当前小鼠已被选择，请更换小鼠')
+        return
+      }
       const _self = this
       let list = this.cacheChoicedList
       const hasThis = this.cacheChoicedList.filter((el) => {
@@ -270,9 +277,9 @@ export default {
     this.getCageList()
     this.needType = this.$route.params.type
     console.log('this.$route.params.index===', this.$route.params.index)
-    if (typeof this.$route.params.index === 'number') { // 实验组会带一个列表项的id或者索引
-      this.item_index = this.$route.params.index
-    }
+    // 实验组会带一个列表项的id或者索引
+    console.log(this.$route.params.index, this.$store.getters.addingExpt.$index)
+    this.item_index = this.$route.params.index || this.$store.getters.addingExpt.$index
   },
   methods: {
     goBack() {
@@ -281,6 +288,7 @@ export default {
     },
     // 确认添加
     goAdd(row) {
+      console.log(this.choicedList)
       if (this.choicedList.length === 0) {
         this.$message({
           type: 'error',
@@ -293,8 +301,8 @@ export default {
         this.add2breed(this.choicedList)
       }
       // 添加到实验组操作
-      if (this.needType === 'noExpt') {
-        const { table: cacheExpt, form } = this.$store.getters.addingExpt
+      if (this.needType === 'noExpt' || Object.keys(this.$store.getters.addingExpt).length > 0) {
+        const { table: cacheExpt, form, tags } = this.$store.getters.addingExpt
         const curExpt = cacheExpt[this.item_index]
 
         const newIds = this.choicedList.map(el => {
@@ -305,7 +313,8 @@ export default {
 
         cacheExpt[this.item_index] = curExpt
         this.$store.dispatch('app/cacheExpts', {
-          form: form,
+          form,
+          tags,
           table: cacheExpt
         })
         this.doAdd(this.choicedList)

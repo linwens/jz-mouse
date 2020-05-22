@@ -260,7 +260,7 @@ export default {
           this.$emit('update:curMouse', res.data)
         })
         getMouseExpInfo(this.curId).then((res) => {
-          console.log(res)
+          console.log('getMouseExpInfo', res)
           this.$emit('update:curMouseExpt', res.data[0] || {}) // 取第一条数据
         })
       }

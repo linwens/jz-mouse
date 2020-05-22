@@ -20,7 +20,7 @@ export const tableOption = {
     prop: 'eventName'
   }, {
     label: '检测',
-    prop: 'experimentGroupSelectionLabels'
+    prop: 'testName'
   }, {
     label: '小鼠',
     prop: 'experimentGroupSelectionMiceIds',

@@ -120,7 +120,7 @@ export default {
             this.$message.success('设置时间成功')
             if (res.data) {
               this.$emit('done', {
-                type: this.operationType,
+                type: this.setTimeForm.operationType,
                 time: Math.floor(this.setTimeForm.time / 1000)
               })
             }

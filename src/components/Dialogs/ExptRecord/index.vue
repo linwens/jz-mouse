@@ -74,6 +74,11 @@ export default {
   methods: {
     // 展示列表
     showList() {
+      console.log(this.id)
+      if (!this.id) {
+        this.$message.warning('请先选中小鼠')
+        return
+      }
       this.getList()
       this.recordDialog = true
     },

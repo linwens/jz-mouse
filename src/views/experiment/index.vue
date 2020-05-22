@@ -19,9 +19,9 @@
             <template slot="operation_check" slot-scope="{scope}">
               <expt-record :id="scope.row.id" btn-text="查看" type="text" size="medium" />
             </template>
-            <template slot="module_rslt" slot-scope="scope">
-              <view-files />
-              <upload-btn class="dib" btn-text="上传" />
+            <template slot="module_rslt" slot-scope="{scope}">
+              <view-files :id="scope.row.id" biz-type="experiment" />
+              <upload-btn :id="scope.row.id" biz-type="experiment" class="dib" btn-text="上传" />
             </template>
             <template slot="menu" slot-scope="{scope}">
               <set-time :id="scope.row.id" btn-text="设置时间" type="text" class="dib" />
@@ -112,7 +112,7 @@ export default {
       }).then(function() {
         return delExptObj(row.id)
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',

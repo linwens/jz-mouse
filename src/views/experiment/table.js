@@ -34,7 +34,7 @@ export const tableOption = {
     width: 120,
     format: 'yyyy-MM-dd'
   }, {
-    label: '最新监测时间',
+    label: '最新检测时间',
     prop: 'newTestTime',
     width: 200,
     format: 'yyyy-MM-dd hh:mm:ss'

@@ -138,7 +138,7 @@
               <el-button
                 type="text"
                 size="mini"
-                @click="showMouses(scope.row)"
+                @click="showMouses(scope)"
               >查看</el-button>
               <el-button
                 type="text"
@@ -243,9 +243,9 @@
             label="检测信息:"
             label-width="80px"
             class="mb8"
-            prop="experimentGroupSelectionLabels"
+            prop="testName"
           >
-            <el-select v-model="addGroupForm.experimentGroupSelectionLabels" multiple placeholder="请选择">
+            <el-select v-model="addGroupForm.testName" multiple placeholder="请选择">
               <el-option
                 v-for="(item, index) in tags"
                 :key="index"
@@ -282,7 +282,7 @@
             type="text"
             size="mini"
             class="btn-text--danger"
-            @click="delMouse(scope.row)"
+            @click="delMouse(scope)"
           >
             移除
           </el-button>
@@ -333,7 +333,7 @@ export default {
       addGroupForm: {
         experimentGroupName: '',
         eventName: '',
-        experimentGroupSelectionLabels: []
+        testName: []
       },
       tableOption,
       tableLoading: false,
@@ -344,6 +344,7 @@ export default {
         limit: 10 // 每页显示多少条
       },
       // 查看小鼠列表
+      curGroupIndex: null, // 当前实验分组index
       mousesDialog: false,
       mouseList: [],
       mouseListOption,
@@ -357,7 +358,7 @@ export default {
   created() {
     console.log(this.$route)
     const cacheExpts = this.$store.getters.addingExpt
-    if ( cacheExpts && cacheExpts.form.experimentId == this.$route.params.id ) {
+    if (cacheExpts && cacheExpts.form.experimentId == this.$route.params.id) {
       const addingExpt = this.$store.getters.addingExpt
       this.$set(this, 'experimentForm', addingExpt.form)
       this.$set(this, 'tableData', addingExpt.table)
@@ -369,6 +370,7 @@ export default {
     goAddMouse(scope) {
       this.$store.dispatch('app/cacheExpts', {
         form: this.experimentForm,
+        tags: this.tags,
         table: this.tableData
       })
       this.goPage('experimentAddMouse', { type: 'noExpt', index: scope.$index })
@@ -399,15 +401,21 @@ export default {
       })
     },
     // 删除小鼠
-    delMouse: function(row) {
+    delMouse: function(scope) {
+      console.log(scope)
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除小鼠"' + scope.row.miceId + '"的数据?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(function() {
-        return delItemObj(row.id)
       }).then(() => {
+        _this.mouseList.splice(scope.$index, 1)
+        // 删除对应分组的小鼠id
+        const curGroupMices = _this.tableData[_this.curGroupIndex].experimentGroupSelectionMiceIds
+        const curMiceId = scope.row.miceId
+        const index = curGroupMices.indexOf(curMiceId)
+        curGroupMices.splice(index, 1)
+
         _this.$message({
           showClose: true,
           message: '删除成功',
@@ -419,9 +427,9 @@ export default {
     // 编辑分组信息
     goEdit(scope) {
       const data = JSON.parse(JSON.stringify(scope.row))
-      const exptLabels = scope.row.experimentGroupSelectionLabels
+      const exptLabels = scope.row.testName
       console.log(exptLabels)
-      data.experimentGroupSelectionLabels = exptLabels ? exptLabels.split(';') : []
+      data.testName = exptLabels ? exptLabels.split(';') : []
       console.log('goEdit====', data)
       this.addGroupDialog = true
       this.addGroupForm = data
@@ -466,7 +474,7 @@ export default {
     // 新增列表项
     addListItem(data) {
       const item = JSON.parse(JSON.stringify(data))
-      item.experimentGroupSelectionLabels = data.experimentGroupSelectionLabels ? data.experimentGroupSelectionLabels.join(';') : ''
+      item.testName = data.testName ? data.testName.join(';') : ''
       // 小鼠数量新建时候为0
       item.experimentGroupSelectionMiceIds = []
 
@@ -475,6 +483,7 @@ export default {
       this.$set(this, 'tableData', newData)
       this.$store.dispatch('app/cacheExpts', {
         form: this.experimentForm,
+        tags: this.tags,
         table: this.tableData
       })
     },
@@ -482,21 +491,23 @@ export default {
     editListItem(data) {
       console.log('编辑确定')
       const { index, ...other } = data
-      other.experimentGroupSelectionLabels = other.experimentGroupSelectionLabels ? other.experimentGroupSelectionLabels.join(';') : ''
+      other.testName = other.testName ? other.testName.join(';') : ''
 
       this.$set(this.tableData, index, other)
       this.$store.dispatch('app/cacheExpts', {
         form: this.experimentForm,
+        tags: this.tags,
         table: this.tableData
       })
     },
     // 查看小鼠列表
-    showMouses(row) {
-      const idArr = row.experimentGroupSelectionMiceIds
+    showMouses(scope) {
+      this.curGroupIndex = scope.$index
+      const idArr = scope.experimentGroupSelectionMiceIds
       if (idArr.length === 0) {
         this.$message.warning('没有小鼠')
       } else {
-        this.getMouseList(row.experimentSampleGroupId)
+        this.getMouseList(scope.experimentSampleGroupId)
         this.mousesDialog = true
       }
     },
@@ -550,7 +561,7 @@ export default {
       // 实验分组数据格式整理
       const cacheTableData = JSON.parse(JSON.stringify(this.tableData))
       const groupInfo = cacheTableData.map(el => {
-        el.experimentGroupSelectionLabels = el.experimentGroupSelectionLabels ? el.experimentGroupSelectionLabels.split(';') : []
+        el.testName = el.testName ? el.testName.split(';') : []
         return el
       })
       updateExptInfo(Object.assign({}, {
@@ -576,6 +587,7 @@ export default {
       if (from.name === 'experimentAddMouse') {
         const addingExpt = vm.$store.getters.addingExpt
         vm.$set(vm, 'experimentForm', addingExpt ? addingExpt.form : {})
+        vm.$set(vm, 'tags', addingExpt ? addingExpt.tags : [])
         vm.$set(vm, 'tableData', addingExpt ? addingExpt.table : [])
         vm.canEdit = true
       }

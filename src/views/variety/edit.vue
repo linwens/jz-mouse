@@ -191,7 +191,7 @@ export default {
             state,
             userId: this.$store.getters.info.id
           }).then((res) => {
-            this.$message.success('编辑成功')
+            this.$message.success(this.optType === 'modify' ? '编辑成功' : '新增成功')
             // 存储输入过的值
             this.$store.dispatch('user/setInputHistory', {
               geneName,

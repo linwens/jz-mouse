@@ -134,12 +134,13 @@
             <el-form-item label="纯/杂合子" class="mb9 mr62">
               <el-select
                 v-model="form.pureHeterozygote"
+                clearable
                 placeholder="请选择纯/杂合子"
                 class="w250"
               >
-                <el-option label="纯合子" :value="0"></el-option>
-                <el-option label="杂合子" :value="1"></el-option>
-                <el-option label="未测试" :value="2"></el-option>
+                <el-option label="纯合子" :value="0" />
+                <el-option label="杂合子" :value="1" />
+                <el-option label="未测试" :value="2" />
               </el-select>
             </el-form-item>
             <el-form-item label="显示颜色:" class="mb9">
