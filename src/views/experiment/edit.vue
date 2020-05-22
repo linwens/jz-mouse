@@ -356,7 +356,14 @@ export default {
   },
   created() {
     console.log(this.$route)
-    this.getExptInfoById(this.$route.params.id)
+    const cacheExpts = this.$store.getters.addingExpt
+    if ( cacheExpts && cacheExpts.form.experimentId == this.$route.params.id ) {
+      const addingExpt = this.$store.getters.addingExpt
+      this.$set(this, 'experimentForm', addingExpt.form)
+      this.$set(this, 'tableData', addingExpt.table)
+    } else {
+      this.getExptInfoById(this.$route.params.id)
+    }
   },
   methods: {
     goAddMouse(scope) {
@@ -508,13 +515,21 @@ export default {
       getExptInfoById({
         experimentId: id
       }).then((res) => {
-        const { experimentName, experimentLabelList, experimentGroupInfo, startTime, endTime, handleTimeFlag, testTimeFlag, endMiceState } = res.data
+        const { experimentId, experimentName, experimentLabelList, experimentGroupInfo, startTime, endTime, handleTimeFlag, testTimeFlag, endMiceState } = res.data
+        // 格式化小鼠ids
+        const groupInfo = experimentGroupInfo.map(el => {
+          const ids = el.experimentGroupSelectionMiceIds
+          el.experimentGroupSelectionMiceIds = ids ? ids.split(',') : []
+          return el
+        })
+
         // 实验组标签信息
         this.$set(this, 'tags', experimentLabelList)
         // 分组列表信息
-        this.$set(this, 'tableData', experimentGroupInfo)
+        this.$set(this, 'tableData', groupInfo)
         // 实验组基础信息
         this.$set(this, 'experimentForm', {
+          experimentId,
           experimentName,
           endMiceState,
           handleTimeFlag,
