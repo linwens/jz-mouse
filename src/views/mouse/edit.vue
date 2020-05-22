@@ -12,13 +12,14 @@
               <el-form-item label="品系名称:" class="mb17">
                 <el-input
                   v-model="varietiesName"
+                  :disabled="!canEdit"
                   placeholder="请选择品系名称"
                   class="w250"
                 />
-                <choice-variety-btn :variety.sync="curVariety" />
+                <choice-variety-btn v-if="canEdit" :variety.sync="curVariety" />
               </el-form-item>
               <div v-if="varietiesName" class="mouse__edit--toggle mb9">
-                <div class="mb13 df">
+                <div v-if="canEdit" class="mb13 df">
                   <genes-choose :id="varietiesId" btn-text="选择" class="mr16" :genes.sync="genes" />
                   <add-genes-btn
                     :varieties-id="varietiesId"
@@ -78,6 +79,7 @@
               <el-form-item label="标记:" class="mb9">
                 <el-select
                   v-model="form.position"
+                  :disabled="!canEdit"
                   placeholder="部位"
                   class="w100"
                 >
@@ -94,6 +96,7 @@
                 <el-input
                   v-else
                   v-model="form.sign"
+                  :disabled="!canEdit"
                   placeholder="请输入1-99的数字"
                   style="width: 142px;"
                 />
@@ -135,10 +138,11 @@
                 <el-form-item label="笼位号:" class="mb8">
                   <el-input
                     v-model="cageInfo.cageNo"
+                    :disabled="!canEdit"
                     placeholder="请选择笼位"
                     class="w250"
                   />
-                  <el-button type="primary" @click="goCage()">选择笼位</el-button>
+                  <el-button v-if="canEdit" type="primary" @click="goCage()">选择笼位</el-button>
                 </el-form-item>
                 <div class="mouse__edit--toggle">
                   <div class="df s-jcsb s-aic">
@@ -172,7 +176,7 @@
                 </div>
               </div>
               <el-form-item label="附件:" class="mb0">
-                <div class="df">
+                <div v-if="canEdit" class="df">
                   <view-files :id="curMouseId" biz-type="mice" />
                   <upload-btn :id="curMouseId" biz-type="mice" class="dib" @done="fillFilesUrl" />
                 </div>
@@ -181,7 +185,7 @@
           </div>
           <div class="mouse__edit--btns pos-a w-100 h60 df s-aic">
             <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
-            <el-button type="primary" size="small" @click="save()">编辑/保存</el-button>
+            <el-button type="primary" size="small" @click="save()">{{ canEdit ? '确定' : '编辑' }}</el-button>
           </div>
         </el-tab-pane>
         <el-tab-pane label="实验记录" name="second">
@@ -225,6 +229,7 @@ export default {
   },
   data() {
     return {
+      canEdit: false, // 是否可编辑
       activeName: 'first', // 鼠笼tab
       curMouseId: 0,
       // 总表单
@@ -417,9 +422,14 @@ export default {
     },
     // 提交
     save() {
+      if (!this.canEdit) {
+        this.canEdit = true
+        return false
+      }
       editMouse(this.form).then((res)=> {
         this.$message.success('修改小鼠信息成功')
         this.$store.dispatch('app/clearMouseInfo')
+        this.goBack()
       })
     },
     // 选择品系 or 基因型
@@ -501,8 +511,8 @@ export default {
         vm.varietiesId = Number(varietiesId)
         vm.$set(vm, 'form', common)
         vm.$set(vm, 'cacheFilesList', files)
-        console.log('vm.form', vm.form)
         vm.$set(vm, 'currentGene', genes)
+        vm.canEdit = true
       }
     })
   }

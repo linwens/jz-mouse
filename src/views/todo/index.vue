@@ -174,15 +174,16 @@ export default {
     },
     // 删除
     rowItemDel: function(row) {
+      console.log(row)
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除【"' + row.title + '"】的消息?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
         return delItemObj(row.id)
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',
@@ -210,6 +211,7 @@ export default {
           return el.id
         })
         allReaded(ids).then((res) => {
+          this.$message.success('一键已读成功')
           _self.getList()
         })
       }).catch(function() {

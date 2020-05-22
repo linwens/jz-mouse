@@ -11,7 +11,7 @@
               { required: true, message: '实验组名称不能为空'}
             ]"
           >
-            <el-input :disabled="!canEdit" v-model="experimentForm.experimentName" size="small" class="w250" />
+            <el-input v-model="experimentForm.experimentName" :disabled="!canEdit" size="small" class="w250" />
           </el-form-item>
           <div class="df s-jcfs s-aic">
             <el-form-item
@@ -147,7 +147,7 @@
               >添加</el-button>
             </template>
             <template slot="sum" slot-scope="{scope}">
-              {{ scope.row.experimentGroupSelectionMiceIds ? scope.row.experimentGroupSelectionMiceIds.split(',').length : 0 }}
+              {{ scope.row.experimentGroupSelectionMiceIds.length }}
             </template>
             <template v-if="canEdit" slot="menu" slot-scope="{scope}">
               <el-button
@@ -161,7 +161,7 @@
                 type="text"
                 size="mini"
                 class="btn-text--danger"
-                @click="rowItemDel(scope.row)"
+                @click="rowItemDel(scope)"
               >
                 删除
               </el-button>
@@ -274,12 +274,15 @@
         :table-option="mouseListOption"
         :table-loading="tableLoading"
       >
+        <template slot="birthDate" slot-scope="{scope}">
+          <span>{{ calcWeek(scope.row.birthDate) }}</span>
+        </template>
         <template slot="menu" slot-scope="{scope}">
           <el-button
             type="text"
             size="mini"
             class="btn-text--danger"
-            @click="rowItemDel(scope.row)"
+            @click="delMouse(scope.row)"
           >
             移除
           </el-button>
@@ -296,14 +299,16 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
-import { addItemObj, addObj, delItemObj, getExptInfoById, fetchItemList, fetchList, updateExptInfo, putObj } from '@/api/experiment'
-import { getMouseInfoByIds, getMiceInfoByIds } from '@/api/mouse'
+import { addItemObj, addObj, delItemObj, getExptInfoById, fetchItemList, fetchList, updateExptInfo, getMouseByGroupId } from '@/api/experiment'
+import { getMouseInfoByIds } from '@/api/mouse'
+import { calcWeek } from '@/components/Mixins/calcWeek'
 
 export default {
   name: 'EditExperiment',
   components: {
     MergeTable
   },
+  mixins: [calcWeek],
   data() {
     return {
       canEdit: false, // 是否可编辑
@@ -351,13 +356,7 @@ export default {
   },
   created() {
     console.log(this.$route)
-    if (this.$store.getters.addingExpt) {
-      const addingExpt = this.$store.getters.addingExpt
-      this.$set(this, 'experimentForm', addingExpt.form)
-      this.$set(this, 'tableData', addingExpt.table)
-    } else {
-      this.getExptInfoById(this.$route.params.id)
-    }
+    this.getExptInfoById(this.$route.params.id)
   },
   methods: {
     goAddMouse(scope) {
@@ -374,10 +373,28 @@ export default {
       console.log(this.$route)
       this.$router.back()
     },
-    // 删除
-    rowItemDel: function(row) {
+    // 删除实验分组
+    rowItemDel: function(scope) {
+      console.log(scope)
       const _this = this
-      this.$confirm('是否确认删除实验分组："' + row.name + '"?', '警告', {
+      this.$confirm('是否确认删除实验分组："' + scope.row.experimentGroupName + '"?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        _this.tableData.splice(scope.$index, 1)
+        _this.$message({
+          showClose: true,
+          message: '删除成功,还需提交保存',
+          type: 'success'
+        })
+      }).catch(function() {
+      })
+    },
+    // 删除小鼠
+    delMouse: function(row) {
+      const _this = this
+      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -444,7 +461,7 @@ export default {
       const item = JSON.parse(JSON.stringify(data))
       item.experimentGroupSelectionLabels = data.experimentGroupSelectionLabels ? data.experimentGroupSelectionLabels.join(';') : ''
       // 小鼠数量新建时候为0
-      item.experimentGroupSelectionMiceIds = ''
+      item.experimentGroupSelectionMiceIds = []
 
       const newData = this.tableData
       newData.push(item)
@@ -468,19 +485,22 @@ export default {
     },
     // 查看小鼠列表
     showMouses(row) {
-      const idArr = row.experimentGroupSelectionMiceIds ? row.experimentGroupSelectionMiceIds.split(',') : []
-      console.log(idArr)
+      const idArr = row.experimentGroupSelectionMiceIds
       if (idArr.length === 0) {
         this.$message.warning('没有小鼠')
       } else {
-        this.getMouseList(idArr)
+        this.getMouseList(row.experimentSampleGroupId)
         this.mousesDialog = true
       }
     },
     // 获取小鼠列表
-    getMouseList(ids) {
-      getMiceInfoByIds(ids).then(res => {
-        this.$set(this, 'mouseList', res.data.records)
+    getMouseList(id) {
+      getMouseByGroupId({
+        groupId: id,
+        current: this.page2.page,
+        size: this.page2.limit
+      }).then(res => {
+        this.$set(this, 'mouseList', res.data)
       })
     },
     // 获取实验组信息
@@ -518,7 +538,6 @@ export default {
         el.experimentGroupSelectionLabels = el.experimentGroupSelectionLabels ? el.experimentGroupSelectionLabels.split(';') : []
         return el
       })
-
       updateExptInfo(Object.assign({}, {
         experimentId: this.$route.params.id,
         createUser: userId,
@@ -530,6 +549,7 @@ export default {
         experimentGroupInfo: groupInfo
       }, other)).then((res) => {
         this.$message.success('编辑实验组成功')
+        this.$store.dispatch('app/clearExpts')
       })
     }
   },

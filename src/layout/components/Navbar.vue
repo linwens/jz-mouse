@@ -4,8 +4,11 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
     <div class="right-menu df s-jcc s-aic">
-      <el-badge :is-dot="hasMsg" class="top-message__icon df s-jcc s-aic">
-        <svg-icon icon-class="message" class="fs26" />
+      <el-badge
+        :is-dot="hasMsg"
+        class="top-message__icon df s-jcc s-aic"
+      >
+        <svg-icon icon-class="message" class="fs26 cp" @click="goTodo()" />
       </el-badge>
     </div>
   </div>
@@ -35,6 +38,10 @@ export default {
     this.getUnRead()
   },
   methods: {
+    // 跳转待办事项列表
+    goTodo() {
+      this.$router.push({ name: 'todo' })
+    },
     // 获取是否有未读消息
     getUnRead() {
       fetchList({

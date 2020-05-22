@@ -64,6 +64,14 @@ export function getExptInfoById(query) { // 根据id获取实验组信息
   })
 }
 
+export function getMouseByGroupId(query) { // 根据分组id获取小鼠列表
+  return request({
+    url: '/miceinfo/getMiceInfoByExperimentGroupId',
+    method: 'get',
+    params: query
+  })
+}
+
 export function updateExptInfo(obj) { // 同步修改实验组，实验分组，实验组标签
   return request({
     url: '/experiment/meanwhileUpdateExperimentInfo',

@@ -240,7 +240,7 @@ export default {
       if (status === 2 && this.needType === 'noBreed') {
         noWay = true
       }
-      if (status === 3 && this.needType === 'noExpt') {
+      if (status === 3 && this.needType === 'noExpt' ) {
         noWay = true
       }
       return !this.isActive || noWay

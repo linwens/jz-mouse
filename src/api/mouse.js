@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 export function fetchCageList(query) { // 鼠笼列表
   return request({
@@ -137,11 +138,14 @@ export function getMouseChildrenTree(query) { // 获取小鼠子鼠树
   })
 }
 
-export function delMiceByMiceId(data) { // 移除小鼠(可批量)
+export function delMiceByMiceId(query) { // 移除小鼠(可批量)
   return request({
     url: '/miceinfo/deleteMiceByMiceId',
     method: 'delete',
-    data
+    params: query,
+    paramsSerializer: function(params) {
+      return qs.stringify(params, { indices: false })
+    }
   })
 }
 
