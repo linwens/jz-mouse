@@ -250,7 +250,7 @@
                 v-for="(item, index) in tags"
                 :key="index"
                 :label="item.label"
-                :value="item.id"
+                :value="item.label"
               />
             </el-select>
           </el-form-item>
@@ -492,7 +492,7 @@ export default {
     },
     // 编辑列表项
     editListItem(data) {
-      console.log('编辑确定')
+      console.log('编辑确定', data)
       const { index, ...other } = data
       other.testName = other.testName ? other.testName.join(';') : ''
 
