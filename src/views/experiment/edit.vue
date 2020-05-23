@@ -382,7 +382,7 @@ export default {
       this.$router.push({ name: r, params: obj })
     },
     goBack() {
-      console.log(this.$route)
+      this.$store.dispatch('app/clearExpts')
       this.$router.back()
     },
     // 删除实验分组
@@ -506,18 +506,14 @@ export default {
       if (idArr.length === 0) {
         this.$message.warning('没有小鼠')
       } else {
-        this.getMouseList(scope.row.experimentSampleGroupId)
+        this.getMouseList(idArr)
         this.mousesDialog = true
       }
     },
     // 获取小鼠列表
-    getMouseList(id) {
-      getMouseByGroupId({
-        groupId: id,
-        current: this.page2.page,
-        size: this.page2.limit
-      }).then(res => {
-        this.$set(this, 'mouseList', res.data.records)
+    getMouseList(ids) {
+      getMouseInfoByIds(ids).then(res => {
+        this.$set(this, 'mouseList', res.data)
       })
     },
     // 获取实验组信息

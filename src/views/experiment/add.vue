@@ -618,6 +618,7 @@ export default {
       }, other)).then((res) => {
         this.$message.success('新增实验组成功')
         this.$store.dispatch('app/clearExpts')
+        this.$store.dispatch('app/clearMouses')
       })
     }
   },
