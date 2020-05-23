@@ -101,8 +101,8 @@
               <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
-              <set-time :id="mouseExptInfo.experimentId" @done="setProgress" />
-              <expt-record :id="mouseExptInfo.experimentId" class="ml16 w100" />
+              <set-time v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" @done="setProgress" />
+              <expt-record v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" class="ml16 w100" />
             </div>
           </div>
         </div>
