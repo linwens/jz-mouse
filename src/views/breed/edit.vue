@@ -205,6 +205,9 @@ export default {
           this.goPage('breedAddMouse', { type: 'noBreed' })
         }).catch(function() {
         })
+      } else {
+        this.$store.dispatch('app/cacheBreed', this.breedForm)
+        this.goPage('breedAddMouse', { type: 'noBreed' })
       }
     },
     goBack() {
