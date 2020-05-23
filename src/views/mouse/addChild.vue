@@ -252,7 +252,7 @@ import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import { addMouse } from '@/api/mouse'
-import { getLisByGeneId } from '@/api/genes'
+import { getLisByGeneId, getLisByVariety } from '@/api/genes'
 
 export default {
   name: 'AddChild',
@@ -335,10 +335,26 @@ export default {
       if (n === 1 || n === 3) {
         this.currentGene.geneName = this.father.geneName
         this.form.genotypes = this.father.genotypes
+        this.varietiesName = this.father.varietiesName
+        this.varietiesId = this.father.vid
       }
       if (n === 2) {
         this.currentGene.geneName = this.mother.geneName
         this.form.genotypes = this.mother.genotypes
+        this.varietiesName = this.mother.varietiesName
+        this.varietiesId = this.mother.vid
+      }
+      if (n === 4) { // WT
+        getLisByVariety({
+          id: this.varietiesId
+        }).then((res) => {
+          const { data } = res
+          const WT = data.filter((el) => {
+            return el.geneName === 'WT'
+          })
+          this.fillGenes(WT)
+        })
+        return
       }
       if (n === 0) {
         this.currentGene.geneName = ''
@@ -353,8 +369,10 @@ export default {
     }
   },
   created() {
-    const parents = this.$route.params.parents || []
-    const cage = this.$route.params.cage || {}
+    const cacheChildMouse = this.$store.getters.addingChildMouse
+    console.log(cacheChildMouse)
+    const parents = cacheChildMouse.parents || []
+    const cage = cacheChildMouse.cage || {}
     if (parents.length === 2) {
       this.father = parents.filter((el) => {
         return el.gender === 0
@@ -389,15 +407,8 @@ export default {
       console.log('list', list)
       this.$set(this, 'cacheFilesList', list)
     },
-    // 选择品系 or 基因型
-    chooseVarity() {
-      this.varietyDialog = true
-    },
-    fillVarity() {
-      this.varietyDialog = false
-      // 填充品系
-    },
     goBack() {
+      this.$store.dispatch('app/clearChildMouses')
       this.$router.back()
     },
     goChoose(obj) {
@@ -421,6 +432,7 @@ export default {
         }
       } else {
         const { geneName, miceCondition, status, color, area } = res
+
         this.currentGene.geneName = geneName
         this.currentGene.miceCondition = miceCondition
         this.currentGene.status = status
@@ -445,6 +457,8 @@ export default {
       })
       addMouse(params).then(res => {
         this.$message.success('新增子鼠成功')
+        this.$store.dispatch('app/clearChildMouses')
+        this.goBack()
       })
     }
   }

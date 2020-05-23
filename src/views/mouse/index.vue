@@ -531,7 +531,7 @@ export default {
             return el.id === this.choosedCage
           })
           const { cageNo, roomNo, shelvesNo } = curCage[0]
-          this.goPage('addChild', {
+          this.$store.dispatch('app/cacheChildMouse', {
             parents: this.choicedList,
             cage: {
               cageNo,
@@ -539,6 +539,7 @@ export default {
               shelvesNo
             }
           })
+          this.goPage('addChild')
         } else {
           this.$message({
             type: 'error',

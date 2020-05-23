@@ -46,7 +46,6 @@
             <el-input
               v-model.number="putInForm.female"
               placeholder="0"
-              min="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
             />
@@ -54,7 +53,6 @@
             <el-input
               v-model.number="putInForm.male"
               placeholder="0"
-              min="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
             />

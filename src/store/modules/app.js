@@ -9,6 +9,7 @@ const state = {
   device: 'desktop',
   cacheMouseInfo: getStorageItem('m-info') || '',
   addingMouses: getStorageItem('adding-mouse') || '',
+  addingChildMouse: getStorageItem('adding-child') || '', // 新增子鼠
   addingExpt: getStorageItem('adding-expt') || '',
   addingBreed: getStorageItem('adding-breed') || ''
 }
@@ -46,6 +47,14 @@ const mutations = {
   CLEAR_MOUSES: (state) => {
     state.addingMouses = []
     removeStorageItem('adding-mouse')
+  },
+  CACHE_CHILD_MOUSES: (state, obj) => {
+    state.addingChildMouse = obj
+    setStorageItem('adding-child', JSON.stringify(obj))
+  },
+  CLEAR_CHILD_MOUSES: (state) => {
+    state.addingChildMouse = {}
+    removeStorageItem('adding-child')
   },
   CACHE_EXPTS: (state, obj) => {
     state.addingExpt = obj
@@ -86,6 +95,12 @@ const actions = {
   },
   clearMouses({ commit }) {
     commit('CLEAR_MOUSES')
+  },
+  cacheChildMouse({ commit }, obj) {
+    commit('CACHE_CHILD_MOUSES', obj)
+  },
+  clearChildMouses({ commit }) {
+    commit('CLEAR_CHILD_MOUSES')
   },
   cacheExpts({ commit }, obj) {
     commit('CACHE_EXPTS', obj)
