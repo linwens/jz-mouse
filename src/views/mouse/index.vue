@@ -20,16 +20,20 @@
           </div>
           <div>
             <h6 class="mouse__info--h6">基本信息</h6>
-            <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.id }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender === 0 ? '雄' : '雌' }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">周龄:</span><i class="mouse__info--i">{{ `${weekAge}周${dayAge}天` }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">标记:</span><i class="mouse__info--i">{{ mouseInfo.sign }}</i></p>
+            <div class="df s-aic mb8">
+              <p class="mouse__info--p" style="width: 240px;"><span class="mouse__info--span">系统编号:</span><i class="mouse__info--i">{{ mouseInfo.miceNo }}</i></p>
+              <p class="mouse__info--p" style="width: 60px;"><span class="mouse__info--span">性别:</span><i class="mouse__info--i">{{ mouseInfo.gender >= 0 ? (mouseInfo.gender === 0 ? '雄' : '雌') : '' }}</i></p>
+              <p class="mouse__info--p" style="width: 100px;"><span class="mouse__info--span">周龄:</span><i class="mouse__info--i">{{ mouseInfo.birthDate ? `${weekAge}周${dayAge}天` : '' }}</i></p>
+              <p class="mouse__info--p pos-r">
+                <span class="mouse__info--span">标记:</span>
+                <i v-if="mouseInfo.position === 'custom'" class="mouse__info--i">{{ mouseInfo.sign }}</i>
+                <img v-else class="pos-a mouse__info-sign" :src="`http://bllb-animal-test.oss-cn-hangzhou.aliyuncs.com/mice-sign/${mouseInfo.filePrefix}/${mouseInfo.sign}.jpg`" alt="">
+              </p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">出生日期:</span><i class="mouse__info--i">{{ mouseInfo.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">体重:</span><i class="mouse__info--i">{{ mouseInfo.weight }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">笼位号:</span><i class="mouse__info--i">10-01</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">笼位号:</span><i class="mouse__info--i">{{ mouseInfo.cageNo }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.miceStatusDesc }}</i></p>
@@ -303,7 +307,7 @@ export default {
       if (!this.mouseInfo.birthDate) return 0
       const duration = +new Date() - this.mouseInfo.birthDate * 1000
       const days = duration / 1000 / 60 / 60 / 24 % 7
-      return Math.floor(days)
+      return Math.floor(days) + 1
     },
     // 实验进度
     percentage() {
@@ -650,6 +654,13 @@ export default {
     }
     &--i {
       color: #333;
+    }
+    &-sign {
+      right: -20px;
+      top: 0;
+      width: 143px;
+      height: 80px;
+      border: 1px solid #F0F0F0;
     }
     .mouse__progrTag {
       position: absolute;

@@ -140,6 +140,7 @@ export default {
       canEdit: false, // 可编辑状态
       type: '',
       breedForm: {
+        id: 0,
         name: '',
         breedTime: null,
         // date: null,
@@ -180,6 +181,7 @@ export default {
         const id = this.$route.params.id
         this.getDetail(id)
       } else {
+        console.log(111111)
         this.$set(this, 'breedForm', cacheInfo)
       }
     } else {

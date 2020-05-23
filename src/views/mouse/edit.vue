@@ -73,7 +73,7 @@
                 </el-form-item>
               </div>
               <div class="df s-jcfs mb16">
-                <p style="margin-right: 44px;">编号: <span>{{ form.miceId }}</span></p>
+                <p style="margin-right: 44px;">编号: <span>{{ form.miceNo }}</span></p>
                 <p>状态: <span>{{ statusLable }}</span></p>
               </div>
               <el-form-item label="标记:" class="mb9">

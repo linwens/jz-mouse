@@ -46,12 +46,12 @@ export const tableOption = {
   }, {
     width: 200,
     label: '提醒时间',
-    prop: 'createTime',
+    prop: 'sendingTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     width: 200,
     label: '发送时间',
-    prop: 'sendingTime',
+    prop: 'createTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }]
 }
