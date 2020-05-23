@@ -95,10 +95,14 @@
             </div>
           </div>
           <div>
-            <div class="pos-r">
-              <svg-icon icon-class="loc-green" class="mouse__progrTag mouse__progrTag--g" :style="{'left': handleTimeScale + 'px'}" />
-              <svg-icon icon-class="loc-yellow" class="mouse__progrTag mouse__progrTag--y" :style="{'left': testTimeScale + 'px'}" />
-              <el-progress :text-inside="true" :stroke-width="24" :percentage="percentage" color="#58A2FB" />
+            <div v-if="Object.keys(mouseExptInfo).length > 0" class="pos-r">
+              <el-tooltip v-for="item in mouseExptInfo.experimentTimes.filter(el=>{ return el.operationType === 1})" :key="item.time+item.operationType" effect="dark" :content="item.time * 1000 | timeFormat('yyyy-MM-dd hh:mm')" placement="top">
+                <svg-icon icon-class="loc-green" class="mouse__progrTag mouse__progrTag--g" :style="{'left': setHandleTimeScale(item.time) + 'px'}" />
+              </el-tooltip>
+              <el-tooltip v-for="item in mouseExptInfo.experimentTimes.filter(el=>{ return el.operationType === 0})" :key="item.time+item.operationType" effect="dark" :content="item.time * 1000 | timeFormat('yyyy-MM-dd hh:mm')" placement="bottom">
+                <svg-icon icon-class="loc-yellow" class="mouse__progrTag mouse__progrTag--y" :style="{'left': setTestTimeScale(item.time) + 'px'}" />
+              </el-tooltip>
+              <el-progress :text-inside="true" :stroke-width="24" :percentage="Number(percentage)" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
               <set-time v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" @done="setProgress" />
@@ -320,8 +324,8 @@ export default {
   watch: {
     'mouseExptInfo.experimentId'(n, o) {
       console.log('id变化了', n)
-      this.setTestTimeScale()
-      this.setHandleTimeScale()
+      // this.setTestTimeScale()
+      // this.setHandleTimeScale()
     },
     // 监听每个鼠笼选中的小鼠，最后合并所有选中小鼠
     'curCageMouseList.mouses'(n, o) {
@@ -349,23 +353,19 @@ export default {
     this.getCageList()
   },
   methods: {
-    setHandleTimeScale() {
-      console.log('watch===handleTime')
+    setHandleTimeScale(time) {
       const start = this.mouseExptInfo.startTime * 1000
       const end = this.mouseExptInfo.endTime * 1000
       const duration = end - start
-      const scale = (this.mouseExptInfo.handleTime * 1000 - start) / duration
-      this.handleTimeScale = (scale * 380).toFixed(2)
-      console.log(this.handleTimeScale)
+      const scale = (time * 1000 - start) / duration
+      return (scale * 380).toFixed(2)
     },
-    setTestTimeScale() {
-      console.log('watch===testTime')
+    setTestTimeScale(time) {
       const start = this.mouseExptInfo.startTime * 1000
       const end = this.mouseExptInfo.endTime * 1000
       const duration = end - start
-      const scale = (this.mouseExptInfo.testTime * 1000 - start) / duration
-      this.testTimeScale = (scale * 380).toFixed(2)
-      console.log(this.testTimeScale)
+      const scale = (time * 1000 - start) / duration
+      return (scale * 380).toFixed(2)
     },
     editCageSubmit() {
       this.$refs['editCageForm'].validate((valid) => {
@@ -587,13 +587,13 @@ export default {
     setProgress(obj) {
       console.log(obj)
 
-      if (obj.type === 0) {
-        this.mouseExptInfo.testTime = obj.time
-        this.setTestTimeScale()
-      } else {
-        this.mouseExptInfo.handleTime = obj.time
-        this.setHandleTimeScale()
-      }
+      // if (obj.type === 0) {
+      //   this.mouseExptInfo.testTime = obj.time
+      //   this.setTestTimeScale()
+      // } else {
+      //   this.mouseExptInfo.handleTime = obj.time
+      //   this.setHandleTimeScale()
+      // }
     }
   }
 }

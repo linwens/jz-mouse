@@ -245,7 +245,8 @@ export default {
         this.getCageList()
         this.putInVisible = false
         if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
-          this.$router.back()
+          this.$store.dispatch('app/clearMouseInfo')
+          this.$router.go(-2)
           return
         }
       })
