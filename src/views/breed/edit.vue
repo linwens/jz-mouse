@@ -175,8 +175,13 @@ export default {
     const cacheInfo = this.$store.getters.addingBreed
     console.log(cacheInfo)
     console.log(this.type)
-    if (Object.keys(cacheInfo).length > 0 && !cacheInfo.id) {
-      this.$set(this, 'breedForm', cacheInfo)
+    if (Object.keys(cacheInfo).length > 0 && cacheInfo.id == this.$route.params.id) {
+      if (cacheInfo.miceIds.length === 0) { // 如果返回回来没有小鼠信息就请求下接口
+        const id = this.$route.params.id
+        this.getDetail(id)
+      } else {
+        this.$set(this, 'breedForm', cacheInfo)
+      }
     } else {
       if (this.type === 'edit') {
         console.log('请求获取数据')
@@ -188,10 +193,22 @@ export default {
   methods: {
     // 添加小鼠
     goAdd() {
-      this.$store.dispatch('app/cacheBreed', this.breedForm)
-      this.goPage('breedAddMouse', { type: 'noBreed' })
+      // 每次添加都先删除原有小鼠
+      if (this.breedForm.miceIds.length > 0) {
+        this.$confirm('添加小鼠将删除原有小鼠，是否确认删除原有小鼠?', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$set(this.breedForm, 'miceIds', [])
+          this.$store.dispatch('app/cacheBreed', this.breedForm)
+          this.goPage('breedAddMouse', { type: 'noBreed' })
+        }).catch(function() {
+        })
+      }
     },
     goBack() {
+      this.$store.dispatch('app/clearBreed')
       this.$router.back()
     },
     goMouse(row) {

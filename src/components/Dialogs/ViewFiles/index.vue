@@ -128,7 +128,7 @@ export default {
           _this.filesData.splice(scope.$index, 1)
         }
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',

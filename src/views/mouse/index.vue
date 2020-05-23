@@ -137,11 +137,28 @@
                 :cur-mouse-id.sync="curMouseId"
                 :cur-mouse.sync="mouseInfo"
                 :cur-mouse-expt.sync="mouseExptInfo"
+                @refresh="getCageList"
               />
             </div>
           </el-tab-pane>
           <el-tab-pane label="其他鼠笼" name="otherCage">
-            其他鼠笼
+            <div class="df s-fwwp s-jcsa">
+              <mouse-cage
+                v-for="(item, index) in cageList"
+                :key="index"
+                :shift="false"
+                :all-data="item"
+                :is-active="false"
+                :disabled="false"
+                :choiced-list.sync="curCageMouseList"
+                :is-choosing-cage="isChoosingCage"
+                :cage-id="item.id"
+                :choosed-cage.sync="choosedCage"
+                :cur-mouse-id.sync="curMouseId"
+                :cur-mouse.sync="mouseInfo"
+                :cur-mouse-expt.sync="mouseExptInfo"
+              />
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -414,6 +431,7 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event)
+      this.getCageList()
     },
     // 鼠笼列表
     getCageList() {
@@ -421,7 +439,8 @@ export default {
       fetchCageList(Object.assign({
         operator: this.activeName === 'myCage' ? this.$store.getters.info.id : '',
         current: this.cagePage.page,
-        size: this.cagePage.limit
+        size: this.cagePage.limit,
+        isMy: this.activeName === 'myCage' ? 0 : 1
       })).then(response => {
         this.cageList = response.data.records
         this.cagePage.total = response.data.total

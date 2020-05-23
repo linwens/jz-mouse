@@ -360,25 +360,6 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     },
-    // 删除
-    rowItemDel: function(row) {
-      const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(function() {
-        return delItemObj(row.id)
-      }).then(() => {
-        this.getDictItemList()
-        _this.$message({
-          showClose: true,
-          message: '删除成功',
-          type: 'success'
-        })
-      }).catch(function() {
-      })
-    },
     // 鼠笼列表
     getCageList() {
       this.tableLoading = true

@@ -122,15 +122,19 @@ export default {
         const { data } = res
         const rslt = {
           name: `小鼠${this.miceId}`,
+          value: this.miceId,
           children: []
         }
         if (data && data.children && data.children.length > 0) {
           for (let i = 0; i < data.children.length; i++) {
             rslt.children.push({
-              name: `子鼠${data.children[i]}`
+              name: `子鼠${data.children[i]}`,
+              value: data.children[i]
             })
           }
         }
+        this.chart.dispose()
+        this.chart = null
         this.initChart(rslt, 'radial')
       })
     },
@@ -209,8 +213,9 @@ export default {
       this.chart.on('click', {
         seriesName: 'familyTree'
       }, function(e) {
+        console.log('e=====>', e)
         self.curMouse = e.value
-        getMouseState(e.value).then((res)=>{
+        getMouseState(e.value).then((res) => {
           this.curMouseStatus = res.data
         })
       })

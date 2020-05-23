@@ -56,11 +56,11 @@ export function putItemObj(obj) {
   })
 }
 
-export function addObj(obj) {
+export function changeOperator(query) { // 切换负责人
   return request({
-    url: '/dict/',
+    url: '/micecage/cageChangeLeader',
     method: 'post',
-    data: obj
+    params: query
   })
 }
 

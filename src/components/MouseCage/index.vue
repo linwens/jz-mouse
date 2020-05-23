@@ -9,7 +9,7 @@
       <div class="mouse-cage__man">
         负责人
         <el-button size="mini" @click="shift ? chageMan() : null">
-          {{ allData.operator }}
+          {{ allData.operatorName }}
           <svg-icon v-if="shift" icon-class="shift" class="cl-green" />
         </el-button>
       </div>
@@ -80,28 +80,37 @@
       width="433px"
     >
       <div>
-        <p class="cl-black fs14 mb10">当前负责人: {{ '张三' }}</p>
+        <p class="cl-black fs14 mb10">当前负责人: {{ allData.operatorName }}</p>
         <el-form ref="mansForm" :model="mansForm" label-position="left" size="mini">
           <el-form-item
             label="更换为:"
             label-width="80px"
             class="mb8"
-            prop="name"
+            prop="userId"
             :rules="[
               { required: true, message: '新的负责人不能为空', trigger: 'blur' }
             ]"
           >
-            <el-input
-              v-model="mansForm.name"
+            <el-select
+              v-model="mansForm.userId"
+              clearable
               placeholder="请输入新的负责人"
-              class="w250"
-            />
+              size="small"
+              class="w104"
+            >
+              <el-option
+                v-for="item in persons"
+                :key="item.userId"
+                :label="item.userName"
+                :value="item.userId"
+              />
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="manDialog = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="addTag()">确 定</el-button>
+        <el-button type="primary" size="small" @click="changeMan()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -109,6 +118,8 @@
 
 <script>
 import { getMouseInfo, getMouseExpInfo } from '@/api/mouse'
+import { getUsers } from '@/api/home'
+import { changeOperator } from '@/api/cmn'
 
 export default {
   name: 'MouseCage',
@@ -188,8 +199,9 @@ export default {
       // 更换负责人
       manDialog: false,
       mansForm: {
-        name: ''
+        userId: ''
       },
+      persons: [], // 负责人选择项
       // 鼠笼checkbox
       checkList: [],
       // 选择笼位
@@ -234,6 +246,12 @@ export default {
     }
   },
   methods: {
+    // 获取负责人列表
+    getPersons() {
+      getUsers().then((res) => {
+        this.$set(this, 'persons', res.data)
+      })
+    },
     // 设置当前小鼠是否可选
     checkBoxStatus(status) {
       let noWay = false
@@ -268,7 +286,26 @@ export default {
     },
     // 切换负责人
     chageMan() {
+      this.getPersons()
       this.manDialog = true
+    },
+    changeMan() {
+      changeOperator({
+        cageId: this.cageId,
+        userId: this.mansForm.userId
+      }).then((res) => {
+        const newData = JSON.parse(JSON.stringify(this.allData))
+        const curOperator = this.persons.filter((el) => {
+          return el.userId === this.mansForm.userId
+        })
+        newData.operatorName = curOperator.userName
+        newData.operator = curOperator.userId
+        this.$emit('update:allData', newData)
+        this.$message.success('切换负责人成功')
+        this.manDialog = false
+        this.$refs['mansForm'].resetFields()
+        this.$emit('refresh')
+      })
     },
     // 多选框选中小鼠
     taggleMouse(val) {
