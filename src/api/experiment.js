@@ -94,11 +94,11 @@ export function delExptRecord(id) { // 删除实验记录
   })
 }
 
-export function endExpt(obj) { // 手动结束实验
+export function endExpt(query) { // 手动结束实验
   return request({
     url: '/experiment',
     method: 'put',
-    data: obj
+    params: query
   })
 }
 
