@@ -43,7 +43,7 @@
                 <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
                 <div @click.stop="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
-                  <p>{{ item.genotypes }}</p>
+                  <p>{{ item.geneName }}</p>
                   <span class="item__miceNo dib">{{ item.miceNo }}</span>
                   <i class="pos-a mouse__item--female">{{ item.sign }}</i>
                 </div>
@@ -61,7 +61,7 @@
                 <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
                 <div @click.stop="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" />
-                  <p>{{ item.genotypes }}</p>
+                  <p>{{ item.geneName }}</p>
                   <span class="item__miceNo dib">{{ item.miceNo }}</span>
                   <i class="pos-a mouse__item--male">{{ item.sign }}</i>
                 </div>

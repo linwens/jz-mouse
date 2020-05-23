@@ -195,7 +195,7 @@ export default {
     goAdd() {
       // 每次添加都先删除原有小鼠
       if (this.breedForm.miceIds.length > 0) {
-        this.$confirm('添加小鼠将删除原有小鼠，是否确认删除原有小鼠?', '警告', {
+        this.$confirm('当前繁育组已有小鼠，是否要重新添加小鼠?', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
