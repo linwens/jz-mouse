@@ -222,7 +222,6 @@ export default {
       const duration = end - start
       const now = +new Date()
       return ((now - start) / duration).toFixed(3) * 100
-
     },
     // 测试时间进度
     testTimeScale() {
@@ -279,7 +278,7 @@ export default {
     console.log('this.$route.params.index===', this.$route.params.index)
     // 实验组会带一个列表项的id或者索引
     console.log(this.$route.params.index, this.$store.getters.addingExpt.$index)
-    this.item_index = this.$route.params.index || this.$store.getters.addingExpt.$index
+    this.item_index = this.$route.params.index >= 0 ? this.$route.params.index : this.$store.getters.addingExpt.$index
   },
   methods: {
     goBack() {

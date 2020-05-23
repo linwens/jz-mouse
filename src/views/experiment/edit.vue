@@ -1,7 +1,7 @@
 <template>
   <div>
     <main-box class="editExperiment">
-      <div class="addExperiment__form">
+      <div class="editExperiment__form">
         <el-form ref="experimentForm" label-position="left" :model="experimentForm" label-width="110px" size="small" class="mt25">
           <el-form-item
             label="实验组名称:"
@@ -122,7 +122,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <div class="addExperiment__table">
+      <div class="editExperiment__table">
         <div class="df s-jcfe s-aic mt8 mb8">
           <el-button v-if="canEdit" type="primary" size="small" class="w100" @click="addNewGroup()">新建分组</el-button>
         </div>
@@ -249,8 +249,8 @@
               <el-option
                 v-for="(item, index) in tags"
                 :key="index"
-                :label="item"
-                :value="item"
+                :label="item.label"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -289,8 +289,7 @@
         </template>
       </merge-table>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="mousesDialog = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="addTag()">确 定</el-button>
+        <el-button type="primary" size="small" @click="mousesDialog = false">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -358,7 +357,7 @@ export default {
   created() {
     console.log(this.$route)
     const cacheExpts = this.$store.getters.addingExpt
-    if (cacheExpts && cacheExpts.form.experimentId == this.$route.params.id) {
+    if (Object.keys(cacheExpts).length > 0 && cacheExpts.form.experimentId == this.$route.params.id) {
       const addingExpt = this.$store.getters.addingExpt
       this.$set(this, 'experimentForm', addingExpt.form)
       this.$set(this, 'tableData', addingExpt.table)
@@ -367,12 +366,16 @@ export default {
     }
   },
   methods: {
-    goAddMouse(scope) {
+    setStorageInfo(index) { // 更新缓存数据
       this.$store.dispatch('app/cacheExpts', {
         form: this.experimentForm,
         tags: this.tags,
-        table: this.tableData
+        table: this.tableData,
+        $index: index >= 0 ? index : null
       })
+    },
+    goAddMouse(scope) {
+      this.setStorageInfo(scope.$index)
       this.goPage('experimentAddMouse', { type: 'noExpt', index: scope.$index })
     },
     goPage(r, obj) {
@@ -437,22 +440,26 @@ export default {
     },
     // 添加标签
     addTag() {
-      const newTags = this.tags
-      newTags.push({ 
-        id: 0,
-        label: this.tagsForm.name
-      })
-      this.$set(this, 'tags', newTags)
+      if (this.tags.findIndex((el) => {
+        return el.label === this.tagsForm.name
+      }) === -1) {
+        const newTags = this.tags
+        newTags.push({
+          id: this.tagsForm.name,
+          label: this.tagsForm.name
+        })
+        this.$set(this, 'tags', newTags)
+        this.setStorageInfo()
+      }
       this.tagDialog = false
       this.tagsForm.name = ''
     },
     // 删除标签
     handleClose(tag) {
-      const index = this.tags.findIndex((el) => {
-        return el.label === tag.label
-      })
-      console.log('tag--index====', index)
-      this.tags.splice(index, 1)
+      this.tags.splice(this.tags.findIndex((el) => {
+        return el.label === tag
+      }), 1)
+      this.setStorageInfo()
     },
     // 点击新建分组
     addNewGroup() {
@@ -481,11 +488,7 @@ export default {
       const newData = this.tableData
       newData.push(item)
       this.$set(this, 'tableData', newData)
-      this.$store.dispatch('app/cacheExpts', {
-        form: this.experimentForm,
-        tags: this.tags,
-        table: this.tableData
-      })
+      this.setStorageInfo()
     },
     // 编辑列表项
     editListItem(data) {
@@ -494,20 +497,16 @@ export default {
       other.testName = other.testName ? other.testName.join(';') : ''
 
       this.$set(this.tableData, index, other)
-      this.$store.dispatch('app/cacheExpts', {
-        form: this.experimentForm,
-        tags: this.tags,
-        table: this.tableData
-      })
+      this.setStorageInfo()
     },
     // 查看小鼠列表
     showMouses(scope) {
       this.curGroupIndex = scope.$index
-      const idArr = scope.experimentGroupSelectionMiceIds
+      const idArr = scope.row.experimentGroupSelectionMiceIds
       if (idArr.length === 0) {
         this.$message.warning('没有小鼠')
       } else {
-        this.getMouseList(scope.experimentSampleGroupId)
+        this.getMouseList(scope.row.experimentSampleGroupId)
         this.mousesDialog = true
       }
     },
@@ -518,7 +517,7 @@ export default {
         current: this.page2.page,
         size: this.page2.limit
       }).then(res => {
-        this.$set(this, 'mouseList', res.data)
+        this.$set(this, 'mouseList', res.data.records)
       })
     },
     // 获取实验组信息
@@ -526,7 +525,7 @@ export default {
       getExptInfoById({
         experimentId: id
       }).then((res) => {
-        const { experimentId, experimentName, experimentLabelList, experimentGroupInfo, startTime, endTime, handleTimeFlag, testTimeFlag, endMiceState } = res.data
+        const { experimentId, experimentName, experimentLabels, experimentGroupInfo, startTime, endTime, handleTimeFlag, testTimeFlag, endMiceState } = res.data
         // 格式化小鼠ids
         const groupInfo = experimentGroupInfo.map(el => {
           const ids = el.experimentGroupSelectionMiceIds
@@ -535,7 +534,7 @@ export default {
         })
 
         // 实验组标签信息
-        this.$set(this, 'tags', experimentLabelList)
+        this.$set(this, 'tags', experimentLabels)
         // 分组列表信息
         this.$set(this, 'tableData', groupInfo)
         // 实验组基础信息
@@ -560,9 +559,15 @@ export default {
       const { id: userId } = this.$store.getters.info
       // 实验分组数据格式整理
       const cacheTableData = JSON.parse(JSON.stringify(this.tableData))
+      console.log('this.tableData==', this.tableData, cacheTableData)
       const groupInfo = cacheTableData.map(el => {
         el.testName = el.testName ? el.testName.split(';') : []
+        el.experimentGroupSelectionMiceIds = el.experimentGroupSelectionMiceIds.join(',')
         return el
+      })
+      console.log('this.tags==', this.tags)
+      const lables = this.tags.map((el) => {
+        return el.label
       })
       updateExptInfo(Object.assign({}, {
         experimentId: this.$route.params.id,
@@ -571,11 +576,12 @@ export default {
         endTime: endTime / 1000,
         handleTime: handleTime / 1000,
         testTime: testTime / 1000,
-        experimentLabels: this.tags ? this.tags.join(',') : '',
+        experimentLabels: lables.join(','),
         experimentGroupInfo: groupInfo
       }, other)).then((res) => {
         this.$message.success('编辑实验组成功')
         this.$store.dispatch('app/clearExpts')
+        this.goBack()
       })
     }
   },

@@ -195,6 +195,7 @@ export default {
       this.$router.back()
     },
     goMouse(row) {
+      console.log('查看小鼠====', row)
       this.goPage('mouseEdit', { id: row.miceInfoId })
     },
     goPage(r, obj) {
