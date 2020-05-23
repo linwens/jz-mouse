@@ -30,7 +30,8 @@ export const tableOption = {
   }, {
     label: '周龄',
     prop: 'birthDate',
-    overHidden: true
+    overHidden: true,
+    slot: true
   }, {
     label: '体重',
     prop: 'weight'
@@ -48,7 +49,7 @@ export const tableOption = {
     prop: 'color'
   }, {
     label: '健康状况',
-    prop: 'status',
+    prop: 'healthStatus',
     overHidden: true
   }, {
     width: 120,

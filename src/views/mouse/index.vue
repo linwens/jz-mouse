@@ -566,8 +566,8 @@ export default {
             delMiceByMiceId({
               miceId: miceIds
             }).then((res) => {
-              console.log(res)
               this.$message.success('删除小鼠成功')
+              this.getCageList()
             })
             this.cancel()
           }).catch(function() {
