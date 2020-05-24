@@ -32,6 +32,10 @@ export const tableOption = {
     prop: 'area',
     overHidden: true
   }, {
+    label: '健康状况',
+    prop: 'status',
+    overHidden: true
+  }, {
     width: 100,
     label: '负责人',
     prop: 'operatorName'

@@ -12,6 +12,7 @@ export const tableOption = {
   scrollDist: 600, // 点击分页时滚轮上移距离
 
   column: [{
+    width: 200,
     label: '编号',
     prop: 'miceNo'
   }, {

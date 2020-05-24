@@ -11,6 +11,7 @@ export const tableOption = {
   menu: true,
 
   column: [{
+    width: 200,
     label: '编号',
     prop: 'miceNo',
     overHidden: true

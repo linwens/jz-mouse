@@ -46,6 +46,7 @@ export const mouseListOption = {
   menuWidth: 130,
 
   column: [{
+    width: 200,
     label: '编号',
     prop: 'miceNo',
     overHidden: true
@@ -70,11 +71,11 @@ export const mouseListOption = {
     label: '体重',
     prop: 'weight'
   }, {
-    width: 200,
+    width: 100,
     label: '品系',
     prop: 'varietiesName'
   }, {
-    width: 200,
+    width: 100,
     label: '基因型',
     prop: 'geneName',
     overHidden: true
