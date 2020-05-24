@@ -80,6 +80,8 @@ export default {
                 varietiesName
               })
               this.$emit('done')
+              this.addVarietyForm.varietiesName = ''
+              this.$refs['addVarietyForm'].resetFields() // 就为了没有错误提示
             }
           })
         } else {

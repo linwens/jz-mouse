@@ -223,7 +223,7 @@ export default {
         weight: null,
         birthDate: null,
         pureHeterozygote: null,
-        color: '#00CB7C',
+        color: '#58A2FB',
         separateCageRemindTime: null,
         separateCageRemindFlag: 0,
         phenotypicIdentificationRemindTime: null,

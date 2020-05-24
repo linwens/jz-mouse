@@ -95,7 +95,7 @@ export default {
     rowItemDel: function(row) {
       console.log(row)
       const _this = this
-      this.$confirm('是否确认删除品系："' + row.varietiesName + '"?', '警告', {
+      this.$confirm(`是否确认删除品系"${row.varietiesName}"的"${row.geneName}"基因型?`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
