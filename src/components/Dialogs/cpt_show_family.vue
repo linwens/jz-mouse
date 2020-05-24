@@ -7,7 +7,7 @@
       :visible.sync="dialogVisible"
       width="30%"
     >
-      <family-tree :mice-id="miceId" />
+      <family-tree v-if="dialogVisible" :mice-id="miceId" />
     </el-dialog>
   </div>
 </template>

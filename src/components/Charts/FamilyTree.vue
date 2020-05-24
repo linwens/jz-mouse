@@ -79,7 +79,11 @@ export default {
   },
   watch: {
     miceId(n, o) {
-      this.getTreeData()
+      if (this.treeType === 0) {
+        this.getTreeData()
+      } else {
+        this.treeType = 0
+      }
     },
     treeType(n, o) {
       if (n === 0) {
@@ -102,6 +106,13 @@ export default {
     this.chart = null
   },
   methods: {
+    // 销毁家谱树
+    disposeTree() {
+      if (this.chart) {
+        this.chart.dispose()
+        this.chart = null
+      }
+    },
     // 查看小鼠详情
     goDetail() {
       if (this.curMouse) {
@@ -125,16 +136,14 @@ export default {
           value: this.miceId,
           children: []
         }
-        if (data && data.children && data.children.length > 0) {
-          for (let i = 0; i < data.children.length; i++) {
+        if (data && data[0] && data[0].children && data[0].children.length > 0) {
+          for (let i = 0; i < data[0].children.length; i++) {
             rslt.children.push({
-              name: `子鼠${data.children[i]}`,
-              value: data.children[i]
+              name: `子鼠${data[0].children[i].id}`,
+              value: data[0].children[i].id
             })
           }
         }
-        this.chart.dispose()
-        this.chart = null
         this.initChart(rslt, 'radial')
       })
     },
@@ -151,6 +160,7 @@ export default {
       })
     },
     initChart(data, layoutType) {
+      this.disposeTree()
       this.chart = echarts.init(document.getElementById(this.miceId))
       this.chart.showLoading()
       this.chart.hideLoading()

@@ -6,7 +6,7 @@
           <el-form-item
             label="实验组名称:"
             prop="experimentName"
-            class="mb9"
+            class="mb18"
             :rules="[
               { required: true, message: '实验组名称不能为空'}
             ]"
@@ -16,7 +16,7 @@
           <div class="df s-jcfs s-aic">
             <el-form-item
               label="开始时间:"
-              class="mr48 mb9"
+              class="mr48 mb18"
               prop="startTime"
               :rules="[
                 { required: true, message: '开始时间不能为空'}
@@ -33,7 +33,7 @@
             </el-form-item>
             <el-form-item
               label="结束时间:"
-              class="mb9"
+              class="mb18"
               prop="endTime"
               :rules="[
                 { required: true, message: '结束时间不能为空'}
@@ -619,6 +619,7 @@ export default {
         this.$message.success('新增实验组成功')
         this.$store.dispatch('app/clearExpts')
         this.$store.dispatch('app/clearMouses')
+        this.goBack()
       })
     }
   },
