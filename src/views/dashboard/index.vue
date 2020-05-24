@@ -83,7 +83,6 @@
                 size="small"
                 class="w80"
               >
-                <el-option label="无" :value="0" />
                 <el-option label="闲置" :value="1" />
                 <el-option label="繁育" :value="2" />
                 <el-option label="实验" :value="3" />
@@ -117,6 +116,9 @@
               @on-load="getList"
               @refresh-change="handleRefreshChange"
             >
+              <template slot="operator" slot-scope="{scope}">
+                <span>{{ persons.filter(el => {return el.userId === scope.row.operator })[0].userName }}</span>
+              </template>
               <template slot="birthDate" slot-scope="{scope}">
                 <span>{{ calcWeek(scope.row.birthDate) }}</span>
               </template>
@@ -369,6 +371,7 @@ export default {
       // 基因型列表
       if (!n) {
         this.genesOpts = []
+        this.getList()
         return
       }
       getLisByVariety({
@@ -376,6 +379,10 @@ export default {
       }).then((res) => {
         this.genesOpts = res.data
       })
+      this.getList()
+    },
+    'myMouseForm.genotypes'(n, o) {
+      this.getList()
     },
     'myMouseForm.gender'(n, o) {
       this.getList()

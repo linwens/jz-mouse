@@ -13,10 +13,11 @@ export const tableOption = {
 
   column: [{
     label: '编号',
-    prop: 'id'
+    prop: 'miceNo'
   }, {
     label: '负责人',
-    prop: 'operator'
+    prop: 'operator',
+    slot: true
   }, {
     label: '品系',
     prop: 'varietiesName',
@@ -42,16 +43,7 @@ export const tableOption = {
     ]
   }, {
     label: '性别',
-    prop: 'gender',
-    dicData: [
-      {
-        label: '雌',
-        value: 1
-      }, {
-        label: '雄',
-        value: 0
-      }
-    ]
+    prop: 'genderDesc'
   }, {
     label: '周龄',
     prop: 'birthDate',
@@ -63,7 +55,7 @@ export const tableOption = {
     slot: true
   }, {
     label: '笼位号',
-    prop: 'cageId',
+    prop: 'cageNo',
     width: 100
   }, {
     label: '家谱记录',

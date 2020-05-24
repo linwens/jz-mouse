@@ -47,7 +47,7 @@ export const mouseListOption = {
 
   column: [{
     label: '编号',
-    prop: 'miceId',
+    prop: 'miceNo',
     overHidden: true
   }, {
     label: '性别',

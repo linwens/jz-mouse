@@ -12,7 +12,7 @@
               <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.geneStatus }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.genotypes }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.geneName }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p w-100"><span class="mouse__info--span">应用领域:</span><i class="mouse__info--i">{{ mouseInfo.area }}</i></p>
@@ -68,7 +68,7 @@
             <h6 class="mouse__info--h6">实验信息</h6>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">实验组名称:</span><i class="mouse__info--i">{{ mouseExptInfo.experimentName }}</i></p>
-              <p class="mouse__info--p" style="width: 205px;"><span class="mouse__info--span">起止时间:</span><i class="mouse__info--i">{{ mouseExptInfo.startTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }} - {{ mouseExptInfo.endTime * 1000 | timeFormat('yyyy年MM月dd日 hh:mm:ss') }}</i></p>
+              <p class="mouse__info--p" style="width: 205px;"><span class="mouse__info--span">起止时间:</span><i class="mouse__info--i">{{ mouseExptInfo.startTime * 1000 | timeFormat('yyyy.M.dd') }}-{{ mouseExptInfo.endTime * 1000 | timeFormat('yyyy.M.dd') }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">分组名称:</span><i class="mouse__info--i">{{ mouseExptInfo.sampleGroupName }}</i></p>
@@ -235,7 +235,7 @@ import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
 import SetTime from '@/components/Dialogs/cpt_set_time'
 import MergeTable from '@/components/MergeTable'
-import { transferCage, delItemObj, editCage, delMiceByMiceId, fetchItemList, fetchCageList, putItemObj, putObj } from '@/api/mouse'
+import { transferCage, delItemObj, editCage, delMiceByMiceId, fetchItemList, fetchCageList, getMouseExpInfo } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
@@ -526,6 +526,7 @@ export default {
       this.$set(this, 'choicedList', [])
       this.choosedCage = null
       this.curMouseId = null
+      this.getCageList() // 为了规避多选框勾选没法取消的折中办法
     },
     // 新增子鼠操作
     goBuild(row) {
@@ -610,15 +611,10 @@ export default {
     },
     // 设置时间后修改进度条
     setProgress(obj) {
-      console.log(obj)
-
-      // if (obj.type === 0) {
-      //   this.mouseExptInfo.testTime = obj.time
-      //   this.setTestTimeScale()
-      // } else {
-      //   this.mouseExptInfo.handleTime = obj.time
-      //   this.setHandleTimeScale()
-      // }
+      getMouseExpInfo(this.curMouseId).then((res) => {
+        console.log('getMouseExpInfo', res)
+        this.$set(this, 'mouseExptInfo', res.data[0] || {})
+      })
     }
   }
 }

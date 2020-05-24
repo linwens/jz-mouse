@@ -24,19 +24,19 @@ function recur(data, parent) { // data是对象
   if (data.children.length === 0 && parent) {
     if (parent.fatherId === data.id) {
       return {
-        name: `父鼠${data.id}`,
+        name: `父鼠${data.miceNo}`,
         value: data.id
       }
     }
     if (parent.motherId === data.id) {
       return {
-        name: `母鼠${data.id}`,
+        name: `母鼠${data.miceNo}`,
         value: data.id
       }
     }
   } else {
     data = {
-      name: `小鼠 ${data.id}`,
+      name: `小鼠 ${data.miceNo}`,
       value: data.id,
       fatherId: data.fatherId,
       motherId: data.motherId,
@@ -132,14 +132,14 @@ export default {
       }).then((res) => {
         const { data } = res
         const rslt = {
-          name: `小鼠${this.miceId}`,
+          name: `小鼠${this.miceNo}`,
           value: this.miceId,
           children: []
         }
         if (data && data[0] && data[0].children && data[0].children.length > 0) {
           for (let i = 0; i < data[0].children.length; i++) {
             rslt.children.push({
-              name: `子鼠${data[0].children[i].id}`,
+              name: `子鼠${data[0].children[i].miceNo}`,
               value: data[0].children[i].id
             })
           }

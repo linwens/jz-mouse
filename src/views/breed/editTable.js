@@ -13,7 +13,7 @@ export const tableOption = {
 
   column: [{
     label: '编号',
-    prop: 'miceInfoId',
+    prop: 'miceNo',
     overHidden: true
   }, {
     label: '性别',
@@ -46,7 +46,7 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '毛色',
-    prop: 'color'
+    prop: 'geneColor'
   }, {
     label: '健康状况',
     prop: 'healthStatus',

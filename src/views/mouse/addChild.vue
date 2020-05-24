@@ -31,7 +31,7 @@
                   v-if="genesType === 5"
                   :varieties-id="varietiesId"
                   :varieties-name="varietiesName"
-                  :genes-data.sync="currentGene"
+                  :genes-data.sync="genes"
                 />
                 <el-input
                   v-else
@@ -330,6 +330,9 @@ export default {
       const newVariety = JSON.parse(n)
       this.varietiesName = newVariety.varietiesName
       this.varietiesId = newVariety.id
+      if (this.genesType === 4) {
+        this.getNewGenesByVariety()
+      }
     },
     genesType(n, o) {
       if (n === 1 || n === 3) {
@@ -345,18 +348,10 @@ export default {
         this.varietiesId = this.mother.vid
       }
       if (n === 4) { // WT
-        getLisByVariety({
-          id: this.varietiesId
-        }).then((res) => {
-          const { data } = res
-          const WT = data.filter((el) => {
-            return el.geneName === 'WT'
-          })
-          this.fillGenes(WT)
-        })
+        this.getNewGenesByVariety()
         return
       }
-      if (n === 0) {
+      if (n === 0 || n === 5) {
         this.currentGene.geneName = ''
         this.form.genotypes = 0
       }
@@ -391,6 +386,18 @@ export default {
     this.getGenesInfo()
   },
   methods: {
+    // 根据品系id重新拿基因型列表,填充WT基因型
+    getNewGenesByVariety() {
+      getLisByVariety({
+        id: this.varietiesId
+      }).then((res) => {
+        const { data } = res
+        const WT = data.filter((el) => {
+          return el.geneName === 'WT'
+        })[0]
+        this.fillGenes(WT)
+      })
+    },
     // 上传成功回填url
     fillFilesUrl(data, fileList) {
       this.$set(this.form, 'files', data)
@@ -427,7 +434,7 @@ export default {
     // 填充基因型信息
     fillGenes(res) {
       if (!res) {
-        for (const key of this.currentGene) {
+        for (const key in this.currentGene) {
           this.currentGene[key] = ''
         }
       } else {
