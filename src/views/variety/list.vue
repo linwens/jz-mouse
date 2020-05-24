@@ -19,21 +19,23 @@
             @refresh-change="handleRefreshChange"
           >
             <template slot="menu" slot-scope="{scope}">
-              <el-button
-                type="text"
-                size="mini"
-                @click="goEdit(scope.row)"
-              >
-                编辑
-              </el-button>
-              <el-button
-                type="text"
-                size="mini"
-                class="btn-text--danger"
-                @click="rowItemDel(scope.row)"
-              >
-                删除
-              </el-button>
+              <div v-if="scope.row.own">
+                <el-button
+                  type="text"
+                  size="mini"
+                  @click="goEdit(scope.row)"
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  type="text"
+                  size="mini"
+                  class="btn-text--danger"
+                  @click="rowItemDel(scope.row)"
+                >
+                  删除
+                </el-button>
+              </div>
             </template>
           </merge-table>
         </div>
