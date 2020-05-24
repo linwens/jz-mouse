@@ -17,7 +17,7 @@
             type="text"
             size="mini"
           >
-            <a :href="scope.row.path" :download="scope.row.fileName">下载</a>
+            <a :href="scope.row.path" target="_blank" :download="scope.row.fileName">下载</a>
           </el-button>
           <el-button
             type="text"

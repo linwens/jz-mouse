@@ -25,7 +25,7 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '开始时间',
-    prop: 'createTime',
+    prop: 'startTime',
     width: 120,
     format: 'yyyy-MM-dd'
   }, {

@@ -38,7 +38,6 @@
         fullscreen
         :visible.sync="dialogVisible"
         width="30%"
-        :before-close="handleClose"
         custom-class="mouse__preview"
       >
         <iframe

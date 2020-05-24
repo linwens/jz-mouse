@@ -26,6 +26,15 @@ export function uploadFiles(obj) { // 图片批量上传
   })
 }
 
+// export function uploadFiles(obj) { // 图片批量上传
+//   const { bizType, id, files } = obj
+//   return request({
+//     url: id ? `/sysfile/uploads/${bizType}/${id}` : '/sysfile/uploadFiles',
+//     method: 'post',
+//     data: files
+//   })
+// }
+
 export function saveFiles(obj) { // 存储图片地址
   return request({
     url: '/sysfile',

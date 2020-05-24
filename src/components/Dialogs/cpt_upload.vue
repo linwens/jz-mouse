@@ -1,7 +1,42 @@
 <template>
   <div>
+    <el-button
+      v-if="btnText"
+      type="text"
+      class="btn-text--black"
+      @click="dialogVisible = true"
+    >{{ btnText }}</el-button>
+    <svg-icon v-else icon-class="upload" class="cp" @click="dialogVisible = true" />
     <!-- 上传 -->
-    <el-upload
+    <el-dialog
+      title="上传文件"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <el-upload
+        ref="upload"
+        class="upload-demo"
+        :action="actionUrl"
+        :headers="{
+          Authorization: getToken()
+        }"
+        name="files"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        multiple
+        :limit="5"
+        :file-list="fileList"
+        :auto-upload="false"
+        :on-exceed="handleExceed"
+        :on-success="handleSuccess"
+      >
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+        <div slot="tip" class="el-upload__tip">可上传jpg/png、pdf、Excel、Word文件</div>
+      </el-upload>
+    </el-dialog>
+    <!-- <el-upload
       class="upload-demo"
       :action="actionUrl"
       :headers="{
@@ -23,12 +58,12 @@
         class="btn-text--black"
       >{{ btnText }}</el-button>
       <svg-icon v-else icon-class="upload" class="cp" />
-    </el-upload>
+    </el-upload> -->
   </div>
 </template>
 
 <script>
-import { saveFiles } from '@/api/cmn'
+import { Message } from 'element-ui';
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -53,6 +88,7 @@ export default {
   },
   data() {
     return {
+      dialogVisible: false,
       // 根据是否传了id 走不同的上传接口
       actionUrl: this.id ? `${process.env.VUE_APP_BASE_API}/sysfile/uploads/${this.bizType}/${this.id}` : `${process.env.VUE_APP_BASE_API}/sysfile/uploadFiles`,
       fileList: [],
@@ -63,14 +99,10 @@ export default {
     // this.getParams()
   },
   methods: {
+    submitUpload() { // 上传文件
+      this.$refs.upload.submit()
+    },
     getToken,
-    // getParams() {
-    //   getUploadParams({
-    //     attachType: this.attachType
-    //   }).then((res) => {
-    //     console.log(res)
-    //   })
-    // },
     handleRemove(file, fileList) {
       console.log(file, fileList)
     },
@@ -81,7 +113,9 @@ export default {
       this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     handleSuccess(response, file, fileList) {
-      this.$message.success('文件上传成功')
+      Message.closeAll()
+      Message.success('文件上传成功')
+      console.log('上传成功返回...', this.id, response)
       console.log(response, file, fileList)
       if (!this.id && response.data.length > 0) {
         console.log(this.cacheUrl, fileList)
@@ -92,11 +126,17 @@ export default {
         if (this.cacheUrl.length === fileList.length) {
           console.log('触发done')
           this.$emit('done', this.cacheUrl, fileList)
+          this.dialogVisible = false
+          this.fileList = []
         }
+      }
+      if (this.id) {
+        this.dialogVisible = false
+        this.fileList = []
       }
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`)
+      return this.$confirm(`确定移除 ${file.name}？`)
     }
   }
 }

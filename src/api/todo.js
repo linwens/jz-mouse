@@ -8,11 +8,10 @@ export function fetchList(query) { // 待办事项列表查询
   })
 }
 
-export function fetchItemList(query) {
+export function getSysRemindNum() { // 获取待办事项数量
   return request({
-    url: '/dict/item/page',
-    method: 'get',
-    params: query
+    url: '/sysremind/getSysRemindNum',
+    method: 'get'
   })
 }
 

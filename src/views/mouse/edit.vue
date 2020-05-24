@@ -318,7 +318,7 @@ export default {
         4: '手动处死',
         5: '实验处死'
       }
-      return MAP[this.form.status]
+      return MAP[this.form.miceStatus]
     },
     pure(n, o) {
       const MAP = {
