@@ -24,13 +24,12 @@ export function getInfo(token) {
   })
 } */
 
-/* export function login(data) { // 模拟普通用户
+export function loginUser() { // 模拟普通用户
   return request({
     url: '/token/imitateUser/login',
-    method: 'get',
-    data
+    method: 'get'
   })
-} */
+}
 
 export function login() { // 模拟admin用户
   return request({

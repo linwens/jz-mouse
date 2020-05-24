@@ -522,7 +522,8 @@ export default {
       this.isDeling = false
 
       this.isChoosingCage = false
-      this.choicedList = []
+      // this.choicedList = []
+      this.$set(this, 'choicedList', [])
       this.choosedCage = null
       this.curMouseId = null
     },

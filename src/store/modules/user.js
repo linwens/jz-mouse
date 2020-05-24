@@ -1,4 +1,4 @@
-import { login, logout } from '@/api/user'
+import { login, loginUser, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { setStorageItem, getStorageItem, removeStorageItem, setLocalStorageItem, getLocalStorageItem } from '@/utils/storage'
 import { resetRouter } from '@/router'
@@ -64,15 +64,28 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        commit('SET_INFO', data)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
+      // 用于测试***********************************************
+      if (username === 'admin') { // 模拟管理员登录
+        login({ username: username.trim(), password: password }).then(response => {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          commit('SET_INFO', data)
+          setToken(data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      } else { // 普通用户登录
+        loginUser({ username: username.trim(), password: password }).then(response => {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          commit('SET_INFO', data)
+          setToken(data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      }
     })
   },
 
