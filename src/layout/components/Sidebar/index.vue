@@ -23,13 +23,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Logo from './Logo'
+// import Logo from './Logo'
 import SidebarItem from './SidebarItem'
-import Hamburger from '@/components/Hamburger'
+// import Hamburger from '@/components/Hamburger'
 import variables from '@/styles/variables.scss'
 
 export default {
-  components: { SidebarItem, Logo, Hamburger },
+  components: { SidebarItem },
   computed: {
     ...mapGetters([
       'sidebar'

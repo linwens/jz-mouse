@@ -126,10 +126,12 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit, state }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
+      commit('REMOVE_INFO')
       commit('RESET_STATE')
+      console.log('清空数据', state)
       resolve()
     })
   },

@@ -18,7 +18,12 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
-  const hasToken = getToken()
+  let hasToken = getToken()
+  // 更新token后，清理缓存
+  if (to.query.token && to.query.token !== hasToken) {
+    hasToken = null
+    store.dispatch('user/resetToken') // 清空用户缓存
+  }
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -45,6 +50,9 @@ router.beforeEach(async(to, from, next) => {
         store.dispatch('user/tokenLogin').then(res => {
           console.log('请求获取了用户信息')
           next('/')
+          NProgress.done()
+        }).catch(() => {
+          Message.error('获取用户信息失败，请关闭后重试')
         })
       })
       return
