@@ -1,4 +1,4 @@
-import { login, loginUser, logout } from '@/api/user'
+import { login, tokenLogin, loginUser, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { setStorageItem, getStorageItem, removeStorageItem, setLocalStorageItem, getLocalStorageItem } from '@/utils/storage'
 import { resetRouter } from '@/router'
@@ -89,26 +89,27 @@ const actions = {
     })
   },
 
-  // get user info
-  /* getInfo({ commit, state }) {
+  // 获取url的token
+  urlSetToken({ commit }, token) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      commit('SET_TOKEN', token)
+      setToken(token)
+      resolve()
+    })
+  },
+
+  // 登录获取用户信息
+  tokenLogin({ commit }) {
+    return new Promise((resolve, reject) => {
+      tokenLogin().then(response => {
         const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
+        commit('SET_INFO', data)
+        resolve()
       }).catch(error => {
         reject(error)
       })
     })
-  }, */
+  },
 
   // user logout
   logout({ commit, state }) {

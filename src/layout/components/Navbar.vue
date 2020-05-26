@@ -1,5 +1,6 @@
 <template>
   <div class="navbar">
+    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
@@ -16,11 +17,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import Hamburger from '@/components/Hamburger'
 import Breadcrumb from '@/components/Breadcrumb'
 import { fetchList } from '@/api/todo'
 
 export default {
   components: {
+    Hamburger,
     Breadcrumb
   },
   data() {
@@ -38,6 +41,9 @@ export default {
     this.getUnRead()
   },
   methods: {
+    toggleSideBar() {
+      this.$store.dispatch('app/toggleSideBar')
+    },
     // 跳转待办事项列表
     goTodo() {
       this.$router.push({ name: 'todo' })

@@ -38,6 +38,17 @@ router.beforeEach(async(to, from, next) => {
     }
   } else {
     /* has no token*/
+    if (to.query.token) {
+      console.log('有token值', to, to.query.token)
+      store.dispatch('user/urlSetToken', to.query.token).then((res) => {
+        console.log('存了token值', getToken())
+        store.dispatch('user/tokenLogin').then(res => {
+          console.log('请求获取了用户信息')
+          next('/')
+        })
+      })
+      return
+    }
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly

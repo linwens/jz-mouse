@@ -106,7 +106,7 @@
             </el-form>
             <p class="mt12 fs14 cl-grey-9">总计：<span class="cl-black">{{ page.total }} 条数据</span></p>
           </div>
-          <div class="bd-gray ml16 mr16">
+          <div class="bd-gray ml16 mr16 mb20">
             <merge-table
               ref="crud"
               :page="page"
@@ -233,7 +233,7 @@
             </el-form>
             <p class="mt12 fs14 cl-grey-9">总计：<span class="cl-black">{{ page.total }} 条数据</span></p>
           </div>
-          <div class="bd-gray ml16 mr16">
+          <div class="bd-gray ml16 mr16 mb20">
             <merge-table
               ref="crud"
               :page="page"
@@ -287,7 +287,7 @@
         <el-button type="primary" size="small" @click="okRange()">确 定</el-button>
       </div>
     </el-dialog>
-    <guide :text="'展示引导'" />
+    <!-- <guide :text="'展示引导'" /> -->
   </div>
 </template>
 

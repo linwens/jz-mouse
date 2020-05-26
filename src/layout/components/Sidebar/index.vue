@@ -1,9 +1,9 @@
 <template>
   <div :class="{'has-logo':showLogo}">
-    <div class="df s-aic">
+    <!-- <div class="df s-aic">
       <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
       <logo v-if="showLogo" :collapse="isCollapse" />
-    </div>
+    </div> -->
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
