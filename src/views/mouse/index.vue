@@ -249,6 +249,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       curMouseId: null, // 当前选中小鼠的id
       mouseInfo: {},
       mouseExptInfo: {},
@@ -367,6 +368,7 @@ export default {
     }
   },
   created() {
+    this.isAdmin = this.$store.getters.info.admin
     this.getCageList()
   },
   methods: {
