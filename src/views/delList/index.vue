@@ -11,14 +11,16 @@
           :table-loading="tableLoading"
         >
           <template slot="menu" slot-scope="scope">
-            <el-button
-              type="text"
-              size="mini"
-              class="btn-text--danger"
-              @click="rowItemDel(scope.scope.row)"
-            >
-              移除
-            </el-button>
+            <div v-if="isAdmin">
+              <el-button
+                type="text"
+                size="mini"
+                class="btn-text--danger"
+                @click="rowItemDel(scope.scope.row)"
+              >
+                移除
+              </el-button>
+            </div>
           </template>
         </merge-table>
       </div>
@@ -38,6 +40,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       tableOption,
       tableLoading: false,
       page: {
@@ -49,6 +52,7 @@ export default {
     }
   },
   created() {
+    this.isAdmin = this.$store.getters.info.admin
     this.getList()
   },
   methods: {

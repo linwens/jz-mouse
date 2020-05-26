@@ -44,7 +44,7 @@
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">附件:</span>
                 <view-files v-if="curMouseId" :id="curMouseId" biz-type="mice" />
-                <upload-btn v-if="curMouseId" :id="curMouseId" biz-type="mice" class="dib" />
+                <upload-btn v-if="curMouseId && (isAdmin || activeName === 'myCage')" :id="curMouseId" biz-type="mice" class="dib" />
               </p>
             </div>
 
@@ -84,7 +84,7 @@
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">检测试验结果:</span>
                 <view-files v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" biz-type="experiment" />
-                <upload-btn v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" biz-type="experiment" class="dib" />
+                <upload-btn v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" biz-type="experiment" class="dib" />
               </p>
               <p class="mouse__info--p">
                 <i class="mouse__info--i mr20">
@@ -109,7 +109,7 @@
               <el-progress :text-inside="true" :stroke-width="24" :percentage="Number(percentage)" color="#58A2FB" />
             </div>
             <div class="df s-jcc s-aic mt30">
-              <set-time v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" @done="setProgress" />
+              <set-time v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" @done="setProgress" />
               <expt-record v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" class="ml16 w100" />
             </div>
           </div>
@@ -228,25 +228,21 @@
 import MouseCage from '@/components/MouseCage'
 import Guide from '@/components/Guide'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
-import FileViewer from '@/components/FileViewer'
 import ShowFamily from '@/components/Dialogs/cpt_show_family'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
 import SetTime from '@/components/Dialogs/cpt_set_time'
-import MergeTable from '@/components/MergeTable'
-import { transferCage, delItemObj, editCage, delMiceByMiceId, fetchItemList, fetchCageList, getMouseExpInfo } from '@/api/mouse'
+import { transferCage, editCage, delMiceByMiceId, fetchCageList, getMouseExpInfo } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
   components: {
-    MergeTable,
     MouseCage,
     AddCageBtn,
     ExptRecord,
     SetTime,
     Guide,
-    FileViewer,
     ShowFamily,
     UploadBtn,
     ViewFiles

@@ -63,6 +63,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       btnText: '查看',
       // 实验记录表格
       filesRecordVisible: false,
@@ -83,6 +84,7 @@ export default {
     }
   },
   created() {
+    this.isAdmin = this.$store.getters.info.admin
     if (this.id) {
       this.getList()
     }
@@ -116,6 +118,10 @@ export default {
     // 删除
     rowItemDel: function(scope) {
       const _this = this
+      if (!(scope.row.own || this.isAdmin)) { // 不是自己的信息无权删除
+        this.$message.warning('无权限删除他人负责的小鼠的文件')
+        return
+      }
       this.$confirm('是否确认删除数据为"' + scope.row.fileName + '"的文件吗?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

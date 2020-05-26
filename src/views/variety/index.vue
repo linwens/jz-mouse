@@ -21,7 +21,7 @@
             @refresh-change="handleRefreshChange"
           >
             <template slot="menu" slot-scope="{scope}">
-              <div v-if="scope.row.own">
+              <div v-if="scope.row.own || isAdmin">
                 <el-button
                   type="text"
                   size="mini"
@@ -61,6 +61,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       tableOption,
       tableLoading: false,
       page: {
@@ -72,7 +73,7 @@ export default {
     }
   },
   created() {
-
+    this.isAdmin = this.$store.getters.info.admin
   },
   methods: {
     goGenes() {
