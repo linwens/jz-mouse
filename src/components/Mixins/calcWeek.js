@@ -3,7 +3,6 @@ export const calcWeek = {
   methods: {
     // 计算周龄
     calcWeek(birthDate) {
-      console.log('计算周龄==222=', birthDate)
       if (!birthDate) {
         return '0周0天'
       }

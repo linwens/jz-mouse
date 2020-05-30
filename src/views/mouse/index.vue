@@ -277,6 +277,7 @@ export default {
       choicedList: [], // 当前选中的小鼠列表
       choosedCage: null, // 当前选中的鼠笼id
       // 新建子鼠
+      buildStep: 0, // 新建子鼠步骤操作节点
       buildBtnText: '新建子鼠',
       isBuilding: false, // 正在新建子鼠标识
       // 删除小鼠
@@ -347,17 +348,20 @@ export default {
     },
     // 监听每个鼠笼选中的小鼠，最后合并所有选中小鼠
     'curCageMouseList.mouses'(n, o) {
+      if (!n) return // 如果mouses不存在，说明是清空，则不执行后续逻辑
       const _self = this
       let list = this.cacheChoicedList
+      // 当前缓存的鼠笼里包含当前选中的鼠笼，即：有当前鼠笼了
       const hasThis = this.cacheChoicedList.filter((el) => {
         return el.cid === _self.curCageMouseList.cid
       }).length > 0
 
-      if (hasThis) {
+      if (hasThis) { // 把缓存的鼠笼删掉，后面重新塞入当前选中的鼠笼
         list = this.cacheChoicedList.filter((el) => {
           return el.cid !== _self.curCageMouseList.cid
         })
       }
+      // 重新塞入鼠笼
       list.push(this.curCageMouseList)
       this.$set(this, 'cacheChoicedList', list)
       // 降维数组
@@ -419,9 +423,9 @@ export default {
         this.cageDialog = true
         return
       }
-      if (this.curMouseId) {
+      if (this.curMouseId) { // 跳转小鼠编辑页
         const id = this.curMouseId
-        this.$router.push({ name: 'mouseEdit', params: { id }})
+        this.$router.push({ name: 'mouseEdit', params: { id, canEdit: 1 }})
       }
     },
     // 新增小鼠
@@ -453,7 +457,7 @@ export default {
     // 移笼操作
     moveCage() {
       // 选中了鼠笼后
-      if (this.choosedCage) {
+      if (this.choosedCage && this.choicedList.length > 0) {
         this.$confirm('是否确认移笼?', '警告', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -504,7 +508,10 @@ export default {
         cageId: this.choosedCage,
         miceId: ids
       }).then((res) => {
-        console.log('移笼成功')
+        this.$set(this, 'choicedList', [])
+        this.$set(this, 'cacheChoicedList', [])
+        this.$set(this, 'curCageMouseList', {})
+
         this.cancel()
         this.getCageList()
       })
@@ -514,6 +521,7 @@ export default {
       this.moveBtnText = '移笼'
       this.isMoving = false
       this.transStep = 0
+      this.buildStep = 0
       this.buildBtnText = '新增子鼠'
       this.isBuilding = false
       this.delBtnText = '移除小鼠'
@@ -529,17 +537,33 @@ export default {
     // 新增子鼠操作
     goBuild(row) {
       // 如果没有选中鼠笼
+      console.log(this.choosedCage, this.curCageMouseList, this.cageList, this.cacheChoicedList)
       if (!this.choosedCage) {
         this.$message({
           type: 'error',
           message: '请先选择鼠笼'
         })
       } else {
-        this.buildBtnText = '下一步'
-        this.isBuilding = true
+        // 如果当前鼠笼里没有小鼠(找到当前鼠笼，获取小鼠信息)
+        const thisCageNoMouse = this.cageList.filter((el) => {
+          return el.id === this.choosedCage
+        })[0].miceInfoByMiceCageQueryVO.length === 0
+        if (thisCageNoMouse) {
+          this.$message({
+            type: 'error',
+            message: '当前鼠笼中没有小鼠，请添加小鼠后进行操作'
+          })
+          return
+        }
+        if (this.buildStep === 0) {
+          this.isBuilding = true
+          this.buildStep = 1
+          this.buildBtnText = '下一步'
+          return
+        }
+
         // 当前选中了小鼠
-        if (this.choicedList.length > 0) {
-          console.log(this.choicedList)
+        if (this.buildStep === 1 && this.choicedList.length > 0) {
           const genders = this.choicedList.map(el => {
             return el.gender
           })
@@ -563,7 +587,9 @@ export default {
             }
           })
           this.goPage('addChild')
-        } else {
+        }
+
+        if (this.buildStep === 1 && this.choicedList.length === 0) {
           this.$message({
             type: 'error',
             message: '请选择小鼠'

@@ -48,6 +48,7 @@
               placeholder="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
+              @input="changeNum(putInForm.female, 'female')"
             />
             <span class="ml8">雄</span>
             <el-input
@@ -55,6 +56,7 @@
               placeholder="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
+              @input="changeNum(putInForm.male, 'male')"
             />
           </el-form-item>
         </el-form>
@@ -141,6 +143,15 @@ export default {
     this.getCageList()
   },
   methods: {
+    changeNum(val, type) { // 限制放入小鼠数量的输入值
+      if (val < 0 || typeof val !== 'number') {
+        this.putInForm[type] = 0
+      }
+      if (val > this.mouseData[`${type}MiceNum`]) {
+        this.putInForm[type] = this.mouseData[`${type}MiceNum`]
+        this.$message.error(`${type === 'female' ? '雌' : '雄'}鼠最多只能放入${this.mouseData[`${type}MiceNum`]}只`)
+      }
+    },
     goBack() {
       if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
         this.$router.back()
@@ -183,11 +194,16 @@ export default {
       if (!this.choosedCage) {
         this.$message.error('请先选择鼠笼')
       } else {
+        this.putInForm.female = this.mouseData.femaleMiceNum
+        this.putInForm.male = this.mouseData.maleMiceNum
         this.putInVisible = true
       }
     },
     // 繁育组添加小鼠
     doTransferCage() {
+      console.log(this.$router)
+      console.log(this.$route.go)
+      console.log(this.$router.go)
       transferCage({
         cageId: this.choosedCage,
         miceId: this.ids
@@ -197,6 +213,9 @@ export default {
         this.mouseData.maleMiceNum -= this.putInForm.male
         if (this.optType === 'breed') { // 繁育组移笼
           this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
+          console.log(this.$route)
+          this.$router.go(-2) // 直接跳回繁育组页面
+          return
         }
         if (this.optType === 'mouseEdit') { // 编辑小鼠移笼
           const { varietiesName, varietiesId, genes, files } = this.$store.getters.cacheMouseInfo
@@ -244,7 +263,7 @@ export default {
         this.putInVisible = false
         if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
           this.$store.dispatch('app/clearMouseInfo')
-          this.$router.go(-2)
+          this.$route.go(-2)
           return
         }
       })

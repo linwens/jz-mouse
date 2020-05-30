@@ -36,11 +36,11 @@
             <div
               v-for="item in femaleSum"
               :key="item.miceInfoId"
-              class="mouse__item pos-r ta-c"
+              class="mouse__item ta-c"
               :class="{'isChoiced': (item.miceInfoId == curMouseId)}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus, item.miceInfoId)" class="mouse__checkbox" :label="item" />
                 <div @click.stop="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" :style="{ 'color': item.color }" />
                   <p>{{ item.geneName }}</p>
@@ -50,6 +50,7 @@
               </div>
             </div>
           </div>
+          <div v-else class="list__content--female">fsfdsfdsfd</div>
           <div v-if="maleSum.length > 0" class="list__content--male df s-jcfs s-aic ofh">
             <div
               v-for="item in maleSum"
@@ -58,7 +59,7 @@
               :class="{'isChoiced': (item.miceInfoId == curMouseId)}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus, item.miceInfoId)" class="mouse__checkbox" :label="item" />
                 <div @click.stop="taggle(item.miceInfoId)">
                   <svg-icon icon-class="mouse" class="fs50" :style="{ 'color': item.color }" />
                   <p>{{ item.geneName }}</p>
@@ -191,6 +192,13 @@ export default {
       default: function() {
         return {}
       }
+    },
+    // 已经被选了的老鼠,不可选
+    cantChoiceMouses: {
+      type: Array,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
@@ -253,7 +261,7 @@ export default {
       })
     },
     // 设置当前小鼠是否可选
-    checkBoxStatus(status) {
+    checkBoxStatus(status, id) {
       let noWay = false
       if (status === 2 && this.needType === 'noBreed') {
         noWay = true
@@ -261,10 +269,10 @@ export default {
       if (status === 3 && this.needType === 'noExpt' ) {
         noWay = true
       }
-      return !this.isActive || noWay
+
+      return !this.isActive || noWay || this.cantChoiceMouses.indexOf(String(id)) > -1
     },
     taggle(id) {
-      console.log(`===11==${id}||||${this.curId}|||${this.curMouseId}`)
       this.curId = this.curMouseId
       if (this.curId === id) { // 再次点击取消选框
         this.curId = null
@@ -412,9 +420,13 @@ export default {
 
     .list__content {
       padding: 10px 0;
+      .el-checkbox-group {
+        height: 100%;
+      }
       &--female, &--male {
         width: 462px;
-        overflow-x: scroll;
+        min-height: 50%;
+        overflow-x: auto;
       }
     }
 
@@ -453,6 +465,11 @@ export default {
         background-color: #58A2FB;
       }
 
+      p {
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+      }
       span.item__miceNo {
         width: 80px;
         overflow: hidden;

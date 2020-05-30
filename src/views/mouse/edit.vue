@@ -350,12 +350,15 @@ export default {
       }
     },
     'form.cageId'(n, o) {
-      getCageInfo(n).then((res) => {
-        this.$set(this, 'cageInfo', res.data)
-      })
+      if (!n) {
+        this.getMouserInfo()
+      }
     }
   },
   created() {
+    if (this.$route.params.canEdit) { // 从小鼠管理的首页，点编辑进来，可直接编辑
+      this.canEdit = true
+    }
     this.curMouseId = Number(this.$route.params.id)
     console.log(this.$route)
     const cacheMouseInfo = this.$store.getters.cacheMouseInfo
@@ -371,6 +374,16 @@ export default {
       console.log('this.form', this.form)
       this.$set(this, 'currentGene', genes)
     } else {
+      this.getMouserInfo()
+    }
+    getMouseExpInfo(this.curMouseId).then((res) => {
+      console.log(res)
+      this.$set(this, 'tableData', res.data)
+    })
+  },
+  methods: {
+    // 获取小鼠信息
+    getMouserInfo() {
       getMouseInfo(this.curMouseId).then((res) => {
         console.log(res)
         const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
@@ -386,14 +399,12 @@ export default {
           color,
           area
         })
+        // 获取鼠笼信息
+        getCageInfo(this.form.cageId).then((res) => {
+          this.$set(this, 'cageInfo', res.data)
+        })
       })
-    }
-    getMouseExpInfo(this.curMouseId).then((res) => {
-      console.log(res)
-      this.$set(this, 'tableData', res.data)
-    })
-  },
-  methods: {
+    },
     // 上传成功回填url
     fillFilesUrl(data, fileList) {
       this.$set(this.form, 'files', data)

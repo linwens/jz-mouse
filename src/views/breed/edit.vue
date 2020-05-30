@@ -167,21 +167,22 @@ export default {
       return this.type === 'add' || this.canEdit
     }
   },
-  created() {
+  mounted() {
     console.log(this.$route)
     // 不能用 === 0；有时0  有时'0'
     this.type = this.$route.params.id == 0 ? 'add' : 'edit'
     this.$route.meta.title = this.type === 'add' ? '新增' : '编辑/查看'
     // 如果是编辑，获取详情
     const cacheInfo = this.$store.getters.addingBreed
+    const cacheMouses = this.$store.getters.addingMouses
     console.log(cacheInfo)
+    cacheInfo.miceIds = cacheMouses // CNMB
     console.log(this.type)
     if (Object.keys(cacheInfo).length > 0 && cacheInfo.id == this.$route.params.id) {
       if (cacheInfo.miceIds.length === 0) { // 如果返回回来没有小鼠信息就请求下接口
         const id = this.$route.params.id
         this.getDetail(id)
       } else {
-        console.log(111111)
         this.$set(this, 'breedForm', cacheInfo)
       }
     } else {

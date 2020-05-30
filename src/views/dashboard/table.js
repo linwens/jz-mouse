@@ -22,11 +22,13 @@ export const tableOption = {
   }, {
     label: '品系',
     prop: 'varietiesName',
-    width: 100
+    width: 100,
+    overHidden: true
   }, {
     label: '基因型',
     prop: 'geneName',
-    width: 100
+    width: 100,
+    overHidden: true
   }, {
     label: '纯/杂合子',
     prop: 'pureHeterozygote',

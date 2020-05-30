@@ -23,7 +23,7 @@
               placeholder="请输入品系名称"
               class="w250"
             />
-            <choice-variety-btn :variety.sync="curVariety" />
+            <choice-variety-btn :variety.sync="curVariety" :disabled="optType === 'modify'" />
           </el-form-item>
           <el-form-item
             label="基因型名称:"

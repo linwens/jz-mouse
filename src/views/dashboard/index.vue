@@ -97,10 +97,10 @@
                 class="w104"
                 @change="selectWeekRange"
               >
-                <el-option label="4周以下" :value="[null, 4]" />
-                <el-option label="4-8周" :value="[4, 8]" />
-                <el-option label="8-12周" :value="[8, 12]" />
-                <el-option label="12周以上" :value="[12, null]" />
+                <el-option label="4周以下" :value="JSON.stringify([null, 4])" />
+                <el-option label="4-8周" :value="JSON.stringify([4, 8])" />
+                <el-option label="8-12周" :value="JSON.stringify([8, 12])" />
+                <el-option label="12周以上" :value="JSON.stringify([12, null])" />
                 <el-option label="自定义" value="custom" />
               </el-select>
             </el-form>
@@ -152,6 +152,7 @@
               <el-button type="primary" size="small" class="w70" @click="reset">重置</el-button>
               <el-select
                 v-model="exptMouseForm.operator"
+                clearable
                 placeholder="负责人"
                 size="small"
                 class="w104"
@@ -165,6 +166,7 @@
               </el-select>
               <el-select
                 v-model="exptMouseForm.varietiesId"
+                clearable
                 placeholder="品系"
                 size="small"
                 class="w104"
@@ -178,6 +180,7 @@
               </el-select>
               <el-select
                 v-model="exptMouseForm.genotypes"
+                clearable
                 placeholder="基因型"
                 size="small"
                 class="w104"
@@ -191,6 +194,7 @@
               </el-select>
               <el-select
                 v-model="exptMouseForm.pureHeterozygote"
+                clearable
                 placeholder="纯/杂合子"
                 size="small"
                 class="w104"
@@ -201,6 +205,7 @@
               </el-select>
               <el-select
                 v-model="exptMouseForm.gender"
+                clearable
                 placeholder="性别"
                 size="small"
                 class="w80"
@@ -210,11 +215,11 @@
               </el-select>
               <el-select
                 v-model="exptMouseForm.status"
+                clearable
                 placeholder="状态"
                 size="small"
                 class="w80"
               >
-                <el-option label="无" :value="0" />
                 <el-option label="闲置" :value="1" />
                 <el-option label="繁育" :value="2" />
                 <el-option label="实验" :value="3" />
@@ -222,13 +227,18 @@
                 <el-option label="实验处死" :value="5" />
               </el-select>
               <el-select
-                v-model="exptMouseForm.man"
+                v-model="weekRange"
+                clearable
                 placeholder="周龄"
                 size="small"
                 class="w104"
+                @change="selectWeekRange"
               >
-                <el-option label="张三" value="1" />
-                <el-option label="李四" value="2" />
+                <el-option label="4周以下" :value="JSON.stringify([null, 4])" />
+                <el-option label="4-8周" :value="JSON.stringify([4, 8])" />
+                <el-option label="8-12周" :value="JSON.stringify([8, 12])" />
+                <el-option label="12周以上" :value="JSON.stringify([12, null])" />
+                <el-option label="自定义" value="custom" />
               </el-select>
             </el-form>
             <p class="mt12 fs14 cl-grey-9">总计：<span class="cl-black">{{ page.total }} 条数据</span></p>
@@ -241,6 +251,7 @@
               :table-option="tableOption"
               :table-loading="tableLoading"
               :on-load="getList"
+              @refresh-change="handleRefreshChange"
             >
               <template slot="status" slot-scope="{scope}">
                 <span v-if="scope.row.status === 0" class="isIdle">闲置</span>
@@ -396,13 +407,11 @@ export default {
     'myMouseForm.operator'(n, o) {
       this.getList()
     },
-    'myMouseForm.genotypes'(n, o) {
-      this.getList()
-    },
     'exptMouseForm.varietiesId'(n, o) {
       // 基因型列表
       if (!n) {
         this.genesOpts = []
+        this.getList()
         return
       }
       getLisByVariety({
@@ -410,6 +419,10 @@ export default {
       }).then((res) => {
         this.genesOpts = res.data
       })
+      this.getList()
+    },
+    'exptMouseForm.genotypes'(n, o) {
+      this.getList()
     },
     'exptMouseForm.gender'(n, o) {
       this.getList()
@@ -421,9 +434,6 @@ export default {
       this.getList()
     },
     'exptMouseForm.operator'(n, o) {
-      this.getList()
-    },
-    'exptMouseForm.genotypes'(n, o) {
       this.getList()
     }
   },
@@ -453,6 +463,9 @@ export default {
           obj[key] = null
         }
       }
+      // 清空周龄
+      this.$set(this, 'weekRange', [])
+      this.getList()
     },
     // 选择周龄范围
     selectWeekRange(val) {
@@ -460,13 +473,18 @@ export default {
         mine: 'myMouseForm',
         expt: 'exptMouseForm'
       }
-      console.log(val)
+      console.log('========', val)
       if (val === 'custom') {
         this.weekRangeDialog = true
       } else {
+        if (!val) {
+          this.getList()
+          return
+        }
+        const parseVal = JSON.parse(val)
         // 注意周龄是到今天算的，所以后面的值算开始时间
-        this[MAP[this.activeName]].startTime = val[1] ? val[1] : 0
-        this[MAP[this.activeName]].endTime = val[0] ? val[0] : 0
+        this[MAP[this.activeName]].startTime = parseVal[1] ? parseVal[1] : 0
+        this[MAP[this.activeName]].endTime = parseVal[0] ? parseVal[0] : 0
         this.getList()
       }
     },
@@ -483,6 +501,7 @@ export default {
         this[MAP[this.activeName]].startTime = endWeek
         this[MAP[this.activeName]].endTime = startWeek
         this.getList()
+        this.weekRangeDialog = false
       }
     },
     // 获取负责人列表

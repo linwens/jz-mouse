@@ -1,6 +1,6 @@
 <template>
   <div class="dib">
-    <el-button type="primary" @click="chooseVarity()">选择品系</el-button>
+    <el-button type="primary" :disabled="disabled" @click="chooseVarity()">选择品系</el-button>
     <!-- 选择品系弹窗 -->
     <el-dialog
       title="选择品系"
@@ -29,6 +29,12 @@
 import { varietiesList } from '@/api/variety'
 export default {
   name: 'ChoiceVariety',
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       list: [],

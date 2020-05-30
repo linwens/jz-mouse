@@ -364,6 +364,7 @@ export default {
     getCageList() {
       this.tableLoading = true
       fetchCageList(Object.assign({
+        operator: this.$store.getters.info.id,
         current: this.cagePage.page,
         size: this.cagePage.limit
       })).then(response => {

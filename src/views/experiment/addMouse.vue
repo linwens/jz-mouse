@@ -125,6 +125,7 @@
             :cur-mouse-id.sync="curMouseId"
             :cur-mouse.sync="mouseInfo"
             :cur-mouse-expt.sync="mouseExptInfo"
+            :cant-choice-mouses="mouseIds"
           />
         </div>
       </div>
@@ -158,6 +159,7 @@ export default {
   },
   data() {
     return {
+      mouseIds: [], // 已被选的老鼠id
       curMouseId: null, // 当前选中小鼠的id
       mouseInfo: {},
       mouseExptInfo: {},
@@ -277,7 +279,8 @@ export default {
     this.needType = this.$route.params.type
     console.log('this.$route.params.index===', this.$route.params.index)
     // 实验组会带一个列表项的id或者索引
-    console.log(this.$route.params.index, this.$store.getters.addingExpt.$index)
+    console.log(this.$route.params.index, this.$store.getters.addingExpt)
+    this.mouseIds = this.$store.getters.addingExpt.table[0].experimentGroupSelectionMiceIds // 告诉鼠笼被选了的老鼠id
     this.item_index = this.$route.params.index >= 0 ? this.$route.params.index : this.$store.getters.addingExpt.$index
   },
   methods: {
@@ -367,6 +370,7 @@ export default {
     getCageList() {
       this.tableLoading = true
       fetchCageList(Object.assign({
+        operator: this.$store.getters.info.id,
         current: this.cagePage.page,
         size: this.cagePage.limit
       })).then(response => {
