@@ -445,7 +445,7 @@ export default {
       fetchCageList(Object.assign({
         operator: this.activeName === 'myCage' ? this.$store.getters.info.id : '',
         // current: this.cagePage.page,
-        // size: this.cagePage.limit,
+        size: -1, // -1获取全部数据； this.cagePage.limit,
         isMy: this.activeName === 'myCage' ? 0 : 1
       })).then(response => {
         this.cageList = response.data.records
