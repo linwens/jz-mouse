@@ -444,8 +444,8 @@ export default {
       this.tableLoading = true
       fetchCageList(Object.assign({
         operator: this.activeName === 'myCage' ? this.$store.getters.info.id : '',
-        current: this.cagePage.page,
-        size: this.cagePage.limit,
+        // current: this.cagePage.page,
+        // size: this.cagePage.limit,
         isMy: this.activeName === 'myCage' ? 0 : 1
       })).then(response => {
         this.cageList = response.data.records
