@@ -456,6 +456,9 @@ export default {
     },
     // 移笼操作
     moveCage() {
+      if (this.transStep === 0 && this.choosedCage) {
+        this.choosedCage = null
+      }
       // 选中了鼠笼后
       if (this.choosedCage && this.choicedList.length > 0) {
         this.$confirm('是否确认移笼?', '警告', {
@@ -530,6 +533,8 @@ export default {
       this.isChoosingCage = false
       // this.choicedList = []
       this.$set(this, 'choicedList', [])
+      this.$set(this, 'cacheChoicedList', [])
+      this.$set(this, 'curCageMouseList', {})
       this.choosedCage = null
       this.curMouseId = null
       this.getCageList() // 为了规避多选框勾选没法取消的折中办法

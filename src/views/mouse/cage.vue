@@ -82,6 +82,7 @@ export default {
   },
   data() {
     return {
+      canGo: false,
       optType: '', // 操作类型
       cageList: [], // 鼠笼列表
       cagePage: {
@@ -162,6 +163,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.canGo = true
         this.$router.back()
       }).catch(function() {
       })
@@ -263,7 +265,7 @@ export default {
         this.putInVisible = false
         if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
           this.$store.dispatch('app/clearMouseInfo')
-          this.$route.go(-2)
+          this.$router.go(-2)
           return
         }
       })
@@ -292,6 +294,20 @@ export default {
         return false
       }
       this.doAdd()
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    console.log(to)
+    if (!this.canGo && this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum !== 0) {
+      const answer = window.confirm(`您当前还有${this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum}只小鼠未新增完成，离开页面后系统将无法保留相关数据，是否继续离开？`)
+      if (answer) {
+        next()
+      } else {
+        next(false)
+      }
+    } else {
+      next()
     }
   }
 }

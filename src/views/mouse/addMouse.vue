@@ -3,7 +3,7 @@
     <main-box>
       <div class="mouse__addNew--form mt25 ml15 cl-black">
         <el-form ref="form" :model="form" size="small" label-width="95px" label-position="left">
-          <el-form-item label="品系名称:" class="mb17">
+          <el-form-item label="品系名称:" class="diy__is-require mb17">
             <el-input
               v-model="varietiesName"
               placeholder="请选择品系名称"
@@ -22,7 +22,7 @@
               />
             </div>
             <div class="df s-jcsb s-aic">
-              <el-form-item label="基因型:" label-width="70px" class="mb8">
+              <el-form-item label="基因型:" label-width="70px" class="diy__is-require mb8">
                 <el-input
                   v-model="currentGene.geneName"
                   placeholder="请输入基因型"
@@ -69,7 +69,7 @@
           <el-form-item label="状态:" class="mb0">
             <span>闲置</span>
           </el-form-item>
-          <el-form-item label="状态数量:" class="mb9">
+          <el-form-item label="状态数量:" class="diy__is-require mb9">
             <el-input
               v-model.number="form.femaleMiceNum"
               placeholder="0"
@@ -140,6 +140,7 @@
               <el-date-picker
                 v-model="form.separateCageRemindTime"
                 type="datetime"
+                default-time="09:00:00"
                 format="yyyy-MM-dd HH:mm"
                 value-format="timestamp"
                 class="w250"
@@ -162,6 +163,7 @@
               <el-date-picker
                 v-model="form.phenotypicIdentificationRemindTime"
                 type="datetime"
+                default-time="09:00:00"
                 format="yyyy-MM-dd HH:mm"
                 value-format="timestamp"
                 class="w250"

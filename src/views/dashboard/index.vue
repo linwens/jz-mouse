@@ -1,10 +1,10 @@
 <template>
   <div>
     <main-box class="home pos-r p0">
-      <div class="home__top-slot df s-jcc s-aic">
+      <!-- <div class="home__top-slot df s-jcc s-aic">
         <p class="df s-jcc s-aic"><i style="background-color: #9A68B4;" />雌鼠</p>
         <p class="df s-jcc s-aic mr16"><i style="background-color: #58A2FB;" />雄鼠</p>
-      </div>
+      </div> -->
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="我的小鼠" name="mine">
           <div v-if="activeName === 'mine'" class="bg-gray">
@@ -349,7 +349,7 @@ export default {
       exptMouseForm: { // 实验室小鼠
         gender: null,
         pureHeterozygote: null,
-        status: 3,
+        status: null,
         varietiesId: null,
         operator: null,
         genotypes: null,
@@ -439,7 +439,7 @@ export default {
   },
   created() {
     this.getPersons()
-    this.myMouseForm.operator = this.$store.getters.info.id
+    // this.myMouseForm.operator = this.$store.getters.info.id
     // 获取品系
     varietiesList().then(res => {
       this.$set(this, 'varietiesOpts', res.data.records)

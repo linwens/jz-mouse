@@ -152,6 +152,7 @@
               <el-date-picker
                 v-model="form.separateCageRemindTime"
                 type="datetime"
+                default-time="09:00:00"
                 format="yyyy-MM-dd HH:mm"
                 value-format="timestamp"
                 class="w250"
@@ -174,6 +175,7 @@
               <el-date-picker
                 v-model="form.phenotypicIdentificationRemindTime"
                 type="datetime"
+                default-time="09:00:00"
                 format="yyyy-MM-dd HH:mm"
                 value-format="timestamp"
                 class="w250"
@@ -322,7 +324,7 @@ export default {
       if (!this.form.birthDate) return 0
       const duration = +new Date() - this.form.birthDate
       const days = duration / 1000 / 60 / 60 / 24 % 7
-      return Math.floor(days)
+      return Math.floor(days) + 1
     }
   },
   watch: {

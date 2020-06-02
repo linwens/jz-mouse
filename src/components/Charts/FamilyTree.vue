@@ -193,8 +193,8 @@ export default {
                 position: 'top',
                 verticalAlign: 'middle',
                 align: 'left',
-                distance: 8
-                // rotate: -90,
+                distance: 8,
+                rotate: 5
               }
             },
             lineStyle: {
@@ -211,7 +211,7 @@ export default {
               }
             },
 
-            expandAndCollapse: true,
+            expandAndCollapse: false,
 
             animationDuration: 550, // 初始动画的时长
             animationDurationUpdate: 750 // 数据更新动画的时长

@@ -253,6 +253,13 @@ export default {
       return females
     }
   },
+  watch: {
+    'choicedList.mouses'(n, o) {
+      if (!n) { // 选中小鼠项情况，checkList也清空
+        this.$set(this, 'checkList', [])
+      }
+    }
+  },
   methods: {
     // 获取负责人列表
     getPersons() {
@@ -266,7 +273,7 @@ export default {
       if (status === 2 && this.needType === 'noBreed') {
         noWay = true
       }
-      if (status === 3 && this.needType === 'noExpt' ) {
+      if (status === 3 && this.needType === 'noExpt') {
         noWay = true
       }
 
