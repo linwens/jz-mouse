@@ -103,6 +103,7 @@
                 <el-option label="12周以上" :value="JSON.stringify([12, null])" />
                 <el-option label="自定义" value="custom" />
               </el-select>
+              <span v-if="weekRange === 'custom'" class="fs12">自定义周龄：{{ weekRangeForm.startWeek }}-{{ weekRangeForm.endWeek }}周</span>
             </el-form>
             <p class="mt12 fs14 cl-grey-9">总计：<span class="cl-black">{{ page.total }} 条数据</span></p>
           </div>
@@ -281,15 +282,15 @@
           <el-form-item label="周龄:" class="mb9">
             <el-input
               v-model="weekRangeForm.startWeek"
-              placeholder="0周"
+              placeholder="0"
               class="w80"
-            />
+            />周
             <span class="ml8">至</span>
             <el-input
               v-model="weekRangeForm.endWeek"
-              placeholder="0周"
+              placeholder="0"
               class="w80"
-            />
+            />周
           </el-form-item>
         </el-form>
       </div>
@@ -496,6 +497,8 @@ export default {
       }
       if (!this.weekRangeForm.startWeek && !this.weekRangeForm.endWeek) {
         this.$message.error('至少输入一个值')
+      } else if (this.weekRangeForm.startWeek > this.weekRangeForm.endWeek) {
+        this.$message.error('起始周龄不得大于结束周龄')
       } else {
         const { startWeek, endWeek } = this.weekRangeForm
         this[MAP[this.activeName]].startTime = endWeek

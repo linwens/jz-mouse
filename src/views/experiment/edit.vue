@@ -134,13 +134,14 @@
             :table-option="tableOption"
             :table-loading="tableLoading"
           >
-            <template v-if="canEdit" slot="experimentGroupSelectionMiceIds" slot-scope="{scope}">
+            <template slot="experimentGroupSelectionMiceIds" slot-scope="{scope}">
               <el-button
                 type="text"
                 size="mini"
                 @click="showMouses(scope)"
               >查看</el-button>
               <el-button
+                v-if="canEdit"
                 type="text"
                 size="mini"
                 @click="goAddMouse(scope)"

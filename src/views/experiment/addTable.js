@@ -46,9 +46,14 @@ export const mouseListOption = {
   menuWidth: 130,
 
   column: [{
-    width: 200,
-    label: '编号',
-    prop: 'miceNo',
+    width: 70,
+    label: '笼位号',
+    prop: 'cageNo',
+    overHidden: true
+  }, {
+    width: 70,
+    label: '标记',
+    prop: 'sign',
     overHidden: true
   }, {
     label: '性别',
@@ -85,6 +90,11 @@ export const mouseListOption = {
   }, {
     label: '健康状况',
     prop: 'status',
+    overHidden: true
+  }, {
+    width: 200,
+    label: '编号',
+    prop: 'miceNo',
     overHidden: true
   }]
 }

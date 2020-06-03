@@ -17,21 +17,22 @@ export const tableOption = {
     prop: 'miceNo'
   }, {
     label: '负责人',
+    width: 100,
     prop: 'operator',
     slot: true
   }, {
     label: '品系',
     prop: 'varietiesName',
-    width: 100,
+    width: 150,
     overHidden: true
   }, {
     label: '基因型',
     prop: 'geneName',
-    width: 100,
     overHidden: true
   }, {
     label: '纯/杂合子',
     prop: 'pureHeterozygote',
+    width: 80,
     dicData: [
       {
         label: '纯合子',
@@ -46,26 +47,30 @@ export const tableOption = {
     ]
   }, {
     label: '性别',
+    width: 60,
     prop: 'genderDesc'
   }, {
     label: '周龄',
     prop: 'birthDate',
-    width: 100,
+    width: 70,
     slot: true
   }, {
     label: '状态',
+    width: 60,
     prop: 'status',
     slot: true
   }, {
     label: '笼位号',
     prop: 'cageNo',
-    width: 100
+    width: 70
   }, {
     label: '家谱记录',
+    width: 80,
     prop: 'family',
     slot: true
   }, {
     label: '检测结果',
+    width: 80,
     prop: 'rslt',
     slot: true
   }]

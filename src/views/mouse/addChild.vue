@@ -7,7 +7,7 @@
           <p>母鼠编号: <span>{{ mother.miceInfoId }}</span></p>
         </div>
         <el-form ref="form" :model="form" size="small" label-width="95px" label-position="left">
-          <el-form-item label="品系名称:" class="mb17">
+          <el-form-item label="品系名称:" class="diy__is-require mb17">
             <el-input
               v-model="varietiesName"
               disabled
@@ -80,7 +80,7 @@
           <el-form-item label="状态:" class="mb0">
             <span>闲置</span>
           </el-form-item>
-          <el-form-item label="状态数量:" class="mb9">
+          <el-form-item label="状态数量:" class="diy__is-require mb9">
             <el-input
               v-model.number="form.femaleMiceNum"
               placeholder="0"
@@ -273,7 +273,7 @@ export default {
         maleMiceNum: 0,
         femaleMiceNum: 0,
         weight: null,
-        birthDate: null,
+        birthDate: +new Date(),
         pureHeterozygote: null,
         color: '#00CB7C',
         separateCageRemindTime: null,
@@ -500,21 +500,6 @@ export default {
       padding-left: 40px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(214,214,214,1);
-    }
-  }
-  .mouse__varietyDialog {
-    min-height: 254px;
-    .el-radio--small.is-bordered{
-      width: 112px;
-      padding: 8px 10px 0;
-      text-align: center;
-    }
-    .el-radio__input{
-      display: none;
-    }
-    .el-radio--small.is-bordered .el-radio__label{
-      padding-left: 0;
-      font-size: 14px;
     }
   }
 </style>

@@ -123,7 +123,7 @@
               <el-button class="w80 ml10" size="small" :disabled="isBuilding || isDeling" @click="moveCage()">{{ moveBtnText }}</el-button>
               <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling" @click="goAdd()">新建小鼠</el-button>
               <el-button class="w80" size="small" :disabled="isMoving || isDeling" @click="goBuild()">{{ buildBtnText }}</el-button>
-              <el-button class="w80" type="primary" :disabled="isMoving || isBuilding" plain size="small" style="margin-right: 46px;" @click="goDel()">{{ delBtnText }}</el-button>
+              <el-button class="w80" :disabled="isMoving || isBuilding" plain size="small" style="margin-right: 46px;" @click="goDel()">{{ delBtnText }}</el-button>
               <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling || (!curMouseId && !choosedCage)" @click="goEdit()">编辑</el-button>
               <el-button class="w80" size="small" @click="cancel()">取消</el-button>
             </div>

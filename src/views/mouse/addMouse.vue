@@ -22,7 +22,7 @@
               />
             </div>
             <div class="df s-jcsb s-aic">
-              <el-form-item label="基因型:" label-width="70px" class="diy__is-require mb8">
+              <el-form-item label="基因型:" label-width="70px" class="mb8">
                 <el-input
                   v-model="currentGene.geneName"
                   placeholder="请输入基因型"
@@ -418,21 +418,6 @@ export default {
       padding-left: 40px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(214,214,214,1);
-    }
-  }
-  .mouse__varietyDialog {
-    min-height: 254px;
-    .el-radio--small.is-bordered{
-      min-width: 112px;
-      padding: 8px 10px 0;
-      text-align: center;
-    }
-    .el-radio__input{
-      display: none;
-    }
-    .el-radio--small.is-bordered .el-radio__label{
-      padding-left: 0;
-      font-size: 14px;
     }
   }
 </style>

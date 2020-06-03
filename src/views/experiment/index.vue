@@ -16,6 +16,15 @@
             @on-load="getList"
             @refresh-change="handleRefreshChange"
           >
+            <template slot="name" slot-scope="{scope}">
+              <el-button
+                type="text"
+                size="mini"
+                @click="goEdit(scope.row)"
+              >
+                {{ scope.row.name }}
+              </el-button>
+            </template>
             <template slot="operation_check" slot-scope="{scope}">
               <expt-record :id="scope.row.id" btn-text="查看" type="text" size="medium" />
             </template>

@@ -63,6 +63,19 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+  .mouse__varietyDialog {
+    .el-radio--small.is-bordered{
+      padding: 8px 10px 0;
+      text-align: center;
+    }
+    .el-radio__input{
+      display: none;
+    }
+    .el-radio--small.is-bordered .el-radio__label{
+      padding-left: 0;
+      font-size: 14px;
+    }
+  }
 
 </style>

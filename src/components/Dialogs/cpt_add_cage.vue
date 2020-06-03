@@ -108,11 +108,21 @@ export default {
       cageDialog: false
     }
   },
+  created() {
+    const iptHistory = JSON.parse(JSON.stringify(this.$store.getters.inputHistory))
+    const latestCageNo = iptHistory['cageNo'].pop()
+    const latestRoomNo = iptHistory['roomNo'].pop()
+    const latestShelvesNo = iptHistory['shelvesNo'].pop()
+
+    this.addCageForm.cageNo = latestCageNo ? latestCageNo.value : '0'
+    this.addCageForm.roomNo = latestRoomNo ? latestRoomNo.value : '0'
+    this.addCageForm.shelvesNo = latestShelvesNo ? latestShelvesNo.value : '0'
+  },
   methods: {
     // 点击获取初始化笼位号
     clickGetNum() {
       getNewCageNo().then((res) => {
-        this.addCageForm.cageNo = res.data + ''
+        this.addCageForm.cageNo = Number(res.data) + 1 + ''
       })
       this.cageDialog = true
     },

@@ -9,18 +9,21 @@ export const tableOption = {
   rowClassName: 'mouse__table--stripe',
   align: 'left',
   menu: true,
-  menuWidth: 130,
+  menuWidth: 100,
 
   column: [{
     label: '品系名称',
+    width: 180,
     prop: 'varietiesName',
     overHidden: true
   }, {
     label: '基因型名称',
+    width: 300,
     prop: 'geneName',
     overHidden: true
   }, {
     label: '饲养条件',
+    width: 110,
     prop: 'miceCondition',
     overHidden: true
   }, {
@@ -29,10 +32,12 @@ export const tableOption = {
     width: 80
   }, {
     label: '应用领域',
+    width: 300,
     prop: 'area',
     overHidden: true
   }, {
     label: '健康状况',
+    width: 120,
     prop: 'status',
     overHidden: true
   }, {

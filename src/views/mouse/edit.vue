@@ -581,19 +581,4 @@ export default {
       border:1px solid rgba(214,214,214,1);
     }
   }
-  .mouse__varietyDialog {
-    min-height: 254px;
-    .el-radio--small.is-bordered{
-      min-width: 112px;
-      padding: 8px 10px 0;
-      text-align: center;
-    }
-    .el-radio__input{
-      display: none;
-    }
-    .el-radio--small.is-bordered .el-radio__label{
-      padding-left: 0;
-      font-size: 14px;
-    }
-  }
 </style>
