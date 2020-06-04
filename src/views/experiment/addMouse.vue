@@ -375,7 +375,7 @@ export default {
         isMy: 0,
         operator: this.$store.getters.info.id,
         current: this.cagePage.page,
-        size: this.cagePage.limit
+        size: -1
       })).then(response => {
         this.cageList = response.data.records
         this.cagePage.total = response.data.total

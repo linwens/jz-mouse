@@ -24,6 +24,7 @@
         :prop="item['prop']"
         :label="item['label']"
         :width="item['width']"
+        :min-width="item['minWidth']"
         :fixed="item['fixed']"
         :show-overflow-tooltip="item['overHidden']"
         :class-name="item['className']"

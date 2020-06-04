@@ -26,6 +26,9 @@ import '@/permission' // permission control
 import AsyncComputed from 'vue-async-computed' // 实现异步计算属性
 
 Vue.use(AsyncComputed)
+// 全局引入需要循环调用的组件
+import ShowFamily from '@/components/Dialogs/cpt_show_family'
+Vue.component('show-family', ShowFamily)
 
 /**
  * If you don't want to use mock-server

@@ -22,7 +22,7 @@
               />
             </div>
             <div class="df s-jcsb s-aic">
-              <el-form-item label="基因型:" label-width="70px" class="mb8">
+              <el-form-item label="基因型:" label-width="70px" class="diy__is-require mb8">
                 <el-input
                   v-model="currentGene.geneName"
                   placeholder="请输入基因型"
@@ -368,31 +368,31 @@ export default {
         this.$message.error('小鼠数量不能为0')
         return false
       }
-      if (!this.form.weight) {
-        this.$message.error('未输入体重')
-        return false
-      }
-      if (!this.form.birthDate) {
-        this.$message.error('未选择出生日期')
-        return false
-      }
-      if (!this.form.pureHeterozygote && this.form.pureHeterozygote !== 0) {
-        console.log(this.form.pureHeterozygote)
-        this.$message.error('未确定纯/杂合子')
-        return false
-      }
-      if (!this.form.color) {
-        this.$message.error('未选择颜色')
-        return false
-      }
-      if (!this.form.separateCageRemindTime) {
-        this.$message.error('未设置分笼时间')
-        return false
-      }
-      if (!this.form.phenotypicIdentificationRemindTime) {
-        this.$message.error('未设置表型鉴定时间')
-        return false
-      }
+      // if (!this.form.weight) {
+      //   this.$message.error('未输入体重')
+      //   return false
+      // }
+      // if (!this.form.birthDate) {
+      //   this.$message.error('未选择出生日期')
+      //   return false
+      // }
+      // if (!this.form.pureHeterozygote && this.form.pureHeterozygote !== 0) {
+      //   console.log(this.form.pureHeterozygote)
+      //   this.$message.error('未确定纯/杂合子')
+      //   return false
+      // }
+      // if (!this.form.color) {
+      //   this.$message.error('未选择颜色')
+      //   return false
+      // }
+      // if (!this.form.separateCageRemindTime) {
+      //   this.$message.error('未设置分笼时间')
+      //   return false
+      // }
+      // if (!this.form.phenotypicIdentificationRemindTime) {
+      //   this.$message.error('未设置表型鉴定时间')
+      //   return false
+      // }
       return true
     }
   }

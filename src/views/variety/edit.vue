@@ -21,7 +21,7 @@
               v-model="addGensForm.varietiesName"
               disabled
               placeholder="请输入品系名称"
-              class="w250"
+              class="w300 mr16"
             />
             <choice-variety-btn :variety.sync="curVariety" :disabled="optType === 'modify'" />
           </el-form-item>
@@ -36,13 +36,13 @@
             <!-- <el-input
               v-model="addGensForm.geneName"
               placeholder="请输入基因型名名称"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.geneName"
               :fetch-suggestions="history('geneName')"
               placeholder="请输入基因型名称"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
           <el-form-item
@@ -54,13 +54,13 @@
             <!-- <el-input
               v-model="addGensForm.miceCondition"
               placeholder="请输入饲养条件"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.miceCondition"
               :fetch-suggestions="history('miceCondition')"
               placeholder="请输入饲养条件"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
           <el-form-item
@@ -72,13 +72,13 @@
             <!-- <el-input
               v-model="addGensForm.status"
               placeholder="请输入健康状态"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.status"
               :fetch-suggestions="history('status')"
               placeholder="请输入健康状态"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
           <el-form-item
@@ -90,13 +90,13 @@
             <!-- <el-input
               v-model="addGensForm.color"
               placeholder="请输入毛色"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.color"
               :fetch-suggestions="history('color')"
               placeholder="请输入毛色"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
           <el-form-item
@@ -109,13 +109,13 @@
               v-model="addGensForm.area"
               type="textarea"
               placeholder="请输入应用领域"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.area"
               :fetch-suggestions="history('area')"
               placeholder="请输入应用领域"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
         </el-form>

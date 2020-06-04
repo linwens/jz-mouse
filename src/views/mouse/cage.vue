@@ -173,7 +173,7 @@ export default {
       this.tableLoading = true
       fetchCageList(Object.assign({
         current: this.cagePage.page,
-        size: this.cagePage.limit
+        size: -1
       })).then(res => {
         const { records } = res.data
         let list = []

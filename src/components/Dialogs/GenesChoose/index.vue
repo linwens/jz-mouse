@@ -2,7 +2,7 @@
   <div>
     <el-button type="primary" size="mini" class="w60" @click="showList()">{{ btnText }}</el-button>
     <!-- 文件列表弹窗 -->
-    <el-dialog title="选择基因型" :visible.sync="genesRecordVisible">
+    <el-dialog title="选择基因型" width="70%" :visible.sync="genesRecordVisible">
       <merge-table
         ref="crud"
         :data="genesData"

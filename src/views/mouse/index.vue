@@ -228,7 +228,6 @@
 import MouseCage from '@/components/MouseCage'
 import Guide from '@/components/Guide'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
-import ShowFamily from '@/components/Dialogs/cpt_show_family'
 import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
@@ -243,7 +242,6 @@ export default {
     ExptRecord,
     SetTime,
     Guide,
-    ShowFamily,
     UploadBtn,
     ViewFiles
   },

@@ -18,7 +18,7 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '基因型名称',
-    width: 300,
+    minWidth: 300,
     prop: 'geneName',
     overHidden: true
   }, {
@@ -32,7 +32,7 @@ export const tableOption = {
     width: 80
   }, {
     label: '应用领域',
-    width: 300,
+    minWidth: 300,
     prop: 'area',
     overHidden: true
   }, {

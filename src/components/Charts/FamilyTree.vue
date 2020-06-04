@@ -9,7 +9,10 @@
       <el-option label="父母记录" :value="0" />
       <el-option label="子鼠记录" :value="1" />
     </el-select>
+    <!-- 选中当前家谱的小鼠，不能重复打开相同的家谱弹窗 -->
+    <show-family v-if="curMouse && curMiceId !== miceId" :dup-count="num+1" :mice-id="curMiceId" btn-type="default" btn-size="mini" btn-text="查看家谱记录" />
     <el-button size="mini" icon="el-icon-search" @click="goDetail()">查看详情</el-button>
+    <span v-if="curMouse">当前小鼠：{{ curMouse }}</span>
     <div :id="miceId" :class="className" :style="{height:height,width:width, 'min-height': '500px'}" />
   </div>
 </template>
@@ -25,19 +28,22 @@ function recur(data, parent) { // data是对象
     if (parent.fatherId === data.id) {
       return {
         name: `父鼠${data.miceNo}`,
-        value: data.id
+        value: data.miceNo,
+        id: data.id
       }
     }
     if (parent.motherId === data.id) {
       return {
         name: `母鼠${data.miceNo}`,
-        value: data.id
+        value: data.miceNo,
+        id: data.id
       }
     }
   } else {
     data = {
       name: `小鼠 ${data.miceNo}`,
-      value: data.id,
+      value: data.miceNo,
+      id: data.id,
       fatherId: data.fatherId,
       motherId: data.motherId,
       children: data.children
@@ -50,8 +56,13 @@ function recur(data, parent) { // data是对象
 }
 
 export default {
+  name: 'FamilyTree',
   mixins: [resize],
   props: {
+    num: { // 序号
+      type: Number,
+      default: 0
+    },
     className: {
       type: String,
       default: 'fTree'
@@ -72,6 +83,7 @@ export default {
   data() {
     return {
       chart: null,
+      curMiceId: null,
       curMouse: '',
       curMouseStatus: null, // 小鼠是否删除
       treeType: 0 // 查看那种家谱树
@@ -131,16 +143,19 @@ export default {
         descendant: this.miceId
       }).then((res) => {
         const { data } = res
+        console.log('data===>', data)
         const rslt = {
-          name: `小鼠${this.miceNo}`,
-          value: this.miceId,
+          name: `小鼠${data[0].miceNo}`,
+          value: data[0].miceNo,
+          id: data[0].id,
           children: []
         }
         if (data && data[0] && data[0].children && data[0].children.length > 0) {
           for (let i = 0; i < data[0].children.length; i++) {
             rslt.children.push({
               name: `子鼠${data[0].children[i].miceNo}`,
-              value: data[0].children[i].id
+              value: data[0].children[i].miceNo,
+              id: data[0].children[i].id
             })
           }
         }
@@ -194,7 +209,7 @@ export default {
                 verticalAlign: 'middle',
                 align: 'left',
                 distance: 8,
-                rotate: 5
+                rotate: 8
               }
             },
             lineStyle: {
@@ -224,8 +239,9 @@ export default {
         seriesName: 'familyTree'
       }, function(e) {
         console.log('e=====>', e)
-        self.curMouse = e.value
-        getMouseState(e.value).then((res) => {
+        self.curMouse = e.data.value
+        self.curMiceId = e.data.id
+        getMouseState(e.data.id).then((res) => {
           this.curMouseStatus = res.data
         })
       })

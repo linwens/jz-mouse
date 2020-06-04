@@ -275,10 +275,13 @@
         :table-option="mouseListOption"
         :table-loading="tableLoading"
       >
+        <template slot="sign" slot-scope="{scope}">
+          <span>{{ scope.row.sign ? scope.row.position + scope.row.sign : '' }}</span>
+        </template>
         <template slot="birthDate" slot-scope="{scope}">
           <span>{{ calcWeek(scope.row.birthDate) }}</span>
         </template>
-        <template slot="menu" slot-scope="{scope}">
+        <template v-if="canEdit" slot="menu" slot-scope="{scope}">
           <el-button
             type="text"
             size="mini"
@@ -299,7 +302,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
-import { addItemObj, addObj, delItemObj, getExptInfoById, fetchItemList, fetchList, updateExptInfo, getMouseByGroupId } from '@/api/experiment'
+import { getExptInfoById, updateExptInfo } from '@/api/experiment'
 import { getMouseInfoByIds } from '@/api/mouse'
 import { calcWeek } from '@/components/Mixins/calcWeek'
 
@@ -408,7 +411,7 @@ export default {
     delMouse: function(scope) {
       console.log(scope)
       const _this = this
-      this.$confirm('是否确认删除小鼠"' + scope.row.miceId + '"的数据?', '警告', {
+      this.$confirm('是否确认删除小鼠"' + scope.row.miceNo + '"的数据?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

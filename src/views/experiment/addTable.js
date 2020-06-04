@@ -54,9 +54,11 @@ export const mouseListOption = {
     width: 70,
     label: '标记',
     prop: 'sign',
-    overHidden: true
+    overHidden: true,
+    slot: true
   }, {
     label: '性别',
+    width: 70,
     prop: 'gender',
     dicData: [
       {
@@ -78,7 +80,8 @@ export const mouseListOption = {
   }, {
     width: 100,
     label: '品系',
-    prop: 'varietiesName'
+    prop: 'varietiesName',
+    overHidden: true
   }, {
     width: 100,
     label: '基因型',

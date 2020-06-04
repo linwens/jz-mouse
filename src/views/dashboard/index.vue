@@ -307,13 +307,11 @@
 import MergeTable from '@/components/MergeTable'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
 import { tableOption } from './table'
-import { addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getUsers } from '@/api/home'
+import { fetchList, getUsers } from '@/api/home'
 import { varietiesList } from '@/api/variety'
 import { getLisByVariety } from '@/api/genes'
 
 import Guide from '@/components/Guide'
-import FileViewer from '@/components/FileViewer'
-import ShowFamily from '@/components/Dialogs/cpt_show_family'
 import SumBar from '@/components/Charts/SumBar'
 import { mapGetters } from 'vuex'
 
@@ -322,9 +320,7 @@ export default {
   components: {
     MergeTable,
     Guide,
-    FileViewer,
     ViewFiles,
-    ShowFamily,
     SumBar
   },
   data() {
