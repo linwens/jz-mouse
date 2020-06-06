@@ -366,7 +366,7 @@ export default {
 
 <style lang="scss">
   .mouse-cage {
-    width: 536px;
+    width: 520px;
     height: 280px;
     border: 2px solid #D6D6D6;
     margin-bottom: 16px;
@@ -431,7 +431,7 @@ export default {
         height: 100%;
       }
       &--female, &--male {
-        width: 462px;
+        width: 450px;
         min-height: 50%;
         overflow-x: auto;
       }

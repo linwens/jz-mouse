@@ -329,7 +329,7 @@ export default {
       // 选中同一鼠笼中部分小鼠
       // if (curCageMouse.length === curMouses.length && curCageMouse.length < curCage[0].miceInfoByMiceCageQueryVO.length) {}
       // 选择了不同笼内的小鼠
-      this.$confirm('您当前所选的小鼠不符合繁育要求，请将选择空闲鼠笼进行移笼？', '警告', {
+      this.$confirm('繁育组小鼠需要在同一个鼠笼中且鼠笼中小鼠不能有其他状态的小鼠。您当前所选的小鼠不符合繁育要求，是否选择空闲鼠笼进行移笼？', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

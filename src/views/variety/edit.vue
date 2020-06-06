@@ -158,7 +158,12 @@ export default {
     curVariety(n, o) {
       const newVariety = JSON.parse(n)
       this.varietiesId = newVariety.id
-      this.$set(this, 'addGensForm', newVariety)
+      if (newVariety.isSystem === 1) { // 渲染内置基因型
+        this.$set(this, 'addGensForm', newVariety.miceGeneVO)
+        this.$set(this.addGensForm, 'varietiesName', newVariety.varietiesName)
+      } else {
+        this.$set(this, 'addGensForm', newVariety)
+      }
     }
   },
   created() {

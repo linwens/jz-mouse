@@ -3,7 +3,7 @@
     <el-button :type="btnType" :size="btnSize" @click="showFamily()">{{ btnText }}</el-button>
     <!-- 家谱弹窗 -->
     <el-dialog
-      :style="{'margin-top': `calc( 15vh - ${20 * dupCount}px )`, 'left': 20 * dupCount + 'px'}"
+      :style="{'margin-top': dupCount ? `-${20 * dupCount}px` : 0, 'left': 20 * dupCount + 'px'}"
       title="家谱记录"
       :visible.sync="dialogVisible"
       append-to-body

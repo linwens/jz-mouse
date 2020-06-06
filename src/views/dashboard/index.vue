@@ -475,6 +475,8 @@ export default {
         this.weekRangeDialog = true
       } else {
         if (!val) {
+          this[MAP[this.activeName]].startTime = null
+          this[MAP[this.activeName]].endTime = null
           this.getList()
           return
         }

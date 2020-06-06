@@ -108,30 +108,131 @@
               </el-form-item>
               <div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">性别:</span><i class="mouse__edit--info--i">{{ form.gender === 1 ? '雌' : '雄' }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">体重:</span><i class="mouse__edit--info--i">{{ form.weight }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">性别:</span><i class="mouse__edit--info--i">{{ form.gender === 1 ? '雌' : '雄' }}</i></p> -->
+                  <el-form-item label="性别" class="mb9 mr62">
+                    <el-select
+                      v-model="form.pureHeterozygote"
+                      placeholder="请选择性别"
+                      class="w250"
+                    >
+                      <el-option label="雄" :value="0" />
+                      <el-option label="雌" :value="1" />
+                    </el-select>
+                  </el-form-item>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">体重:</span><i class="mouse__edit--info--i">{{ form.weight }}</i></p> -->
+                  <el-form-item label="体重:" class="mb9">
+                    <el-input
+                      v-model.number="form.weight"
+                      :disabled="!canEdit"
+                      placeholder="请输入体重"
+                      class="w250"
+                    />
+                    <span class="ml8">g</span>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">基因型:</span><i class="mouse__edit--info--i">{{ form.geneName }}</i></p>
-                  <p class="mouse__edit--info--p df">
+                  <p class="mouse__edit--info--p"><span class="dib mouse__edit--info--span" style="width: 95px;">基因型:</span><i class="mouse__edit--info--i">{{ currentGene.geneName }}</i></p>
+                  <!-- <p class="mouse__edit--info--p df">
                     <span class="mouse__edit--info--span">显示颜色:</span>
                     <i class="mouse__edit--info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': form.miceColor}" />
-                  </p>
+                  </p> -->
+                  <el-form-item label="显示颜色:" class="mb9">
+                    <el-color-picker v-model="form.miceColor" size="mini" style="position: relative;top: 2px;height: 32px;" />
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">出生日期:</span><i class="mouse__edit--info--i">{{ form.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">周龄:</span><i class="mouse__edit--info--i">{{ weekAge + '周' + dayAge + '天' }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">出生日期:</span><i class="mouse__edit--info--i">{{ form.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">周龄:</span><i class="mouse__edit--info--i">{{ weekAge + '周' + dayAge + '天' }}</i></p> -->
+                  <el-form-item label="出生日期:" class="mb9 mr62">
+                    <el-date-picker
+                      v-model="form.birthDate"
+                      type="datetime"
+                      placeholder="请输入出生日期"
+                      format="yyyy 年 MM 月 dd 日"
+                      value-format="timestamp"
+                      class="w250"
+                    />
+                  </el-form-item>
+                  <el-form-item label="周龄:" class="mb9">
+                    <el-input
+                      v-model="weekAge"
+                      placeholder="0"
+                      disabled
+                      class="w80"
+                    />
+                    <span class="ml8">周</span>
+                    <el-input
+                      v-model="dayAge"
+                      placeholder="0"
+                      disabled
+                      class="w80"
+                    />
+                    <span class="ml8">天</span>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">纯/杂合子:</span><i class="mouse__edit--info--i">{{ pure }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">纯/杂合子:</span><i class="mouse__edit--info--i">{{ pure }}</i></p> -->
+                  <el-form-item label="纯/杂合子" class="mb9 mr62">
+                    <el-select
+                      v-model="form.pureHeterozygote"
+                      placeholder="请选择纯/杂合子"
+                      class="w250"
+                    >
+                      <el-option label="纯合子" :value="0" />
+                      <el-option label="杂合子" :value="1" />
+                      <el-option label="未测试" :value="2" />
+                    </el-select>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼时间:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼提醒:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindFlag ? '否' : '是' }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼时间:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼提醒:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindFlag ? '否' : '是' }}</i></p> -->
+                  <el-form-item label="分笼时间:" class="mb9 mr62">
+                    <el-date-picker
+                      v-model="form.separateCageRemindTime"
+                      type="datetime"
+                      default-time="09:00:00"
+                      format="yyyy-MM-dd HH:mm"
+                      value-format="timestamp"
+                      class="w250"
+                      placeholder="选择分笼时间"
+                    />
+                  </el-form-item>
+                  <el-form-item label="分笼提醒:" class="mb9 mr62">
+                    <el-select
+                      v-model="form.separateCageRemindFlag"
+                      placeholder="请选择是否分笼提醒"
+                      class="w250"
+                    >
+                      <el-option label="是" :value="0" />
+                      <el-option label="否" :value="1" />
+                    </el-select>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定时间:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定提醒:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindFlag ? '否' : '是' }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定时间:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定提醒:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindFlag ? '否' : '是' }}</i></p> -->
+                  <el-form-item label="表型鉴定时间:" class="mb9 mr62">
+                    <el-date-picker
+                      v-model="form.phenotypicIdentificationRemindTime"
+                      type="datetime"
+                      default-time="09:00:00"
+                      format="yyyy-MM-dd HH:mm"
+                      value-format="timestamp"
+                      class="w250"
+                      placeholder="选择分笼时间"
+                    />
+                  </el-form-item>
+                  <el-form-item label="表型鉴定提醒:" class="mb9 mr62">
+                    <el-select
+                      v-model="form.phenotypicIdentificationRemindFlag"
+                      placeholder="请选择是否表型鉴定提醒"
+                      class="w250"
+                    >
+                      <el-option label="是" :value="0" />
+                      <el-option label="否" :value="1" />
+                    </el-select>
+                  </el-form-item>
                 </div>
               </div>
               <div>
@@ -297,14 +398,14 @@ export default {
     // 周龄，不存数据库
     weekAge() {
       if (!this.form.birthDate) return 0
-      const duration = +new Date() - this.form.birthDate * 1000
+      const duration = +new Date() - this.form.birthDate
       const weeks = duration / 1000 / 60 / 60 / 24 / 7
       return Math.floor(weeks)
     },
     // 天
     dayAge() {
       if (!this.form.birthDate) return 0
-      const duration = +new Date() - this.form.birthDate * 1000
+      const duration = +new Date() - this.form.birthDate
       const days = duration / 1000 / 60 / 60 / 24 % 7
       return Math.floor(days)
     },
@@ -334,6 +435,7 @@ export default {
       const newVariety = JSON.parse(n)
       this.varietiesName = newVariety.varietiesName
       this.varietiesId = newVariety.id
+      this.form.varietiesId = newVariety.id
     },
     genes(n, o) {
       const newGenes = JSON.parse(n)
@@ -390,6 +492,10 @@ export default {
         this.varietiesName = varietiesName
         this.varietiesId = Number(varietiesId)
         this.$set(this, 'form', res.data)
+        // 时间戳换算
+        this.$set(this.form, 'birthDate', res.data.birthDate * 1000)
+        this.$set(this.form, 'separateCageRemindTime', res.data.separateCageRemindTime * 1000)
+        this.$set(this.form, 'phenotypicIdentificationRemindTime', res.data.phenotypicIdentificationRemindTime * 1000)
         this.form.varietiesId = Number(varietiesId)
         this.$set(this, 'currentGene', {
           varietiesName,
@@ -437,7 +543,13 @@ export default {
         this.canEdit = true
         return false
       }
-      editMouse(this.form).then((res)=> {
+      const params = JSON.parse(JSON.stringify(this.form))
+      // 时间戳换算
+      params.birthDate = params.birthDate / 1000
+      params.separateCageRemindTime = params.separateCageRemindTime / 1000
+      params.phenotypicIdentificationRemindTime = params.phenotypicIdentificationRemindTime / 1000
+
+      editMouse(params).then((res) => {
         this.$message.success('修改小鼠信息成功')
         this.$store.dispatch('app/clearMouseInfo')
         this.goBack()

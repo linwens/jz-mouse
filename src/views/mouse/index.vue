@@ -660,6 +660,8 @@ export default {
       padding: 16px 24px;
     }
     &3{
+      max-height: 700px;
+      overflow-y: scroll;
       padding: 0 16px 16px;
     }
     &--h6{

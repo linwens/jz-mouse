@@ -172,6 +172,7 @@ export default {
     getCageList() {
       this.tableLoading = true
       fetchCageList(Object.assign({
+        isMy: 0,
         current: this.cagePage.page,
         size: -1
       })).then(res => {
