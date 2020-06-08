@@ -50,7 +50,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="list__content--female">fsfdsfdsfd</div>
+          <div v-else class="list__content--female" />
           <div v-if="maleSum.length > 0" class="list__content--male df s-jcfs s-aic ofh">
             <div
               v-for="item in maleSum"
