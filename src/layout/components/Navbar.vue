@@ -38,7 +38,7 @@ export default {
     ])
   },
   created() {
-    this.getUnRead()
+    // this.getUnRead()
   },
   methods: {
     toggleSideBar() {

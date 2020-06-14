@@ -135,23 +135,17 @@
 <script>
 import MouseCage from '@/components/MouseCage'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
-import FileViewer from '@/components/FileViewer'
 import ShowFamily from '@/components/Dialogs/cpt_show_family'
-import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
-import MergeTable from '@/components/MergeTable'
 import { recordOption } from './recordTable'
-import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
+import { fetchCageList } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
   components: {
-    MergeTable,
     MouseCage,
-    AddCageBtn,
     ExptRecord,
-    FileViewer,
     ShowFamily,
     UploadBtn,
     ViewFiles
@@ -322,7 +316,7 @@ export default {
       })
       console.log('curMouses==', curMouses, 'curCageMouse==', curCageMouse, 'curCage==', curCage)
       // 选中了同一笼内的所有鼠
-      if (curCageMouse.length === curCage[0].miceInfoByMiceCageQueryVO.length) {
+      if ((curMouses.length === curCageMouse.length) && (curCageMouse.length === curCage[0].miceInfoByMiceCageQueryVO.length)) {
         this.doAdd(curCageMouse)
         return false
       }

@@ -17,7 +17,7 @@ export const filesOption = {
     overHidden: true
   }, {
     label: '文件格式',
-    prop: 'bizType',
+    prop: 'fileType',
     width: 180
   }, {
     label: '上传时间',

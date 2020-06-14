@@ -9,6 +9,7 @@
           :data="tableData"
           :table-option="tableOption"
           :table-loading="tableLoading"
+          @refresh-change="handleRefreshChange"
         >
           <template slot="menu" slot-scope="scope">
             <div v-if="isAdmin">

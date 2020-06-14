@@ -30,9 +30,11 @@
         :auto-upload="false"
         :on-exceed="handleExceed"
         :on-success="handleSuccess"
+        :on-error="handleError"
+        :disabled="isUploading"
       >
         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" :disabled="isUploading" @click="submitUpload">上传到服务器</el-button>
         <div slot="tip" class="el-upload__tip">可上传jpg/png、pdf、Excel、Word文件</div>
       </el-upload>
     </el-dialog>
@@ -63,7 +65,7 @@
 </template>
 
 <script>
-import { Message } from 'element-ui';
+import { Message } from 'element-ui'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -88,6 +90,7 @@ export default {
   },
   data() {
     return {
+      isUploading: false,
       dialogVisible: false,
       // 根据是否传了id 走不同的上传接口
       actionUrl: this.id ? `${process.env.VUE_APP_BASE_API}/sysfile/uploads/${this.bizType}/${this.id}` : `${process.env.VUE_APP_BASE_API}/sysfile/uploadFiles`,
@@ -95,11 +98,19 @@ export default {
       cacheUrl: []
     }
   },
+  watch: {
+    dialogVisible(n, o) {
+      if (!n) {
+        this.fileList = []
+      }
+    }
+  },
   created() {
     // this.getParams()
   },
   methods: {
     submitUpload() { // 上传文件
+      this.isUploading = true
       this.$refs.upload.submit()
     },
     getToken,
@@ -112,9 +123,14 @@ export default {
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
+    handleError(err, file, fileList) {
+      this.isUploading = false
+      this.$message.error(`${err.type}: 文件上传失败`)
+    },
     handleSuccess(response, file, fileList) {
-      Message.closeAll()
-      Message.success('文件上传成功')
+      this.isUploading = false
+      this.$message.closeAll()
+      this.$message.success('文件上传成功')
       console.log('上传成功返回...', this.id, response)
       console.log(response, file, fileList)
       if (!this.id && response.data.length > 0) {
@@ -126,13 +142,17 @@ export default {
         if (this.cacheUrl.length === fileList.length) {
           console.log('触发done')
           this.$emit('done', this.cacheUrl, fileList)
-          this.dialogVisible = false
-          this.fileList = []
+          // this.dialogVisible = false
+          setTimeout(() => {
+            this.dialogVisible = false
+          }, 2000)
         }
       }
       if (this.id) {
-        this.dialogVisible = false
-        this.fileList = []
+        // this.dialogVisible = false
+        setTimeout(() => {
+          this.dialogVisible = false
+        }, 2000)
       }
     },
     beforeRemove(file, fileList) {

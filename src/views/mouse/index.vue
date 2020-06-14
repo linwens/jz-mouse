@@ -99,14 +99,18 @@
             </div>
           </div>
           <div>
-            <div v-if="Object.keys(mouseExptInfo).length > 0" class="pos-r">
-              <el-tooltip v-for="item in mouseExptInfo.experimentTimes.filter(el=>{ return el.operationType === 1})" :key="item.time+item.operationType" effect="dark" :content="item.time * 1000 | timeFormat('yyyy-MM-dd hh:mm')" placement="top">
-                <svg-icon icon-class="loc-green" class="mouse__progrTag mouse__progrTag--g" :style="{'left': setHandleTimeScale(item.time) + 'px'}" />
-              </el-tooltip>
-              <el-tooltip v-for="item in mouseExptInfo.experimentTimes.filter(el=>{ return el.operationType === 0})" :key="item.time+item.operationType" effect="dark" :content="item.time * 1000 | timeFormat('yyyy-MM-dd hh:mm')" placement="bottom">
-                <svg-icon icon-class="loc-yellow" class="mouse__progrTag mouse__progrTag--y" :style="{'left': setTestTimeScale(item.time) + 'px'}" />
-              </el-tooltip>
-              <el-progress :text-inside="true" :stroke-width="24" :percentage="Number(percentage)" color="#58A2FB" />
+            <div class="df s-jcfs s-aic">
+              <div v-if="Object.keys(mouseExptInfo).length > 0" class="mr10 fs14">{{ Number(percentage) }}%</div>
+              <div v-if="Object.keys(mouseExptInfo).length > 0" class="w350 pos-r">
+                <el-tooltip v-for="item in mouseExptInfo.experimentTimes.filter(el=>{ return el.operationType === 1})" :key="item.time+item.operationType" effect="dark" :content="item.time * 1000 | timeFormat('yyyy-MM-dd hh:mm')" placement="top">
+                  <svg-icon icon-class="loc-green" class="mouse__progrTag mouse__progrTag--g" :style="{'left': setHandleTimeScale(item.time) + 'px'}" />
+                </el-tooltip>
+                <el-tooltip v-for="item in mouseExptInfo.experimentTimes.filter(el=>{ return el.operationType === 0})" :key="item.time+item.operationType" effect="dark" :content="item.time * 1000 | timeFormat('yyyy-MM-dd hh:mm')" placement="bottom">
+                  <svg-icon icon-class="loc-yellow" class="mouse__progrTag mouse__progrTag--y" :style="{'left': setTestTimeScale(item.time) + 'px'}" />
+                </el-tooltip>
+                <el-progress :show-text="false" :text-inside="true" :stroke-width="24" :percentage="Number(percentage)" color="#58A2FB" />
+              </div>
+
             </div>
             <div class="df s-jcc s-aic mt30">
               <set-time v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" @done="setProgress" />
@@ -116,18 +120,18 @@
         </div>
       </div>
       <div class="mouse__info3 bg-white w-100 mt16">
+        <div v-if="activeName === 'myCage'" class="df mb16 operator-btns">
+          <add-cage-btn :disabled="isBuilding || isDeling" @done="getCageList" />
+          <el-button class="w80 ml10" size="small" :disabled="isBuilding || isDeling" @click="moveCage()">{{ moveBtnText }}</el-button>
+          <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling" @click="goAdd()">新建小鼠</el-button>
+          <el-button class="w80" size="small" :disabled="isMoving || isDeling" @click="goBuild()">{{ buildBtnText }}</el-button>
+          <el-button class="w80" :disabled="isMoving || isBuilding" plain size="small" style="margin-right: 46px;" @click="goDel()">{{ delBtnText }}</el-button>
+          <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling || (!curMouseId && !choosedCage)" @click="goEdit()">编辑</el-button>
+          <el-button class="w80" size="small" @click="cancel()">取消</el-button>
+        </div>
         <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="我的鼠笼" name="myCage">
-            <div class="df mb16">
-              <add-cage-btn :disabled="isBuilding || isDeling" @done="getCageList" />
-              <el-button class="w80 ml10" size="small" :disabled="isBuilding || isDeling" @click="moveCage()">{{ moveBtnText }}</el-button>
-              <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling" @click="goAdd()">新建小鼠</el-button>
-              <el-button class="w80" size="small" :disabled="isMoving || isDeling" @click="goBuild()">{{ buildBtnText }}</el-button>
-              <el-button class="w80" :disabled="isMoving || isBuilding" plain size="small" style="margin-right: 46px;" @click="goDel()">{{ delBtnText }}</el-button>
-              <el-button class="w80" size="small" :disabled="isMoving || isBuilding || isDeling || (!curMouseId && !choosedCage)" @click="goEdit()">编辑</el-button>
-              <el-button class="w80" size="small" @click="cancel()">取消</el-button>
-            </div>
-            <div class="df s-fwwp s-jcsa">
+            <div class="df s-fwwp s-jcsa mouse-cages">
               <mouse-cage
                 v-for="(item, index) in cageList"
                 :key="index"
@@ -399,6 +403,8 @@ export default {
             operator: userId
           })).then((res) => {
             this.$message.success('编辑鼠笼成功')
+            this.cancel()
+            this.getCageList()
           })
         } else {
           return false
@@ -660,9 +666,22 @@ export default {
       padding: 16px 24px;
     }
     &3{
-      max-height: 700px;
-      overflow-y: scroll;
+      position: relative;
+      // max-height: 700px;
+      // overflow-y: scroll;
       padding: 0 16px 16px;
+
+      .operator-btns {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        z-index: 2;
+      }
+
+      .mouse-cages {
+        max-height: 700px;
+        overflow-y: scroll;
+      }
     }
     &--h6{
       margin-bottom: 8px;
@@ -687,6 +706,9 @@ export default {
       width: 143px;
       height: 80px;
       border: 1px solid #F0F0F0;
+    }
+    .w350 {
+      width: 350px;
     }
     .mouse__progrTag {
       position: absolute;

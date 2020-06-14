@@ -546,7 +546,7 @@ export default {
     },
     // 实验小鼠柱状图，切换负责人
     changeMan() {
-      this.barTypeBtn = this.barTypeBtn === '人员' ? '小鼠' : '人员'
+      this.barTypeBtn = this.barTypeBtn === '人员' ? '基因型' : '人员'
       this.barType = this.barType === 'operator' ? 'allVarieties' : 'operator'
     }
   }

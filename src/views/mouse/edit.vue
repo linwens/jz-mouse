@@ -12,7 +12,7 @@
               <el-form-item label="品系名称:" class="mb17">
                 <el-input
                   v-model="varietiesName"
-                  :disabled="!canEdit"
+                  disabled
                   placeholder="请选择品系名称"
                   class="w250"
                 />
@@ -95,10 +95,11 @@
                 />
                 <el-input
                   v-else
-                  v-model="form.sign"
+                  v-model.number="form.sign"
                   :disabled="!canEdit"
                   placeholder="请输入1-99的数字"
                   style="width: 142px;"
+                  @input="one2nine(form.sign)"
                 />
                 <div v-show="form.position !== 'custom'" class="mouse__edit--img mt8">
                   <img v-if="form.position !== 'custom'" :src="`http://bllb-animal-test.oss-cn-hangzhou.aliyuncs.com/mice-sign/${form.filePrefix}/${form.sign}.jpg`" alt="">
@@ -484,6 +485,17 @@ export default {
     })
   },
   methods: {
+    // 控制标记值为数字
+    one2nine(val) { // 限制放入小鼠数量的输入值
+      if ((val === 0 || val) && (val < 1 || typeof val !== 'number')) {
+        this.form.sign = 1
+        this.$message.error('请输入1-99的数字')
+      }
+      if (val > 99) {
+        this.form.sign = 99
+        this.$message.error('请输入1-99的数字')
+      }
+    },
     // 获取小鼠信息
     getMouserInfo() {
       getMouseInfo(this.curMouseId).then((res) => {

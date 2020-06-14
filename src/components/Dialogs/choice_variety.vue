@@ -12,7 +12,7 @@
           :key="item.id"
           v-model="variety_radio"
           :label="item"
-          class="mr0"
+          class="mr10 ml0 mb10"
           size="small"
           border
         >{{ item.varietiesName }}</el-radio>

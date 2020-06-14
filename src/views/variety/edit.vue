@@ -41,6 +41,7 @@
             <el-autocomplete
               v-model="addGensForm.geneName"
               :fetch-suggestions="history('geneName')"
+              :disabled="isWT"
               placeholder="请输入基因型名称"
               class="w400"
             />
@@ -141,6 +142,7 @@ export default {
   mixins: [inputRemenber],
   data() {
     return {
+      isWT: false,
       curVariety: null, // 当前选中的品系
       varietiesId: '',
       optType: 'add', // 操作方式
@@ -158,9 +160,13 @@ export default {
     curVariety(n, o) {
       const newVariety = JSON.parse(n)
       this.varietiesId = newVariety.id
+      if (newVariety.geneName === 'WT') {
+        this.isWT = true
+      }
       if (newVariety.isSystem === 1) { // 渲染内置基因型
         this.$set(this, 'addGensForm', newVariety.miceGeneVO)
         this.$set(this.addGensForm, 'varietiesName', newVariety.varietiesName)
+        this.$set(this.addGensForm, 'geneName', '') // 基因型空掉
       } else {
         this.$set(this, 'addGensForm', newVariety)
       }
@@ -168,7 +174,7 @@ export default {
   },
   created() {
     console.log(this.$route.params)
-    if (this.$route.params.miceGeneId) {
+    if (this.$route.params.miceGeneId) { // 后端没接口，直接前端从列表页带过来
       this.optType = 'modify'
       this.curVariety = JSON.stringify(this.$route.params)
     }

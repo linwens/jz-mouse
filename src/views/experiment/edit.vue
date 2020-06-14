@@ -216,7 +216,7 @@
           <el-form-item
             label="分组名称:"
             label-width="80px"
-            class="mb8"
+            class="mb18"
             prop="experimentGroupName"
             :rules="[
               { required: true, message: '分组名称不能为空', trigger: 'blur' }
@@ -358,6 +358,13 @@ export default {
       }
     }
   },
+  watch: {
+    addGroupDialog(n, o) {
+      if (!n) {
+        this.$refs['addGroupForm'].resetFields()
+      }
+    }
+  },
   created() {
     console.log(this.$route)
     const cacheExpts = this.$store.getters.addingExpt
@@ -474,13 +481,19 @@ export default {
     },
     // 新建分组
     addGroup() {
-      this.addGroupDialog = false
-      // 有编号就是编辑
-      if (typeof this.addGroupForm.index === 'number') {
-        this.editListItem(this.addGroupForm)
-      } else {
-        this.addListItem(this.addGroupForm)
-      }
+      this.$refs['addGroupForm'].validate((valid) => {
+        if (valid) {
+          this.addGroupDialog = false
+          // 有编号就是编辑
+          if (typeof this.addGroupForm.index === 'number') {
+            this.editListItem(this.addGroupForm)
+          } else {
+            this.addListItem(this.addGroupForm)
+          }
+        } else {
+          return false
+        }
+      })
     },
     // 新增列表项
     addListItem(data) {
