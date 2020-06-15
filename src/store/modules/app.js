@@ -11,7 +11,7 @@ const state = {
   addingMouses: getStorageItem('adding-mouse') || '',
   addingChildMouse: getStorageItem('adding-child') || '', // 新增子鼠
   addingExpt: getStorageItem('adding-expt') || '',
-  addingBreed: getStorageItem('adding-breed') || ''
+  addingBreed: getStorageItem('adding-breed') || { miceIds: null }
 }
 
 const mutations = {

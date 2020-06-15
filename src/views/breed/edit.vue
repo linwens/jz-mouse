@@ -126,7 +126,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './editTable'
-import { addBreed, getbreedDetail, delItemObj, editBreed, removeBreedMouse } from '@/api/breed'
+import { addBreed, getbreedDetail, editBreed } from '@/api/breed'
 import { calcWeek } from '@/components/Mixins/calcWeek'
 
 export default {
@@ -175,6 +175,7 @@ export default {
     // 如果是编辑，获取详情
     const cacheInfo = this.$store.getters.addingBreed
     const cacheMouses = this.$store.getters.addingMouses
+    console.log(this.$store.getters)
     console.log(cacheInfo)
     cacheInfo.miceIds = cacheMouses // CNMB
     console.log(this.type)

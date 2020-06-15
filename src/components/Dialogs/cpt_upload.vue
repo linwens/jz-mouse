@@ -125,7 +125,8 @@ export default {
     },
     handleError(err, file, fileList) {
       this.isUploading = false
-      this.$message.error(`${err.type}: 文件上传失败`)
+      console.log('handleError===', err)
+      this.$message.error('文件上传失败')
     },
     handleSuccess(response, file, fileList) {
       this.isUploading = false
