@@ -2,80 +2,121 @@
   <div>
     <main-box class="variety__addGenes mt25 cl-black fs14">
       <div>
-        <el-form ref="addGensForm" :model="addGensForm" label-position="left" size="mini">
-          <el-form-item label="品系名称:" label-width="80px" class="mb8">
+        <el-form
+          ref="addGensForm"
+          :model="addGensForm"
+          label-position="left"
+          label-width="90px"
+          size="mini"
+        >
+          <el-form-item
+            label="品系名称:"
+            class="mb18"
+            prop="varietiesName"
+            :rules="[
+              { required: true, message: '品系名称不能为空', trigger: 'change' }
+            ]"
+          >
             <el-input
               v-model="addGensForm.varietiesName"
               disabled
               placeholder="请输入品系名称"
-              class="w250"
+              class="w300 mr16"
             />
-            <choice-variety-btn :variety.sync="curVariety" />
+            <choice-variety-btn :variety.sync="curVariety" :disabled="optType === 'modify'" />
           </el-form-item>
-          <el-form-item label="基因型名称:" label-width="80px" class="mb8">
+          <el-form-item
+            label="基因型名称:"
+            class="mb18"
+            prop="geneName"
+            :rules="[
+              { required: true, message: '基因型名称不能为空', trigger: 'change' }
+            ]"
+          >
             <!-- <el-input
               v-model="addGensForm.geneName"
               placeholder="请输入基因型名名称"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.geneName"
               :fetch-suggestions="history('geneName')"
-              placeholder="请输入基因型名名称"
-              class="w250"
+              :disabled="isWT"
+              placeholder="请输入基因型名称"
+              class="w400"
             />
           </el-form-item>
-          <el-form-item label="饲养条件:" label-width="80px" class="mb8">
+          <el-form-item
+            label="饲养条件:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb18"
+          >
             <!-- <el-input
               v-model="addGensForm.miceCondition"
               placeholder="请输入饲养条件"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.miceCondition"
               :fetch-suggestions="history('miceCondition')"
               placeholder="请输入饲养条件"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
-          <el-form-item label="健康状态:" label-width="80px" class="mb8">
+          <el-form-item
+            label="健康状态:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb18"
+          >
             <!-- <el-input
               v-model="addGensForm.status"
               placeholder="请输入健康状态"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.status"
               :fetch-suggestions="history('status')"
               placeholder="请输入健康状态"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
-          <el-form-item label="毛色:" label-width="80px" class="mb8">
+          <el-form-item
+            label="毛色:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb18"
+          >
             <!-- <el-input
               v-model="addGensForm.color"
               placeholder="请输入毛色"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.color"
               :fetch-suggestions="history('color')"
               placeholder="请输入毛色"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
-          <el-form-item label="应用领域:" label-width="80px" class="mb0">
+          <el-form-item
+            label="应用领域:"
+            label-width="80.56px"
+            style="padding-left: 9.44px;"
+            class="mb0"
+          >
             <!-- <el-input
               v-model="addGensForm.area"
               type="textarea"
               placeholder="请输入应用领域"
-              class="w250"
+              class="w400"
             /> -->
             <el-autocomplete
               v-model="addGensForm.area"
               :fetch-suggestions="history('area')"
               placeholder="请输入应用领域"
-              class="w250"
+              class="w400"
             />
           </el-form-item>
         </el-form>
@@ -91,15 +132,17 @@
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import { addNewGenes, editGenes } from '@/api/genes'
-import { mapGetters } from 'vuex'
+import { inputRemenber } from '@/components/Mixins/history'
 
 export default {
   name: 'VarietyEdit',
   components: {
     ChoiceVarietyBtn
   },
+  mixins: [inputRemenber],
   data() {
     return {
+      isWT: false,
       curVariety: null, // 当前选中的品系
       varietiesId: '',
       optType: 'add', // 操作方式
@@ -113,32 +156,30 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters([
-      'inputHistory'
-    ])
-  },
   watch: {
     curVariety(n, o) {
       const newVariety = JSON.parse(n)
       this.varietiesId = newVariety.id
-      this.$set(this, 'addGensForm', newVariety)
+      if (newVariety.geneName === 'WT') {
+        this.isWT = true
+      }
+      if (newVariety.isSystem === 1) { // 渲染内置基因型
+        this.$set(this, 'addGensForm', newVariety.miceGeneVO)
+        this.$set(this.addGensForm, 'varietiesName', newVariety.varietiesName)
+        this.$set(this.addGensForm, 'geneName', '') // 基因型空掉
+      } else {
+        this.$set(this, 'addGensForm', newVariety)
+      }
     }
   },
   created() {
     console.log(this.$route.params)
-    if (this.$route.params.miceGeneId) {
+    if (this.$route.params.miceGeneId) { // 后端没接口，直接前端从列表页带过来
       this.optType = 'modify'
       this.curVariety = JSON.stringify(this.$route.params)
     }
   },
   methods: {
-    history(key) {
-      const rslt = this.inputHistory[key]
-      return function(queryString, cb) {
-        cb(rslt)
-      }
-    },
     goBack() {
       this.$router.back()
     },
@@ -147,28 +188,34 @@ export default {
       console.log('this.optType', this.optType)
       const apiType = this.optType === 'modify' ? editGenes : addNewGenes
       const { miceGeneId: id, source, geneName, miceCondition, status, color, area, state } = this.addGensForm
-      apiType({
-        id,
-        source,
-        varietiesId: this.varietiesId,
-        geneName,
-        miceCondition,
-        status,
-        color,
-        area,
-        state,
-        userId: this.$store.getters.info.id
-      }).then((res) => {
-        this.$message.success('编辑成功')
-        // 存储输入过的值
-        this.$store.dispatch('user/setInputHistory', {
-          geneName,
-          miceCondition,
-          status,
-          color,
-          area
-        })
-        this.goBack()
+      this.$refs['addGensForm'].validate((valid) => {
+        if (valid) {
+          apiType({
+            id,
+            source,
+            varietiesId: this.varietiesId,
+            geneName,
+            miceCondition,
+            status,
+            color,
+            area,
+            state,
+            userId: this.$store.getters.info.id
+          }).then((res) => {
+            this.$message.success(this.optType === 'modify' ? '编辑成功' : '新增成功')
+            // 存储输入过的值
+            this.$store.dispatch('user/setInputHistory', {
+              geneName,
+              miceCondition,
+              status,
+              color,
+              area
+            })
+            this.goBack()
+          })
+        } else {
+          return false
+        }
       })
     }
   }

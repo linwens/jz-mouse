@@ -7,9 +7,9 @@
             <h6 class="mouse__info--h6">品系信息</h6>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">品系:</span><i class="mouse__info--i">{{ mouseInfo.varietiesName }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.color }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.geneColor }}</i></p>
               <p class="mouse__info--p"><span class="mouse__info--span">饲养条件:</span><i class="mouse__info--i">{{ mouseInfo.miceCondition }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.geneStatus }}</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
               <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.genotypes }}</i></p>
@@ -32,7 +32,7 @@
               <p class="mouse__info--p"><span class="mouse__info--span">笼位号:</span><i class="mouse__info--i">10-01</i></p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.status }}</i></p>
+              <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.miceStatusDesc }}</i></p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">显示颜色:</span>
                 <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" />
@@ -135,23 +135,17 @@
 <script>
 import MouseCage from '@/components/MouseCage'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
-import FileViewer from '@/components/FileViewer'
 import ShowFamily from '@/components/Dialogs/cpt_show_family'
-import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
-import MergeTable from '@/components/MergeTable'
 import { recordOption } from './recordTable'
-import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
+import { fetchCageList } from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
   components: {
-    MergeTable,
     MouseCage,
-    AddCageBtn,
     ExptRecord,
-    FileViewer,
     ShowFamily,
     UploadBtn,
     ViewFiles
@@ -298,7 +292,7 @@ export default {
       }
       // 添加到实验组操作
       if (this.needType === 'noExpt') {
-        const cacheExpt = JSON.parse(this.$store.getters.addingExpt)
+        const cacheExpt = this.$store.getters.addingExpt
         const curExpt = cacheExpt[this.item_index]
 
         const ids = this.choicedList.map(el => {
@@ -322,14 +316,14 @@ export default {
       })
       console.log('curMouses==', curMouses, 'curCageMouse==', curCageMouse, 'curCage==', curCage)
       // 选中了同一笼内的所有鼠
-      if (curCageMouse.length === curCage[0].miceInfoByMiceCageQueryVO.length) {
+      if ((curMouses.length === curCageMouse.length) && (curCageMouse.length === curCage[0].miceInfoByMiceCageQueryVO.length)) {
         this.doAdd(curCageMouse)
         return false
       }
       // 选中同一鼠笼中部分小鼠
       // if (curCageMouse.length === curMouses.length && curCageMouse.length < curCage[0].miceInfoByMiceCageQueryVO.length) {}
       // 选择了不同笼内的小鼠
-      this.$confirm('您当前所选的小鼠不符合繁育要求，请将选择空闲鼠笼进行移笼？', '警告', {
+      this.$confirm('繁育组小鼠需要在同一个鼠笼中且鼠笼中小鼠不能有其他状态的小鼠。您当前所选的小鼠不符合繁育要求，是否选择空闲鼠笼进行移笼？', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -348,7 +342,7 @@ export default {
     doAdd(mouseArr) {
       this.$store.dispatch('app/cacheChoosedMouse', mouseArr)
       // 填充繁育组信息
-      const cacheBreed = this.$store.getters.addingBreed ? JSON.parse(this.$store.getters.addingBreed) : {} // 繁育组信息
+      const cacheBreed = this.$store.getters.addingBreed // 繁育组信息
       // 更新繁育组数据
       cacheBreed.miceIds = cacheBreed.miceIds.concat(mouseArr)
       this.$store.dispatch('app/cacheBreed', cacheBreed)
@@ -360,31 +354,14 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event)
     },
-    // 删除
-    rowItemDel: function(row) {
-      const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(function() {
-        return delItemObj(row.id)
-      }).then(() => {
-        this.getDictItemList()
-        _this.$message({
-          showClose: true,
-          message: '删除成功',
-          type: 'success'
-        })
-      }).catch(function() {
-      })
-    },
     // 鼠笼列表
     getCageList() {
       this.tableLoading = true
       fetchCageList(Object.assign({
+        isMy: 0,
+        operator: this.$store.getters.info.id,
         current: this.cagePage.page,
-        size: this.cagePage.limit
+        size: -1
       })).then(response => {
         this.cageList = response.data.records
         this.cagePage.total = response.data.total

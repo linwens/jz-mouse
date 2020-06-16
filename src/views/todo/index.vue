@@ -49,24 +49,24 @@
               @on-load="getList"
               @refresh-change="handleRefreshChange"
             >
-              <template slot="status" slot-scope="scope">
-                <svg-icon v-if="scope.scope.row.status === 1" icon-class="noRead" class="fs30" />
+              <template slot="status" slot-scope="{scope}">
+                <svg-icon v-if="scope.row.status === 1" icon-class="noRead" class="fs30" />
                 <svg-icon v-else icon-class="isReaded" class="fs30" />
               </template>
-              <template slot="menu" slot-scope="scope">
+              <template slot="menu" slot-scope="{scope}">
                 <el-button
                   type="text"
                   size="mini"
                   class="btn-text--danger"
-                  @click="rowItemDel(scope.scope.row)"
+                  @click="rowItemDel(scope.row)"
                 >
                   删除
                 </el-button>
                 <el-button
-                  v-if="scope.scope.row.status === 1"
+                  v-if="scope.row.status === 1"
                   type="text"
                   size="mini"
-                  @click="markReaded(scope.scope.row)"
+                  @click="markReaded(scope.row)"
                 >
                   标为已读
                 </el-button>
@@ -112,7 +112,7 @@
         </el-tab-pane>
       </el-tabs>
       <div class="todo__allReaded pos-a">
-        <el-button type="success" @click="allReaded">一键已读</el-button>
+        <el-button type="success" :disabled="tabsSum[1] <= 0" @click="allReaded">一键已读</el-button>
       </div>
     </main-box>
   </div>
@@ -121,7 +121,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/todo'
+import { markReaded, allReaded, delItemObj, getSysRemindNum, fetchList, putItemObj, putObj } from '@/api/todo'
 
 export default {
   name: 'Todo',
@@ -143,7 +143,7 @@ export default {
     }
   },
   created() {
-
+    this.getNums()
   },
   methods: {
     handleClick(tab, event) {
@@ -151,6 +151,15 @@ export default {
     },
     handleRefreshChange() {
       this.getList()
+    },
+    // 获取数量
+    getNums() {
+      getSysRemindNum().then((res) => {
+        const { allNum, readNum, unReadNum } = res.data
+        this.tabsSum[0] = allNum || 0
+        this.tabsSum[1] = unReadNum || 0
+        this.tabsSum[2] = readNum || 0
+      })
     },
     // 获取列表
     getList() {
@@ -167,7 +176,7 @@ export default {
       })).then(response => {
         this.tableData = response.data.records
         this.page.total = response.data.total
-        this.tabsSum[STATUS_MAP[this.activeName][0]] = response.data.total
+        // this.tabsSum[STATUS_MAP[this.activeName][0]] = response.data.total
       }).finally(() => {
         this.tableLoading = false
       })
@@ -175,14 +184,15 @@ export default {
     // 删除
     rowItemDel: function(row) {
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除【"' + row.title + '"】的消息?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
         return delItemObj(row.id)
       }).then(() => {
-        this.getDictItemList()
+        _this.getList()
+        _this.getNums()
         _this.$message({
           showClose: true,
           message: '删除成功',
@@ -192,17 +202,29 @@ export default {
       })
     },
     // 标为已读
-    markReaded() {
-
+    markReaded(row) {
+      markReaded(row.id).then((res) => {
+        this.$message.success('标记为已读')
+        this.getList()
+        this.getNums()
+      })
     },
     // 一键已读
     allReaded() {
+      const _self = this
       this.$confirm('是否确认标记所有信息为已读?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log('确认标记')
+        const ids = _self.tableData.map((el) => {
+          return el.id
+        })
+        allReaded(ids).then((res) => {
+          _self.$message.success('一键已读成功')
+          _self.getList()
+          _self.getNums()
+        })
       }).catch(function() {
       })
     }

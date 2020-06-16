@@ -74,6 +74,9 @@
     .is-active>.el-submenu__title {
       color: $subMenuActiveText !important;
     }
+    .is-active.submenu-title-noDropdown {
+      background-color: $menuHover !important;
+    }
 
     & .nest-menu .el-submenu>.el-submenu__title,
     & .el-submenu .el-menu-item {

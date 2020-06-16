@@ -9,7 +9,7 @@
       <div class="mouse-cage__man">
         负责人
         <el-button size="mini" @click="shift ? chageMan() : null">
-          {{ allData.operator }}
+          {{ allData.operatorName }}
           <svg-icon v-if="shift" icon-class="shift" class="cl-green" />
         </el-button>
       </div>
@@ -36,32 +36,33 @@
             <div
               v-for="item in femaleSum"
               :key="item.miceInfoId"
-              class="mouse__item pos-r ta-c"
-              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
+              class="mouse__item ta-c"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId)}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
-                <div @click="taggle(item.miceInfoId)">
-                  <svg-icon icon-class="mouse" class="fs50" />
-                  <p>{{ item.genotypes }}</p>
-                  <span class="item__miceNo dib">打发范德萨范德萨范德萨发</span>
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus, item.miceInfoId)" class="mouse__checkbox" :label="item" />
+                <div @click.stop="taggle(item.miceInfoId)">
+                  <svg-icon icon-class="mouse" class="fs50" :style="{ 'color': item.color }" />
+                  <p>{{ item.geneName }}</p>
+                  <span class="item__miceNo dib">{{ item.miceNo }}</span>
                   <i class="pos-a mouse__item--female">{{ item.sign }}</i>
                 </div>
               </div>
             </div>
           </div>
+          <div v-else class="list__content--female" />
           <div v-if="maleSum.length > 0" class="list__content--male df s-jcfs s-aic ofh">
             <div
               v-for="item in maleSum"
               :key="item.miceInfoId"
               class="mouse__item ta-c"
-              :class="{'isChoiced': (item.miceInfoId == curMouseId && cageId == choosedCage)}"
+              :class="{'isChoiced': (item.miceInfoId == curMouseId)}"
             >
               <div class="pos-r">
-                <el-checkbox :disabled="checkBoxStatus(item.miceStatus)" class="mouse__checkbox" :label="item" />
-                <div @click="taggle(item.miceInfoId)">
-                  <svg-icon icon-class="mouse" class="fs50" />
-                  <p>{{ item.genotypes }}</p>
+                <el-checkbox :disabled="checkBoxStatus(item.miceStatus, item.miceInfoId)" class="mouse__checkbox" :label="item" />
+                <div @click.stop="taggle(item.miceInfoId)">
+                  <svg-icon icon-class="mouse" class="fs50" :style="{ 'color': item.color }" />
+                  <p>{{ item.geneName }}</p>
                   <span class="item__miceNo dib">{{ item.miceNo }}</span>
                   <i class="pos-a mouse__item--male">{{ item.sign }}</i>
                 </div>
@@ -80,28 +81,37 @@
       width="433px"
     >
       <div>
-        <p class="cl-black fs14 mb10">当前负责人: {{ '张三' }}</p>
+        <p class="cl-black fs14 mb10">当前负责人: {{ allData.operatorName }}</p>
         <el-form ref="mansForm" :model="mansForm" label-position="left" size="mini">
           <el-form-item
             label="更换为:"
             label-width="80px"
             class="mb8"
-            prop="name"
+            prop="userId"
             :rules="[
               { required: true, message: '新的负责人不能为空', trigger: 'blur' }
             ]"
           >
-            <el-input
-              v-model="mansForm.name"
+            <el-select
+              v-model="mansForm.userId"
+              clearable
               placeholder="请输入新的负责人"
-              class="w250"
-            />
+              size="small"
+              class="w104"
+            >
+              <el-option
+                v-for="item in persons"
+                :key="item.userId"
+                :label="item.userName"
+                :value="item.userId"
+              />
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="manDialog = false">取 消</el-button>
-        <el-button type="primary" size="small" @click="addTag()">确 定</el-button>
+        <el-button type="primary" size="small" @click="changeMan()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -109,6 +119,8 @@
 
 <script>
 import { getMouseInfo, getMouseExpInfo } from '@/api/mouse'
+import { getUsers } from '@/api/home'
+import { changeOperator } from '@/api/cmn'
 
 export default {
   name: 'MouseCage',
@@ -180,6 +192,13 @@ export default {
       default: function() {
         return {}
       }
+    },
+    // 已经被选了的老鼠,不可选
+    cantChoiceMouses: {
+      type: Array,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
@@ -188,8 +207,9 @@ export default {
       // 更换负责人
       manDialog: false,
       mansForm: {
-        name: ''
+        userId: ''
       },
+      persons: [], // 负责人选择项
       // 鼠笼checkbox
       checkList: [],
       // 选择笼位
@@ -233,9 +253,22 @@ export default {
       return females
     }
   },
+  watch: {
+    'choicedList.mouses'(n, o) {
+      if (!n) { // 选中小鼠项情况，checkList也清空
+        this.$set(this, 'checkList', [])
+      }
+    }
+  },
   methods: {
+    // 获取负责人列表
+    getPersons() {
+      getUsers().then((res) => {
+        this.$set(this, 'persons', res.data)
+      })
+    },
     // 设置当前小鼠是否可选
-    checkBoxStatus(status) {
+    checkBoxStatus(status, id) {
       let noWay = false
       if (status === 2 && this.needType === 'noBreed') {
         noWay = true
@@ -243,10 +276,10 @@ export default {
       if (status === 3 && this.needType === 'noExpt') {
         noWay = true
       }
-      return !this.isActive || noWay
+
+      return !this.isActive || noWay || this.cantChoiceMouses.indexOf(String(id)) > -1
     },
     taggle(id) {
-      console.log(`===11==${id}||||${this.curId}|||${this.curMouseId}`)
       this.curId = this.curMouseId
       if (this.curId === id) { // 再次点击取消选框
         this.curId = null
@@ -260,7 +293,7 @@ export default {
           this.$emit('update:curMouse', res.data)
         })
         getMouseExpInfo(this.curId).then((res) => {
-          console.log(res)
+          console.log('getMouseExpInfo', res)
           this.$emit('update:curMouseExpt', res.data[0] || {}) // 取第一条数据
         })
       }
@@ -268,7 +301,26 @@ export default {
     },
     // 切换负责人
     chageMan() {
+      this.getPersons()
       this.manDialog = true
+    },
+    changeMan() {
+      changeOperator({
+        cageId: this.cageId,
+        userId: this.mansForm.userId
+      }).then((res) => {
+        const newData = JSON.parse(JSON.stringify(this.allData))
+        const curOperator = this.persons.filter((el) => {
+          return el.userId === this.mansForm.userId
+        })
+        newData.operatorName = curOperator.userName
+        newData.operator = curOperator.userId
+        this.$emit('update:allData', newData)
+        this.$message.success('切换负责人成功')
+        this.manDialog = false
+        this.$refs['mansForm'].resetFields()
+        this.$emit('refresh')
+      })
     },
     // 多选框选中小鼠
     taggleMouse(val) {
@@ -314,7 +366,7 @@ export default {
 
 <style lang="scss">
   .mouse-cage {
-    width: 536px;
+    width: 520px;
     height: 280px;
     border: 2px solid #D6D6D6;
     margin-bottom: 16px;
@@ -375,9 +427,13 @@ export default {
 
     .list__content {
       padding: 10px 0;
+      .el-checkbox-group {
+        height: 100%;
+      }
       &--female, &--male {
-        width: 462px;
-        overflow-x: scroll;
+        width: 450px;
+        min-height: 50%;
+        overflow-x: auto;
       }
     }
 
@@ -416,6 +472,11 @@ export default {
         background-color: #58A2FB;
       }
 
+      p {
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+      }
       span.item__miceNo {
         width: 80px;
         overflow: hidden;

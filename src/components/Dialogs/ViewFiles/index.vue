@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="text" @click="filesRecordVisible = true">{{ btnText }}</el-button>
+    <el-button type="text" @click="showList()">{{ btnText }}</el-button>
     <!-- 文件列表弹窗 -->
     <el-dialog title="文件查看" :visible.sync="filesRecordVisible">
       <merge-table
@@ -12,18 +12,18 @@
         @refresh-change="handleRefreshChange"
       >
         <template slot="menu" slot-scope="{scope}">
-          <file-viewer :file-url="scope.row.fileUrl" btn-text="预览" />
+          <file-viewer :file-url="scope.row.path" btn-text="预览" />
           <el-button
             type="text"
             size="mini"
           >
-            下载
+            <a :href="scope.row.path" target="_blank" :download="scope.row.fileName">下载</a>
           </el-button>
           <el-button
             type="text"
             size="mini"
             class="btn-text--danger"
-            @click="rowItemDel(scope.row)"
+            @click="rowItemDel(scope)"
           >
             删除
           </el-button>
@@ -37,7 +37,7 @@
 import MergeTable from '@/components/MergeTable'
 import FileViewer from '@/components/FileViewer'
 import { filesOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/cmn'
+import { delFile, getFilesList } from '@/api/cmn'
 
 export default {
   name: 'ViewFiles',
@@ -47,12 +47,23 @@ export default {
   },
   props: {
     id: {
+      type: Number,
+      default: 0
+    },
+    bizType: { // 上传文件对应的业务类型
       type: String,
       default: ''
+    },
+    cacheList: {
+      type: Array,
+      default: function() {
+        return []
+      }
     }
   },
   data() {
     return {
+      isAdmin: false,
       btnText: '查看',
       // 实验记录表格
       filesRecordVisible: false,
@@ -63,25 +74,35 @@ export default {
         page: 1, // 当前页数
         limit: 10 // 每页显示多少条
       },
-      filesData: [{
-        name: '文件1',
-        type: 'jpg',
-        opr_time: 1587277449395,
-        fileUrl: 'http://localhost/test.pdf'
-      }, {
-        name: '文件2',
-        type: 'pdf',
-        opr_time: 1587277449395,
-        fileUrl: 'http://localhost/test.pdf'
-      }]
+      filesData: []
+    }
+  },
+  watch: {
+    cacheList(n, o) {
+      console.log('更新cachelist')
+      this.$set(this, 'filesData', n)
+    }
+  },
+  created() {
+    this.isAdmin = this.$store.getters.info.admin
+    if (this.id) {
+      this.getList()
     }
   },
   methods: {
+    // 展示列表
+    showList() {
+      if (this.id) {
+        this.getList()
+      }
+      this.filesRecordVisible = true
+    },
     // 获取列表
     getList() {
       this.filesLoading = true
-      fetchList(Object.assign({
-        id: this.id,
+      getFilesList(Object.assign({
+        bizId: this.id,
+        bizType: this.bizType,
         current: this.filesPage.page,
         size: this.filesPage.limit
       })).then(response => {
@@ -95,16 +116,25 @@ export default {
       this.getList()
     },
     // 删除
-    rowItemDel: function(row) {
+    rowItemDel: function(scope) {
       const _this = this
-      this.$confirm('是否确认删除数据为"' + row.label + '"的数据项?', '警告', {
+      if (!(scope.row.own || this.isAdmin)) { // 不是自己的信息无权删除
+        this.$message.warning('无权限删除他人负责的小鼠的文件')
+        return
+      }
+      this.$confirm('是否确认删除数据为"' + scope.row.fileName + '"的文件吗?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        return delItemObj(row.id)
+        if (scope.row.fileId) {
+          return delFile(scope.row.fileId)
+        }
+        if (!scope.row.fileId) {
+          _this.filesData.splice(scope.$index, 1)
+        }
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',

@@ -8,11 +8,10 @@ export function fetchList(query) { // 待办事项列表查询
   })
 }
 
-export function fetchItemList(query) {
+export function getSysRemindNum() { // 获取待办事项数量
   return request({
-    url: '/dict/item/page',
-    method: 'get',
-    params: query
+    url: '/sysremind/getSysRemindNum',
+    method: 'get'
   })
 }
 
@@ -35,6 +34,21 @@ export function delItemObj(id) { // 删除待办事项
   return request({
     url: '/sysremind/' + id,
     method: 'delete'
+  })
+}
+
+export function allReaded(obj) { // 一键已读操作
+  return request({
+    url: '/sysremind/batch',
+    method: 'post',
+    data: obj
+  })
+}
+
+export function markReaded(id) { // 已读操作
+  return request({
+    url: '/sysremind/' + id,
+    method: 'post'
   })
 }
 

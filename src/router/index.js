@@ -178,18 +178,18 @@ export const constantRoutes = [
     ]
   },
 
-  {
-    path: '/todo',
-    component: Layout,
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/views/todo/index'),
-        name: 'todo',
-        meta: { title: '待处理事项', icon: 'todo', noCache: true }
-      }
-    ]
-  },
+  // {
+  //   path: '/todo',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'list',
+  //       component: () => import('@/views/todo/index'),
+  //       name: 'todo',
+  //       meta: { title: '待处理事项', icon: 'todo', noCache: true }
+  //     }
+  //   ]
+  // },
 
   {
     path: '/breed',

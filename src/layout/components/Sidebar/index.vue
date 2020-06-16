@@ -1,9 +1,9 @@
 <template>
   <div :class="{'has-logo':showLogo}">
-    <div class="df s-aic">
+    <!-- <div class="df s-aic">
       <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
       <logo v-if="showLogo" :collapse="isCollapse" />
-    </div>
+    </div> -->
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -23,13 +23,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Logo from './Logo'
+// import Logo from './Logo'
 import SidebarItem from './SidebarItem'
-import Hamburger from '@/components/Hamburger'
+// import Hamburger from '@/components/Hamburger'
 import variables from '@/styles/variables.scss'
 
 export default {
-  components: { SidebarItem, Logo, Hamburger },
+  components: { SidebarItem },
   computed: {
     ...mapGetters([
       'sidebar'

@@ -24,6 +24,7 @@
         :prop="item['prop']"
         :label="item['label']"
         :width="item['width']"
+        :min-width="item['minWidth']"
         :fixed="item['fixed']"
         :show-overflow-tooltip="item['overHidden']"
         :class-name="item['className']"
@@ -75,7 +76,7 @@ export default {
     },
     dicLabel: function(val, dicData) { // 字典值转化
       const rslt = dicData.filter(el => el.value === val)
-      return rslt[0].label
+      return rslt.length > 0 ? rslt[0].label : ''
     }
   },
   components: {

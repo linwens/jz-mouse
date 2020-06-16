@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import qs from 'qs'
 
 export function fetchCageList(query) { // 鼠笼列表
   return request({
@@ -18,7 +19,7 @@ export function recordList(query) { // 记录列表
 
 export function getCageInfo(id) { // 获取鼠笼信息
   return request({
-    url: '/micecage/{cId}' + id,
+    url: '/micecage/' + id,
     method: 'get'
   })
 }
@@ -27,6 +28,22 @@ export function addCage(obj) { // 新增笼位
   return request({
     url: '/micecage',
     method: 'post',
+    data: obj
+  })
+}
+
+export function editCage(obj) { // 编辑笼位
+  return request({
+    url: '/micecage',
+    method: 'put',
+    data: obj
+  })
+}
+
+export function editMouse(obj) { // 编辑小鼠信息
+  return request({
+    url: '/miceinfo',
+    method: 'put',
     data: obj
   })
 }
@@ -46,10 +63,25 @@ export function getMouseInfo(id) { // 获取小鼠信息
   })
 }
 
+export function getMouseState(id) { // 获取小鼠状态
+  return request({
+    url: '/miceinfo/state/' + id,
+    method: 'get'
+  })
+}
+
 export function getMouseInfoByIds(id) { // 获取小鼠信息
   return request({
     url: '/miceinfo/getById?ids=' + id,
     method: 'get'
+  })
+}
+
+export function getMiceInfoByIds(data) { // 通过小鼠id集合查询小鼠信息（通过小鼠id集合查询小鼠信息）
+  return request({
+    url: '/miceinfo/getMiceInfoByIds',
+    method: 'post',
+    data
   })
 }
 
@@ -98,10 +130,22 @@ export function getMouseTree(query) { // 获取小鼠家谱树
   })
 }
 
-export function delMiceByMiceId(data) { // 移除小鼠(可批量)
+export function getMouseChildrenTree(query) { // 获取小鼠子鼠树
+  return request({
+    url: '/miceinfo/subRelation/tree',
+    method: 'get',
+    params: query
+  })
+}
+
+export function delMiceByMiceId(query) { // 移除小鼠(可批量)
   return request({
     url: '/miceinfo/deleteMiceByMiceId',
-    method: 'delete'
+    method: 'delete',
+    params: query,
+    paramsSerializer: function(params) {
+      return qs.stringify(params, { indices: false })
+    }
   })
 }
 

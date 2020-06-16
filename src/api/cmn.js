@@ -1,20 +1,39 @@
 import request from '@/utils/request'
 // 一些公共组件的请求
-export function fetchList(query) {
+export function getFilesList(data) { // 请求文件列表
+  const { bizType, bizId, ...other } = data
   return request({
-    url: '/micebreed/page',
+    url: `/sysfile/${bizType}/${bizId}`,
     method: 'get',
-    params: query
+    params: other
   })
 }
 
-export function fetchItemList(query) {
+// export function getUploadParams(query) { // 获取OSS上传参数
+//   return request({
+//     baseURL: process.env.VUE_APP_FILE_API,
+//     url: '/api/fileManage/uploadParam',
+//     method: 'get',
+//     params: query
+//   })
+// }
+
+export function uploadFiles(obj) { // 图片批量上传
   return request({
-    url: '/dict/item/page',
-    method: 'get',
-    params: query
+    url: '/sysfile/uploadFiles',
+    method: 'post',
+    data: obj
   })
 }
+
+// export function uploadFiles(obj) { // 图片批量上传
+//   const { bizType, id, files } = obj
+//   return request({
+//     url: id ? `/sysfile/uploads/${bizType}/${id}` : '/sysfile/uploadFiles',
+//     method: 'post',
+//     data: files
+//   })
+// }
 
 export function saveFiles(obj) { // 存储图片地址
   return request({
@@ -31,9 +50,9 @@ export function getItemObj(id) {
   })
 }
 
-export function delItemObj(id) {
+export function delFile(id) { // 删除文件
   return request({
-    url: '/dict/item/' + id,
+    url: '/sysfile/' + id,
     method: 'delete'
   })
 }
@@ -46,11 +65,11 @@ export function putItemObj(obj) {
   })
 }
 
-export function addObj(obj) {
+export function changeOperator(query) { // 切换负责人
   return request({
-    url: '/dict/',
+    url: '/micecage/cageChangeLeader',
     method: 'post',
-    data: obj
+    params: query
   })
 }
 

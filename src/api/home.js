@@ -8,7 +8,7 @@ export function fetchList(query) { // 首页列表查询
   })
 }
 
-export function getUsers(query) { // 获取用户列表
+export function getUsers(query) { // 获取负责人列表
   return request({
     url: '/sysuser/operatorList',
     method: 'get',
@@ -16,11 +16,10 @@ export function getUsers(query) { // 获取用户列表
   })
 }
 
-export function countMice(query) { // 柱状图
+export function countMice(action) { // 柱状图
   return request({
-    url: '/miceinfo/countMice',
-    method: 'get',
-    params: query
+    url: `/stat/${action}`,
+    method: 'get'
   })
 }
 

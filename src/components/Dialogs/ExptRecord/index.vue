@@ -59,6 +59,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       // 基因型列表
       recordDialog: false,
       recordOption,
@@ -71,9 +72,17 @@ export default {
       }
     }
   },
+  mounted() {
+    this.isAdmin = this.$store.getters.info.admin
+  },
   methods: {
     // 展示列表
     showList() {
+      console.log(this.id)
+      if (!this.id) {
+        this.$message.warning('请先选中小鼠')
+        return
+      }
       this.getList()
       this.recordDialog = true
     },
@@ -97,6 +106,10 @@ export default {
     // 删除
     rowItemDel: function(row) {
       const _this = this
+      if (!(row.own || this.isAdmin)) { // 不是自己的信息无权删除
+        this.$message.warning('无权限删除他人记录')
+        return
+      }
       this.$confirm('是否确认删除实验记录' + row.id + '?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

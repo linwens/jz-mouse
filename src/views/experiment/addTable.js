@@ -20,7 +20,7 @@ export const tableOption = {
     prop: 'eventName'
   }, {
     label: '检测',
-    prop: 'experimentGroupSelectionLabels'
+    prop: 'testName'
   }, {
     label: '小鼠',
     prop: 'experimentGroupSelectionMiceIds',
@@ -46,11 +46,19 @@ export const mouseListOption = {
   menuWidth: 130,
 
   column: [{
-    label: '编号',
-    prop: 'num',
+    width: 70,
+    label: '笼位号',
+    prop: 'cageNo',
     overHidden: true
   }, {
+    width: 70,
+    label: '标记',
+    prop: 'sign',
+    overHidden: true,
+    slot: true
+  }, {
     label: '性别',
+    width: 70,
     prop: 'gender',
     dicData: [
       {
@@ -63,26 +71,33 @@ export const mouseListOption = {
     ]
   }, {
     label: '周龄',
-    prop: 'week',
-    overHidden: true
+    prop: 'birthDate',
+    overHidden: true,
+    slot: true
   }, {
     label: '体重',
     prop: 'weight'
   }, {
-    width: 200,
+    width: 100,
     label: '品系',
-    prop: 'class_type'
+    prop: 'varietiesName',
+    overHidden: true
   }, {
-    width: 200,
+    width: 100,
     label: '基因型',
-    prop: 'gene',
+    prop: 'geneName',
     overHidden: true
   }, {
     label: '毛色',
-    prop: 'fur'
+    prop: 'color'
   }, {
     label: '健康状况',
-    prop: 'health_status',
+    prop: 'status',
+    overHidden: true
+  }, {
+    width: 200,
+    label: '编号',
+    prop: 'miceNo',
     overHidden: true
   }]
 }

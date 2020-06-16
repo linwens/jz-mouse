@@ -26,6 +26,9 @@ import '@/permission' // permission control
 import AsyncComputed from 'vue-async-computed' // 实现异步计算属性
 
 Vue.use(AsyncComputed)
+// 全局引入需要循环调用的组件
+import ShowFamily from '@/components/Dialogs/cpt_show_family'
+Vue.component('show-family', ShowFamily)
 
 /**
  * If you don't want to use mock-server
@@ -42,9 +45,9 @@ if (process.env.NODE_ENV === 'production') {
 
 Vue.component('main-box', MainBox)
 // set ElementUI lang to EN
-Vue.use(ElementUI, { locale })
+// Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明
-// Vue.use(ElementUI)
+Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 

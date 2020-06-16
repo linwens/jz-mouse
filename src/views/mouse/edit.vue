@@ -12,13 +12,14 @@
               <el-form-item label="品系名称:" class="mb17">
                 <el-input
                   v-model="varietiesName"
+                  disabled
                   placeholder="请选择品系名称"
                   class="w250"
                 />
-                <choice-variety-btn :variety.sync="curVariety" />
+                <choice-variety-btn v-if="canEdit" :variety.sync="curVariety" />
               </el-form-item>
               <div v-if="varietiesName" class="mouse__edit--toggle mb9">
-                <div class="mb13 df">
+                <div v-if="canEdit" class="mb13 df">
                   <genes-choose :id="varietiesId" btn-text="选择" class="mr16" :genes.sync="genes" />
                   <add-genes-btn
                     :varieties-id="varietiesId"
@@ -72,12 +73,13 @@
                 </el-form-item>
               </div>
               <div class="df s-jcfs mb16">
-                <p style="margin-right: 44px;">编号: <span>{{ form.miceId }}</span></p>
+                <p style="margin-right: 44px;">编号: <span>{{ form.miceNo }}</span></p>
                 <p>状态: <span>{{ statusLable }}</span></p>
               </div>
               <el-form-item label="标记:" class="mb9">
                 <el-select
                   v-model="form.position"
+                  :disabled="!canEdit"
                   placeholder="部位"
                   class="w100"
                 >
@@ -93,52 +95,156 @@
                 />
                 <el-input
                   v-else
-                  v-model="form.sign"
+                  v-model.number="form.sign"
+                  :disabled="!canEdit"
                   placeholder="请输入1-99的数字"
                   style="width: 142px;"
+                  @input="one2nine(form.sign)"
                 />
                 <div v-show="form.position !== 'custom'" class="mouse__edit--img mt8">
-                  <img :src="`http://bllb-animal-test.oss-cn-hangzhou.aliyuncs.com/mice-sign/${form.filePrefix}/${form.sign}.jpg`" alt="">
+                  <img v-if="form.position !== 'custom'" :src="`http://bllb-animal-test.oss-cn-hangzhou.aliyuncs.com/mice-sign/${form.filePrefix}/${form.sign}.jpg`" alt="">
                   <span class="pl16 pr16">示例：</span>
                   <img src="@/assets/test.jpg" alt="">
                 </div>
               </el-form-item>
               <div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">性别:</span><i class="mouse__edit--info--i">{{ form.gender === 1 ? '雌' : '雄' }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">体重:</span><i class="mouse__edit--info--i">{{ form.weight }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">性别:</span><i class="mouse__edit--info--i">{{ form.gender === 1 ? '雌' : '雄' }}</i></p> -->
+                  <el-form-item label="性别" class="mb9 mr62">
+                    <el-select
+                      v-model="form.pureHeterozygote"
+                      placeholder="请选择性别"
+                      class="w250"
+                    >
+                      <el-option label="雄" :value="0" />
+                      <el-option label="雌" :value="1" />
+                    </el-select>
+                  </el-form-item>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">体重:</span><i class="mouse__edit--info--i">{{ form.weight }}</i></p> -->
+                  <el-form-item label="体重:" class="mb9">
+                    <el-input
+                      v-model.number="form.weight"
+                      :disabled="!canEdit"
+                      placeholder="请输入体重"
+                      class="w250"
+                    />
+                    <span class="ml8">g</span>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">基因型:</span><i class="mouse__edit--info--i">{{ form.geneName }}</i></p>
-                  <p class="mouse__edit--info--p">
+                  <p class="mouse__edit--info--p"><span class="dib mouse__edit--info--span" style="width: 95px;">基因型:</span><i class="mouse__edit--info--i">{{ currentGene.geneName }}</i></p>
+                  <!-- <p class="mouse__edit--info--p df">
                     <span class="mouse__edit--info--span">显示颜色:</span>
                     <i class="mouse__edit--info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': form.miceColor}" />
-                  </p>
+                  </p> -->
+                  <el-form-item label="显示颜色:" class="mb9">
+                    <el-color-picker v-model="form.miceColor" size="mini" style="position: relative;top: 2px;height: 32px;" />
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">出生日期:</span><i class="mouse__edit--info--i">{{ form.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">周龄:</span><i class="mouse__edit--info--i">{{ weekAge + '周' + dayAge + '天' }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">出生日期:</span><i class="mouse__edit--info--i">{{ form.birthDate * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">周龄:</span><i class="mouse__edit--info--i">{{ weekAge + '周' + dayAge + '天' }}</i></p> -->
+                  <el-form-item label="出生日期:" class="mb9 mr62">
+                    <el-date-picker
+                      v-model="form.birthDate"
+                      type="datetime"
+                      placeholder="请输入出生日期"
+                      format="yyyy 年 MM 月 dd 日"
+                      value-format="timestamp"
+                      class="w250"
+                    />
+                  </el-form-item>
+                  <el-form-item label="周龄:" class="mb9">
+                    <el-input
+                      v-model="weekAge"
+                      placeholder="0"
+                      disabled
+                      class="w80"
+                    />
+                    <span class="ml8">周</span>
+                    <el-input
+                      v-model="dayAge"
+                      placeholder="0"
+                      disabled
+                      class="w80"
+                    />
+                    <span class="ml8">天</span>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">纯/杂合子:</span><i class="mouse__edit--info--i">{{ pure }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">纯/杂合子:</span><i class="mouse__edit--info--i">{{ pure }}</i></p> -->
+                  <el-form-item label="纯/杂合子" class="mb9 mr62">
+                    <el-select
+                      v-model="form.pureHeterozygote"
+                      placeholder="请选择纯/杂合子"
+                      class="w250"
+                    >
+                      <el-option label="纯合子" :value="0" />
+                      <el-option label="杂合子" :value="1" />
+                      <el-option label="未测试" :value="2" />
+                    </el-select>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼时间:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼提醒:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindFlag ? '否' : '是' }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼时间:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">分笼提醒:</span><i class="mouse__edit--info--i">{{ form.separateCageRemindFlag ? '否' : '是' }}</i></p> -->
+                  <el-form-item label="分笼时间:" class="mb9 mr62">
+                    <el-date-picker
+                      v-model="form.separateCageRemindTime"
+                      type="datetime"
+                      default-time="09:00:00"
+                      format="yyyy-MM-dd HH:mm"
+                      value-format="timestamp"
+                      class="w250"
+                      placeholder="选择分笼时间"
+                    />
+                  </el-form-item>
+                  <el-form-item label="分笼提醒:" class="mb9 mr62">
+                    <el-select
+                      v-model="form.separateCageRemindFlag"
+                      placeholder="请选择是否分笼提醒"
+                      class="w250"
+                    >
+                      <el-option label="是" :value="0" />
+                      <el-option label="否" :value="1" />
+                    </el-select>
+                  </el-form-item>
                 </div>
                 <div class="df s-jcfs s-aic mb16">
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定时间:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
-                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定提醒:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindFlag ? '否' : '是' }}</i></p>
+                  <!-- <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定时间:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindTime * 1000 | timeFormat('yyyy-MM-dd') }}</i></p>
+                  <p class="mouse__edit--info--p"><span class="mouse__edit--info--span">表型鉴定提醒:</span><i class="mouse__edit--info--i">{{ form.phenotypicIdentificationRemindFlag ? '否' : '是' }}</i></p> -->
+                  <el-form-item label="表型鉴定时间:" class="mb9 mr62">
+                    <el-date-picker
+                      v-model="form.phenotypicIdentificationRemindTime"
+                      type="datetime"
+                      default-time="09:00:00"
+                      format="yyyy-MM-dd HH:mm"
+                      value-format="timestamp"
+                      class="w250"
+                      placeholder="选择分笼时间"
+                    />
+                  </el-form-item>
+                  <el-form-item label="表型鉴定提醒:" class="mb9 mr62">
+                    <el-select
+                      v-model="form.phenotypicIdentificationRemindFlag"
+                      placeholder="请选择是否表型鉴定提醒"
+                      class="w250"
+                    >
+                      <el-option label="是" :value="0" />
+                      <el-option label="否" :value="1" />
+                    </el-select>
+                  </el-form-item>
                 </div>
               </div>
               <div>
                 <el-form-item label="笼位号:" class="mb8">
                   <el-input
-                    v-model="form.name"
-                    placeholder="请选择品系名称"
+                    v-model="cageInfo.cageNo"
+                    :disabled="!canEdit"
+                    placeholder="请选择笼位"
                     class="w250"
                   />
-                  <el-button type="primary" @click="goCage()">选择笼位</el-button>
+                  <el-button v-if="canEdit" type="primary" @click="goCage()">选择笼位</el-button>
                 </el-form-item>
                 <div class="mouse__edit--toggle">
                   <div class="df s-jcsb s-aic">
@@ -172,16 +278,16 @@
                 </div>
               </div>
               <el-form-item label="附件:" class="mb0">
-                <div class="dib">
-                  <view-files />
+                <div v-if="canEdit" class="df">
+                  <view-files :id="curMouseId" biz-type="mice" />
+                  <upload-btn :id="curMouseId" biz-type="mice" class="dib" @done="fillFilesUrl" />
                 </div>
-                <upload-btn class="dib" />
               </el-form-item>
             </el-form>
           </div>
           <div class="mouse__edit--btns pos-a w-100 h60 df s-aic">
             <el-button size="small" class="w100 mr6" @click="goBack()">返回</el-button>
-            <el-button type="primary" size="small" @click="save()">编辑/保存</el-button>
+            <el-button type="primary" size="small" @click="save()">{{ canEdit ? '确定' : '编辑' }}</el-button>
           </div>
         </el-tab-pane>
         <el-tab-pane label="实验记录" name="second">
@@ -210,7 +316,7 @@ import { addNewGenes } from '@/api/genes'
 
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './labTable'
-import { getMouseInfo, getMouseExpInfo, getCageInfo } from '@/api/mouse'
+import { getMouseInfo, getMouseExpInfo, getCageInfo, editMouse } from '@/api/mouse'
 import { fetchList } from '@/api/experiment'
 
 export default {
@@ -225,7 +331,9 @@ export default {
   },
   data() {
     return {
+      canEdit: false, // 是否可编辑
       activeName: 'first', // 鼠笼tab
+      curMouseId: 0,
       // 总表单
       form: {
         vid: '',
@@ -244,12 +352,16 @@ export default {
         phenotypicIdentificationRemindFlag: 0,
         deathStatus: 0,
         delFlag: 0,
+        cageId: 0,
+        roomNo: 0,
+        shelvesNo: 0,
         miceNo: '',
         position: '',
         sign: '',
         filePrefix: '',
         status: 1 // 0:无，1：闲置，2：繁育，3：实验,4:手动处死5,实验处死
       },
+      cacheFilesList: [],
       // 品系选择
       curVariety: '',
       varietiesName: '',
@@ -287,14 +399,14 @@ export default {
     // 周龄，不存数据库
     weekAge() {
       if (!this.form.birthDate) return 0
-      const duration = +new Date() - this.form.birthDate * 1000
+      const duration = +new Date() - this.form.birthDate
       const weeks = duration / 1000 / 60 / 60 / 24 / 7
       return Math.floor(weeks)
     },
     // 天
     dayAge() {
       if (!this.form.birthDate) return 0
-      const duration = +new Date() - this.form.birthDate * 1000
+      const duration = +new Date() - this.form.birthDate
       const days = duration / 1000 / 60 / 60 / 24 % 7
       return Math.floor(days)
     },
@@ -308,7 +420,7 @@ export default {
         4: '手动处死',
         5: '实验处死'
       }
-      return MAP[this.form.status]
+      return MAP[this.form.miceStatus]
     },
     pure(n, o) {
       const MAP = {
@@ -324,6 +436,7 @@ export default {
       const newVariety = JSON.parse(n)
       this.varietiesName = newVariety.varietiesName
       this.varietiesId = newVariety.id
+      this.form.varietiesId = newVariety.id
     },
     genes(n, o) {
       const newGenes = JSON.parse(n)
@@ -339,36 +452,93 @@ export default {
         default: this.form.filePrefix = ''
       }
     },
-    cid(n, o) {
-      getCageInfo(n).then((res) => {
-        this.$set(this, 'cageInfo', res.data)
-      })
+    'form.cageId'(n, o) {
+      if (!n) {
+        this.getMouserInfo()
+      }
     }
   },
   created() {
-    const id = this.$route.params.id
-    getMouseInfo(id).then((res) => {
-      console.log(res)
-      const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
+    if (this.$route.params.canEdit) { // 从小鼠管理的首页，点编辑进来，可直接编辑
+      this.canEdit = true
+    }
+    this.curMouseId = Number(this.$route.params.id)
+    console.log(this.$route)
+    const cacheMouseInfo = this.$store.getters.cacheMouseInfo
+    console.log('cacheMouseInfo======', cacheMouseInfo)
+    if (Object.keys(cacheMouseInfo).length > 0) {
+      const mouseInfo = this.$store.getters.cacheMouseInfo
+      const { varietiesName, varietiesId, genes, common, files } = mouseInfo
+
       this.varietiesName = varietiesName
       this.varietiesId = Number(varietiesId)
-      this.$set(this, 'form', res.data)
-      this.form.varietiesId = Number(varietiesId)
-      this.$set(this, 'currentGene', {
-        varietiesName,
-        geneName,
-        miceCondition,
-        status,
-        color,
-        area
-      })
-    })
-    getMouseExpInfo(id).then((res) => {
+      this.$set(this, 'form', common)
+      this.$set(this, 'cacheFilesList', files)
+      console.log('this.form', this.form)
+      this.$set(this, 'currentGene', genes)
+    } else {
+      this.getMouserInfo()
+    }
+    getMouseExpInfo(this.curMouseId).then((res) => {
       console.log(res)
       this.$set(this, 'tableData', res.data)
     })
   },
   methods: {
+    // 控制标记值为数字
+    one2nine(val) { // 限制放入小鼠数量的输入值
+      if ((val === 0 || val) && (val < 1 || typeof val !== 'number')) {
+        this.form.sign = 1
+        this.$message.error('请输入1-99的数字')
+      }
+      if (val > 99) {
+        this.form.sign = 99
+        this.$message.error('请输入1-99的数字')
+      }
+    },
+    // 获取小鼠信息
+    getMouserInfo() {
+      getMouseInfo(this.curMouseId).then((res) => {
+        console.log(res)
+        const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, ...other } = res.data
+        this.varietiesName = varietiesName
+        this.varietiesId = Number(varietiesId)
+        this.$set(this, 'form', res.data)
+        // 时间戳换算
+        this.$set(this.form, 'birthDate', res.data.birthDate * 1000)
+        this.$set(this.form, 'separateCageRemindTime', res.data.separateCageRemindTime * 1000)
+        this.$set(this.form, 'phenotypicIdentificationRemindTime', res.data.phenotypicIdentificationRemindTime * 1000)
+        this.form.varietiesId = Number(varietiesId)
+        this.$set(this, 'currentGene', {
+          varietiesName,
+          geneName,
+          miceCondition,
+          status,
+          color,
+          area
+        })
+        // 获取鼠笼信息
+        getCageInfo(this.form.cageId).then((res) => {
+          this.$set(this, 'cageInfo', res.data)
+        })
+      })
+    },
+    // 上传成功回填url
+    fillFilesUrl(data, fileList) {
+      this.$set(this.form, 'files', data)
+      // 填充文件查看列表
+      const list = []
+      for (let i = 0; i < data.length; i++) {
+        const { name: fileName, type: bizType } = fileList[i].raw
+        list.push({
+          fileName,
+          bizType,
+          path: data[i]
+        })
+      }
+      console.log('list', list)
+      this.$set(this, 'cacheFilesList', list)
+    },
     handleClick(tab, event) {
       console.log(tab, event)
       if (tab === 'second') {
@@ -381,7 +551,21 @@ export default {
     },
     // 提交
     save() {
-      console.log('submit!');
+      if (!this.canEdit) {
+        this.canEdit = true
+        return false
+      }
+      const params = JSON.parse(JSON.stringify(this.form))
+      // 时间戳换算
+      params.birthDate = params.birthDate / 1000
+      params.separateCageRemindTime = params.separateCageRemindTime / 1000
+      params.phenotypicIdentificationRemindTime = params.phenotypicIdentificationRemindTime / 1000
+
+      editMouse(params).then((res) => {
+        this.$message.success('修改小鼠信息成功')
+        this.$store.dispatch('app/clearMouseInfo')
+        this.goBack()
+      })
     },
     // 选择品系 or 基因型
     chooseVarity() {
@@ -419,6 +603,7 @@ export default {
           varietiesName: this.varietiesName,
           varietiesId: this.varietiesId,
           genes: this.currentGene,
+          files: this.cacheFilesList,
           common: this.form
         })
         this.$router.push({
@@ -454,23 +639,15 @@ export default {
     next(vm => {
       // 选择鼠笼后返回,回填数据(请求也获取了数据...)
       if (from.name === 'mouseCage') {
-        const cacheMouseInfo = vm.$store.getters.cacheMouseInfo
-        const mouseInfo = cacheMouseInfo ? JSON.parse(cacheMouseInfo) : {}
-        const { geneName, varietiesName, miceCondition, area, status, color, varietiesId, cid, ...other } = mouseInfo
+        const mouseInfo = vm.$store.getters.cacheMouseInfo
+        const { varietiesName, varietiesId, genes, common, files } = mouseInfo
 
-        vm.cid = cid
         vm.varietiesName = varietiesName
         vm.varietiesId = Number(varietiesId)
-        vm.$set(vm, 'form', other)
-        vm.form.varietiesId = Number(varietiesId)
-        vm.$set(vm, 'currentGene', {
-          varietiesName,
-          geneName,
-          miceCondition,
-          status,
-          color,
-          area
-        })
+        vm.$set(vm, 'form', common)
+        vm.$set(vm, 'cacheFilesList', files)
+        vm.$set(vm, 'currentGene', genes)
+        vm.canEdit = true
       }
     })
   }
@@ -512,7 +689,6 @@ export default {
           width: 405px;
         }
         font-size: 14px;
-        display: inline-block;
       }
       &--span {
         margin-right: 5px;
@@ -527,21 +703,6 @@ export default {
       padding-left: 40px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(214,214,214,1);
-    }
-  }
-  .mouse__varietyDialog {
-    min-height: 254px;
-    .el-radio--small.is-bordered{
-      min-width: 112px;
-      padding: 8px 10px 0;
-      text-align: center;
-    }
-    .el-radio__input{
-      display: none;
-    }
-    .el-radio--small.is-bordered .el-radio__label{
-      padding-left: 0;
-      font-size: 14px;
     }
   }
 </style>

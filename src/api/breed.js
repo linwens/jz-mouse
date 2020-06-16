@@ -40,7 +40,7 @@ export function getbreedDetail(query) { // 获取繁育组详情
   })
 }
 
-export function delItemObj(id) { // 删除繁育组
+export function delBreedGroup(id) { // 删除繁育组
   return request({
     url: '/micebreed/' + id,
     method: 'delete'
@@ -70,10 +70,11 @@ export function getObj(id) {
   })
 }
 
-export function delObj(row) {
+export function removeBreedMouse(query) { // 移除小鼠
   return request({
-    url: '/dict/' + row.id,
-    method: 'delete'
+    url: '/micebreed/removeBreedDetailsById',
+    method: 'get',
+    params: query
   })
 }
 

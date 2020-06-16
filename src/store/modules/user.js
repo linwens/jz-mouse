@@ -1,4 +1,4 @@
-import { login, logout } from '@/api/user'
+import { login, tokenLogin, loginUser, logout } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { setStorageItem, getStorageItem, removeStorageItem, setLocalStorageItem, getLocalStorageItem } from '@/utils/storage'
 import { resetRouter } from '@/router'
@@ -64,38 +64,52 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      // 用于测试***********************************************
+      if (username === 'admin') { // 模拟管理员登录
+        login({ username: username.trim(), password: password }).then(response => {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          commit('SET_INFO', data)
+          setToken(data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      } else { // 普通用户登录
+        loginUser({ username: username.trim(), password: password }).then(response => {
+          const { data } = response
+          commit('SET_TOKEN', data.token)
+          commit('SET_INFO', data)
+          setToken(data.token)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      }
+    })
+  },
+
+  // 获取url的token
+  urlSetToken({ commit }, token) {
+    return new Promise((resolve, reject) => {
+      commit('SET_TOKEN', token)
+      setToken(token)
+      resolve()
+    })
+  },
+
+  // 登录获取用户信息
+  tokenLogin({ commit }) {
+    return new Promise((resolve, reject) => {
+      tokenLogin().then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
         commit('SET_INFO', data)
-        setToken(data.token)
         resolve()
       }).catch(error => {
         reject(error)
       })
     })
   },
-
-  // get user info
-  /* getInfo({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  }, */
 
   // user logout
   logout({ commit, state }) {
@@ -112,10 +126,12 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit, state }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
+      commit('REMOVE_INFO')
       commit('RESET_STATE')
+      console.log('清空数据', state)
       resolve()
     })
   },

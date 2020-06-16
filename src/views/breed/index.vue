@@ -43,7 +43,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './table'
-import { addItemObj, addObj, delItemObj, delObj, fetchItemList, fetchList, putItemObj, putObj } from '@/api/breed'
+import { delBreedGroup, fetchList } from '@/api/breed'
 
 export default {
   name: 'DelList',
@@ -87,7 +87,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        return delItemObj(row.id)
+        return delBreedGroup(row.id)
       }).then(() => {
         this.getList()
         _this.$message({

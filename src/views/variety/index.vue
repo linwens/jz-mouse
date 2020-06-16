@@ -21,21 +21,23 @@
             @refresh-change="handleRefreshChange"
           >
             <template slot="menu" slot-scope="{scope}">
-              <el-button
-                type="text"
-                size="mini"
-                @click="goEdit(scope.row)"
-              >
-                编辑
-              </el-button>
-              <el-button
-                type="text"
-                size="mini"
-                class="btn-text--danger"
-                @click="rowItemDel(scope.row)"
-              >
-                删除
-              </el-button>
+              <div v-if="scope.row.own || isAdmin">
+                <el-button
+                  type="text"
+                  size="mini"
+                  @click="goEdit(scope.row)"
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  type="text"
+                  size="mini"
+                  class="btn-text--danger"
+                  @click="rowItemDel(scope.row)"
+                >
+                  删除
+                </el-button>
+              </div>
             </template>
           </merge-table>
         </div>
@@ -49,7 +51,7 @@ import MergeTable from '@/components/MergeTable'
 import AddVarietyBtn from '@/components/Dialogs/cpt_add_variety'
 import { tableOption } from './table'
 import { fetchList } from '@/api/variety'
-import { editGenes } from '@/api/genes'
+import { delGenes } from '@/api/genes'
 
 export default {
   name: 'DelList',
@@ -59,6 +61,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       tableOption,
       tableLoading: false,
       page: {
@@ -70,7 +73,7 @@ export default {
     }
   },
   created() {
-
+    this.isAdmin = this.$store.getters.info.admin
   },
   methods: {
     goGenes() {
@@ -95,25 +98,14 @@ export default {
     rowItemDel: function(row) {
       console.log(row)
       const _this = this
-      this.$confirm('是否确认删除品系："' + row.varietiesName + '"?', '警告', {
+      this.$confirm(`是否确认删除品系"${row.varietiesName}"的"${row.geneName}"基因型?`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         console.log('del====row', row)
-        const { id, miceGeneId, source, geneName, miceCondition, status, color, area } = row
-        return editGenes({
-          id: miceGeneId,
-          source,
-          varietiesId: id,
-          geneName,
-          miceCondition,
-          status,
-          color,
-          area,
-          state: 1,
-          userId: this.$store.getters.info.id
-        })
+        const { miceGeneId } = row
+        return delGenes(miceGeneId)
       }).then(() => {
         this.getList()
         _this.$message({

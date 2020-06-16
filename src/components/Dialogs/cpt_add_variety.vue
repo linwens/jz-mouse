@@ -13,13 +13,19 @@
             label="品系名称:"
             label-width="80px"
             class="mb8"
-            prop="name"
+            prop="varietiesName"
             :rules="[
               { required: true, message: '品系名称不能为空'}
             ]"
           >
-            <el-input
+            <!-- <el-input
               v-model="addVarietyForm.name"
+              placeholder="请输入品系名称"
+              class="w250"
+            /> -->
+            <el-autocomplete
+              v-model="addVarietyForm.varietiesName"
+              :fetch-suggestions="history('varietiesName')"
               placeholder="请输入品系名称"
               class="w250"
             />
@@ -36,9 +42,11 @@
 
 <script>
 import { addItemObj } from '@/api/variety'
+import { inputRemenber } from '@/components/Mixins/history'
 
 export default {
   name: 'VarietyEdit',
+  mixins: [inputRemenber],
   props: {
     btnText: {
       type: String,
@@ -48,7 +56,7 @@ export default {
   data() {
     return {
       addVarietyForm: {
-        name: ''
+        varietiesName: ''
       },
       varietyDialog: false
     }
@@ -59,14 +67,21 @@ export default {
         if (valid) {
           this.varietyDialog = false
           // 提交成功后触发done
+          const { varietiesName } = this.addVarietyForm
           const { id: operator, id: userId } = this.$store.getters.info
           addItemObj({
-            varietiesName: this.addVarietyForm.name,
+            varietiesName,
             operator,
             userId
           }).then((res) => {
             if (res.data) {
+              // 存储输入过的值
+              this.$store.dispatch('user/setInputHistory', {
+                varietiesName
+              })
               this.$emit('done')
+              this.addVarietyForm.varietiesName = ''
+              this.$refs['addVarietyForm'].resetFields() // 就为了没有错误提示
             }
           })
         } else {

@@ -31,11 +31,18 @@ export function addNewGenes(obj) { // 新增基因型
   })
 }
 
-export function editGenes(obj) { // 修改基因型(删除 通过修改state字段实现)
+export function editGenes(obj) { // 修改基因型
   return request({
     url: '/micegene',
     method: 'put',
     data: obj
+  })
+}
+
+export function delGenes(id) { // 删除基因型
+  return request({
+    url: '/micegene/' + id,
+    method: 'delete'
   })
 }
 

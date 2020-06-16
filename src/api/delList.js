@@ -31,10 +31,11 @@ export function getItemObj(id) {
   })
 }
 
-export function delItemObj(id) { // 移除列表移除小鼠
+export function delDelMouse(query) { // 移除列表移除小鼠
   return request({
-    url: '/dict/item/' + id,
-    method: 'delete'
+    url: '/miceinfo/removeById',
+    method: 'delete',
+    params: query
   })
 }
 

@@ -1,17 +1,58 @@
 <template>
   <div>
+    <el-button
+      v-if="btnText"
+      type="text"
+      class="btn-text--black"
+      @click="dialogVisible = true"
+    >{{ btnText }}</el-button>
+    <svg-icon v-else icon-class="upload" class="cp" @click="dialogVisible = true" />
     <!-- 上传 -->
-    <el-upload
+    <el-dialog
+      title="上传文件"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <el-upload
+        ref="upload"
+        class="upload-demo"
+        :action="actionUrl"
+        :headers="{
+          Authorization: getToken()
+        }"
+        name="files"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        multiple
+        :limit="5"
+        :file-list="fileList"
+        :auto-upload="false"
+        :on-exceed="handleExceed"
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        :disabled="isUploading"
+      >
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" :disabled="isUploading" @click="submitUpload">上传到服务器</el-button>
+        <div slot="tip" class="el-upload__tip">可上传jpg/png、pdf、Excel、Word文件</div>
+      </el-upload>
+    </el-dialog>
+    <!-- <el-upload
       class="upload-demo"
-      action="https://jsonplaceholder.typicode.com/posts/"
+      :action="actionUrl"
+      :headers="{
+        Authorization: getToken()
+      }"
+      name="files"
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :before-remove="beforeRemove"
       multiple
+      :show-file-list="false"
       :limit="5"
       :on-exceed="handleExceed"
       :on-success="handleSuccess"
-      :file-list="fileList"
     >
       <el-button
         v-if="btnText"
@@ -19,12 +60,13 @@
         class="btn-text--black"
       >{{ btnText }}</el-button>
       <svg-icon v-else icon-class="upload" class="cp" />
-    </el-upload>
+    </el-upload> -->
   </div>
 </template>
 
 <script>
-import { saveFiles } from '@/api/cmn'
+import { Message } from 'element-ui'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'UploadFile',
@@ -40,14 +82,38 @@ export default {
     btnText: {
       type: String,
       default: ''
+    },
+    bizType: { // 上传文件对应的业务类型
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      fileList: []
+      isUploading: false,
+      dialogVisible: false,
+      // 根据是否传了id 走不同的上传接口
+      actionUrl: this.id ? `${process.env.VUE_APP_BASE_API}/sysfile/uploads/${this.bizType}/${this.id}` : `${process.env.VUE_APP_BASE_API}/sysfile/uploadFiles`,
+      fileList: [],
+      cacheUrl: []
     }
   },
+  watch: {
+    dialogVisible(n, o) {
+      if (!n) {
+        this.fileList = []
+      }
+    }
+  },
+  created() {
+    // this.getParams()
+  },
   methods: {
+    submitUpload() { // 上传文件
+      this.isUploading = true
+      this.$refs.upload.submit()
+    },
+    getToken,
     handleRemove(file, fileList) {
       console.log(file, fileList)
     },
@@ -57,22 +123,41 @@ export default {
     handleExceed(files, fileList) {
       this.$message.warning(`当前限制选择 5 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
+    handleError(err, file, fileList) {
+      this.isUploading = false
+      console.log('handleError===', err)
+      this.$message.error('文件上传失败')
+    },
     handleSuccess(response, file, fileList) {
-      // 上传成功后，调后端接口存路径
-      const { id: userId } = this.$store.getters.info
-      const createTme = +new Date() / 1000
-      console.log(response)
-      debugger
-      saveFiles({
-        createTme,
-        createUser: userId,
-        file: '',
-        fileId: this.id,
-        type: this.type
-      }).then((res) => {})
+      this.isUploading = false
+      this.$message.closeAll()
+      this.$message.success('文件上传成功')
+      console.log('上传成功返回...', this.id, response)
+      console.log(response, file, fileList)
+      if (!this.id && response.data.length > 0) {
+        console.log(this.cacheUrl, fileList)
+        // 因为设计稿只有一个上传按钮，所以没法做手动上传，就无法一次性传多张图，只能多次传单张图，为了确保done调用获得的data是全部
+        if (response.data.length <= fileList.length) {
+          this.cacheUrl.push(response.data[0])
+        }
+        if (this.cacheUrl.length === fileList.length) {
+          console.log('触发done')
+          this.$emit('done', this.cacheUrl, fileList)
+          // this.dialogVisible = false
+          setTimeout(() => {
+            this.dialogVisible = false
+          }, 2000)
+        }
+      }
+      if (this.id) {
+        // this.dialogVisible = false
+        setTimeout(() => {
+          this.dialogVisible = false
+        }, 2000)
+      }
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`)
+      return this.$confirm(`确定移除 ${file.name}？`)
     }
   }
 }

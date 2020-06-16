@@ -18,14 +18,17 @@ export const genesOption = {
   }, {
     label: '饲养条件',
     prop: 'miceCondition',
+    width: 80,
     overHidden: true
   }, {
     label: '健康状态',
     prop: 'status',
+    width: 80,
     overHidden: true
   }, {
     label: '毛色',
     prop: 'color',
+    width: 80,
     overHidden: true
   }, {
     label: '应用领域',

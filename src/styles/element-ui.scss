@@ -117,3 +117,15 @@
     background-color: #409eff;
   }
 }
+
+// 自己加个必选项红星
+.diy__is-require {
+  position: relative;
+  &::before {
+    content: '*';
+    color: #EB5444;
+    position: absolute;
+    left: -9px;
+    top: 8px;
+  }
+}

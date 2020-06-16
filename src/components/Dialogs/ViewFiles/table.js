@@ -13,15 +13,15 @@ export const filesOption = {
 
   column: [{
     label: '文件名称',
-    prop: 'name',
+    prop: 'fileName',
     overHidden: true
   }, {
     label: '文件格式',
-    prop: 'type',
+    prop: 'fileType',
     width: 180
   }, {
     label: '上传时间',
-    prop: 'opr_time',
+    prop: 'createTime',
     width: 180,
     format: 'yyyy-MM-dd hh:mm:ss'
   }]

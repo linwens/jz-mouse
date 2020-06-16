@@ -48,6 +48,7 @@
               placeholder="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
+              @input="changeNum(putInForm.female, 'female')"
             />
             <span class="ml8">雄</span>
             <el-input
@@ -55,6 +56,7 @@
               placeholder="0"
               :disabled="optType === 'breed' || optType === 'expt'"
               class="w80"
+              @input="changeNum(putInForm.male, 'male')"
             />
           </el-form-item>
         </el-form>
@@ -80,6 +82,7 @@ export default {
   },
   data() {
     return {
+      canGo: false,
       optType: '', // 操作类型
       cageList: [], // 鼠笼列表
       cagePage: {
@@ -141,12 +144,26 @@ export default {
     this.getCageList()
   },
   methods: {
+    changeNum(val, type) { // 限制放入小鼠数量的输入值
+      if (val < 0 || typeof val !== 'number') {
+        this.putInForm[type] = 0
+      }
+      if (val > this.mouseData[`${type}MiceNum`]) {
+        this.putInForm[type] = this.mouseData[`${type}MiceNum`]
+        this.$message.error(`${type === 'female' ? '雌' : '雄'}鼠最多只能放入${this.mouseData[`${type}MiceNum`]}只`)
+      }
+    },
     goBack() {
+      if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
+        this.$router.back()
+        return
+      }
       this.$confirm(`当前仍有${this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum}只小鼠尚未放入鼠笼，是否继续返回？`, '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        this.canGo = true
         this.$router.back()
       }).catch(function() {
       })
@@ -155,8 +172,9 @@ export default {
     getCageList() {
       this.tableLoading = true
       fetchCageList(Object.assign({
+        isMy: 0,
         current: this.cagePage.page,
-        size: this.cagePage.limit
+        size: -1
       })).then(res => {
         const { records } = res.data
         let list = []
@@ -179,11 +197,16 @@ export default {
       if (!this.choosedCage) {
         this.$message.error('请先选择鼠笼')
       } else {
+        this.putInForm.female = this.mouseData.femaleMiceNum
+        this.putInForm.male = this.mouseData.maleMiceNum
         this.putInVisible = true
       }
     },
     // 繁育组添加小鼠
     doTransferCage() {
+      console.log(this.$router)
+      console.log(this.$route.go)
+      console.log(this.$router.go)
       transferCage({
         cageId: this.choosedCage,
         miceId: this.ids
@@ -193,11 +216,20 @@ export default {
         this.mouseData.maleMiceNum -= this.putInForm.male
         if (this.optType === 'breed') { // 繁育组移笼
           this.$store.dispatch('app/cacheChoosedMouse', this.mouses)
+          console.log(this.$route)
+          this.$router.go(-2) // 直接跳回繁育组页面
+          return
         }
         if (this.optType === 'mouseEdit') { // 编辑小鼠移笼
-          this.$store.dispatch('app/cacheMouseInfo', Object.assign({}, this.mouseData,{
-            cid: this.choosedCage
-          }))
+          const { varietiesName, varietiesId, genes, files } = this.$store.getters.cacheMouseInfo
+          this.mouseData.cageId = this.choosedCage
+          this.$store.dispatch('app/cacheMouseInfo', {
+            common: this.mouseData,
+            varietiesName,
+            varietiesId,
+            genes,
+            files
+          })
         }
         this.putInVisible = false
         this.$router.back()
@@ -221,17 +253,22 @@ export default {
         // 更新剩余小鼠数量
         this.mouseData.femaleMiceNum -= this.putInForm.female
         this.mouseData.maleMiceNum -= this.putInForm.male
-        const { varietiesName, varietiesId, genes } = this.$store.getters.cacheMouseInfo
-
+        const { varietiesName, varietiesId, genes, files } = this.$store.getters.cacheMouseInfo
         this.$store.dispatch('app/cacheMouseInfo', {
           common: this.mouseData,
           varietiesName,
           varietiesId,
-          genes
+          genes,
+          files
         })
         this.$message.success('新增小鼠成功')
         this.getCageList()
         this.putInVisible = false
+        if (this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum === 0) {
+          this.$store.dispatch('app/clearMouseInfo')
+          this.$router.go(-2)
+          return
+        }
       })
     },
     putInSubmit() {
@@ -258,6 +295,20 @@ export default {
         return false
       }
       this.doAdd()
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    console.log(to)
+    if (!this.canGo && this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum !== 0) {
+      const answer = window.confirm(`您当前还有${this.mouseData.femaleMiceNum + this.mouseData.maleMiceNum}只小鼠未新增完成，离开页面后系统将无法保留相关数据，是否继续离开？`)
+      if (answer) {
+        next()
+      } else {
+        next(false)
+      }
+    } else {
+      next()
     }
   }
 }

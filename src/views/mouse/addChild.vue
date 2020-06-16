@@ -7,7 +7,7 @@
           <p>母鼠编号: <span>{{ mother.miceInfoId }}</span></p>
         </div>
         <el-form ref="form" :model="form" size="small" label-width="95px" label-position="left">
-          <el-form-item label="品系名称:" class="mb17">
+          <el-form-item label="品系名称:" class="diy__is-require mb17">
             <el-input
               v-model="varietiesName"
               disabled
@@ -31,7 +31,7 @@
                   v-if="genesType === 5"
                   :varieties-id="varietiesId"
                   :varieties-name="varietiesName"
-                  :genes-data.sync="currentGene"
+                  :genes-data.sync="genes"
                 />
                 <el-input
                   v-else
@@ -80,7 +80,7 @@
           <el-form-item label="状态:" class="mb0">
             <span>闲置</span>
           </el-form-item>
-          <el-form-item label="状态数量:" class="mb9">
+          <el-form-item label="状态数量:" class="diy__is-require mb9">
             <el-input
               v-model.number="form.femaleMiceNum"
               placeholder="0"
@@ -134,12 +134,13 @@
             <el-form-item label="纯/杂合子" class="mb9 mr62">
               <el-select
                 v-model="form.pureHeterozygote"
+                clearable
                 placeholder="请选择纯/杂合子"
                 class="w250"
               >
-                <el-option label="纯合子" :value="0"></el-option>
-                <el-option label="杂合子" :value="1"></el-option>
-                <el-option label="未测试" :value="2"></el-option>
+                <el-option label="纯合子" :value="0" />
+                <el-option label="杂合子" :value="1" />
+                <el-option label="未测试" :value="2" />
               </el-select>
             </el-form-item>
             <el-form-item label="显示颜色:" class="mb9">
@@ -151,6 +152,7 @@
               <el-date-picker
                 v-model="form.separateCageRemindTime"
                 type="datetime"
+                default-time="09:00:00"
                 format="yyyy-MM-dd HH:mm"
                 value-format="timestamp"
                 class="w250"
@@ -173,6 +175,7 @@
               <el-date-picker
                 v-model="form.phenotypicIdentificationRemindTime"
                 type="datetime"
+                default-time="09:00:00"
                 format="yyyy-MM-dd HH:mm"
                 value-format="timestamp"
                 class="w250"
@@ -230,8 +233,10 @@
             </div>
           </div>
           <el-form-item label="附件:" class="mb0">
-            <el-button type="text">查看</el-button>
-            <upload-btn class="dib" />
+            <div class="df">
+              <view-files :cache-list="cacheFilesList" />
+              <upload-btn class="dib" @done="fillFilesUrl" />
+            </div>
           </el-form-item>
         </el-form>
       </div>
@@ -246,14 +251,16 @@
 <script>
 import ChoiceVarietyBtn from '@/components/Dialogs/choice_variety'
 import AddGenesBtn from '@/components/Dialogs/cpt_add_genes'
+import ViewFiles from '@/components/Dialogs/ViewFiles'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import { addMouse } from '@/api/mouse'
-import { getLisByGeneId } from '@/api/genes'
+import { getLisByGeneId, getLisByVariety } from '@/api/genes'
 
 export default {
   name: 'AddChild',
   components: {
     ChoiceVarietyBtn,
+    ViewFiles,
     UploadBtn,
     AddGenesBtn
   },
@@ -266,7 +273,7 @@ export default {
         maleMiceNum: 0,
         femaleMiceNum: 0,
         weight: null,
-        birthDate: null,
+        birthDate: +new Date(),
         pureHeterozygote: null,
         color: '#00CB7C',
         separateCageRemindTime: null,
@@ -281,6 +288,7 @@ export default {
         sign: '',
         status: 1 // 0:无，1：闲置，2：繁育，3：实验,4:手动处死5,实验处死
       },
+      cacheFilesList: [],
       // 品系选择
       curVariety: '',
       varietiesName: '',
@@ -316,7 +324,7 @@ export default {
       if (!this.form.birthDate) return 0
       const duration = +new Date() - this.form.birthDate
       const days = duration / 1000 / 60 / 60 / 24 % 7
-      return Math.floor(days)
+      return Math.floor(days) + 1
     }
   },
   watch: {
@@ -324,17 +332,28 @@ export default {
       const newVariety = JSON.parse(n)
       this.varietiesName = newVariety.varietiesName
       this.varietiesId = newVariety.id
+      if (this.genesType === 4) {
+        this.getNewGenesByVariety()
+      }
     },
     genesType(n, o) {
       if (n === 1 || n === 3) {
         this.currentGene.geneName = this.father.geneName
         this.form.genotypes = this.father.genotypes
+        this.varietiesName = this.father.varietiesName
+        this.varietiesId = this.father.vid
       }
       if (n === 2) {
         this.currentGene.geneName = this.mother.geneName
         this.form.genotypes = this.mother.genotypes
+        this.varietiesName = this.mother.varietiesName
+        this.varietiesId = this.mother.vid
       }
-      if (n === 0) {
+      if (n === 4) { // WT
+        this.getNewGenesByVariety()
+        return
+      }
+      if (n === 0 || n === 5) {
         this.currentGene.geneName = ''
         this.form.genotypes = 0
       }
@@ -347,8 +366,10 @@ export default {
     }
   },
   created() {
-    const parents = this.$route.params.parents || []
-    const cage = this.$route.params.cage || {}
+    const cacheChildMouse = this.$store.getters.addingChildMouse
+    console.log(cacheChildMouse)
+    const parents = cacheChildMouse.parents || []
+    const cage = cacheChildMouse.cage || {}
     if (parents.length === 2) {
       this.father = parents.filter((el) => {
         return el.gender === 0
@@ -367,15 +388,36 @@ export default {
     this.getGenesInfo()
   },
   methods: {
-    // 选择品系 or 基因型
-    chooseVarity() {
-      this.varietyDialog = true
+    // 根据品系id重新拿基因型列表,填充WT基因型
+    getNewGenesByVariety() {
+      getLisByVariety({
+        id: this.varietiesId
+      }).then((res) => {
+        const { data } = res
+        const WT = data.filter((el) => {
+          return el.geneName === 'WT'
+        })[0]
+        this.fillGenes(WT)
+      })
     },
-    fillVarity() {
-      this.varietyDialog = false
-      // 填充品系
+    // 上传成功回填url
+    fillFilesUrl(data, fileList) {
+      this.$set(this.form, 'files', data)
+      // 填充文件查看列表
+      const list = []
+      for (let i = 0; i < data.length; i++) {
+        const { name: fileName, type: bizType } = fileList[i].raw
+        list.push({
+          fileName,
+          bizType,
+          path: data[i]
+        })
+      }
+      console.log('list', list)
+      this.$set(this, 'cacheFilesList', list)
     },
     goBack() {
+      this.$store.dispatch('app/clearChildMouses')
       this.$router.back()
     },
     goChoose(obj) {
@@ -394,11 +436,12 @@ export default {
     // 填充基因型信息
     fillGenes(res) {
       if (!res) {
-        for (const key of this.currentGene) {
+        for (const key in this.currentGene) {
           this.currentGene[key] = ''
         }
       } else {
         const { geneName, miceCondition, status, color, area } = res
+
         this.currentGene.geneName = geneName
         this.currentGene.miceCondition = miceCondition
         this.currentGene.status = status
@@ -416,11 +459,15 @@ export default {
         phenotypicIdentificationRemindTime: this.form.phenotypicIdentificationRemindTime / 1000,
         createUser: userId,
         operator: userId,
+        fatherId: this.father.miceInfoId,
+        motherId: this.mother.miceInfoId,
         cid: this.father.cid,
         vid: this.varietiesId
       })
       addMouse(params).then(res => {
         this.$message.success('新增子鼠成功')
+        this.$store.dispatch('app/clearChildMouses')
+        this.goBack()
       })
     }
   }
@@ -453,21 +500,6 @@ export default {
       padding-left: 40px;
       background:rgba(255,255,255,1);
       border:1px solid rgba(214,214,214,1);
-    }
-  }
-  .mouse__varietyDialog {
-    min-height: 254px;
-    .el-radio--small.is-bordered{
-      width: 112px;
-      padding: 8px 10px 0;
-      text-align: center;
-    }
-    .el-radio__input{
-      display: none;
-    }
-    .el-radio--small.is-bordered .el-radio__label{
-      padding-left: 0;
-      font-size: 14px;
     }
   }
 </style>

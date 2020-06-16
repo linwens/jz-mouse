@@ -1,35 +1,65 @@
 <template>
   <div class="navbar">
+    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
-    <div class="right-menu df s-jcc s-aic">
-      <el-badge :is-dot="hasMsg" class="top-message__icon df s-jcc s-aic">
-        <svg-icon icon-class="message" class="fs26" />
+    <!-- <div class="right-menu df s-jcc s-aic">
+      <el-badge
+        :is-dot="hasMsg"
+        class="top-message__icon df s-jcc s-aic"
+      >
+        <svg-icon icon-class="message" class="fs26 cp" @click="goTodo()" />
       </el-badge>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import Hamburger from '@/components/Hamburger'
 import Breadcrumb from '@/components/Breadcrumb'
+import { fetchList } from '@/api/todo'
 
 export default {
   components: {
+    Hamburger,
     Breadcrumb
+  },
+  data() {
+    return {
+      hasMsg: false
+    }
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ]),
-    // 是否有消息
-    hasMsg() {
-      return true
-    }
+    ])
+  },
+  created() {
+    // this.getUnRead()
   },
   methods: {
+    toggleSideBar() {
+      this.$store.dispatch('app/toggleSideBar')
+    },
+    // 跳转待办事项列表
+    goTodo() {
+      this.$router.push({ name: 'todo' })
+    },
+    // 获取是否有未读消息
+    getUnRead() {
+      fetchList({
+        status: 1,
+        current: 1,
+        size: 10
+      }).then((res) => {
+        if (res.data.total > 0) {
+          this.hasMsg = true
+        }
+      })
+    },
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)

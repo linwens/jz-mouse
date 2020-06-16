@@ -3,7 +3,7 @@
     <el-button type="text" size="mini" @click="dialogVisible = true">{{ btnText }}</el-button>
     <div v-if="type === 'pdf'">
       <el-dialog
-        title="pdf查看"
+        title="pdf文件查看"
         append-to-body
         fullscreen
         custom-class="mouse__preview"
@@ -17,19 +17,27 @@
       </el-dialog>
     </div>
     <div v-if="type === 'img'">
-      <el-image
-        style="width: 100px; height: 100px"
-        :src="fileUrl"
-        :preview-src-list="[fileUrl]"
-      />
+      <el-dialog
+        title="图片查看"
+        append-to-body
+        fullscreen
+        custom-class="mouse__preview"
+        :visible.sync="dialogVisible"
+        width="30%"
+      >
+        <el-image
+          style="width: 100px; height: 100px"
+          :src="fileUrl"
+          :preview-src-list="[fileUrl]"
+        />
+      </el-dialog>
     </div>
     <div v-if="type === 'office'">
       <el-dialog
-        title="office查看"
+        title="office文件查看"
         fullscreen
         :visible.sync="dialogVisible"
         width="30%"
-        :before-close="handleClose"
         custom-class="mouse__preview"
       >
         <iframe
@@ -52,7 +60,7 @@ export default {
     },
     fileUrl: {
       type: String,
-      default: 'http://localhost/test.pdf'
+      default: ''
     }
   },
   data() {
@@ -68,7 +76,9 @@ export default {
   methods: {
     // 获取类型
     getType(url) {
-      const type = url.match(/\.[^\.]+$/g)[0].slice(1)
+      let URL = url.match(/[^/?]*\?+/g)[0] // 渠道url里 最后一个 / 与 ? 之间的值
+      URL = URL.slice(0, URL.length - 1)
+      const type = URL.match(/\.[^\.]+$/g)[0].slice(1)
       const pattImg = new RegExp(/(jpg|png|jpeg)/g)
       const pattOffice = new RegExp(/(docx|xlsx|pptx)/g)
       if (pattImg.test(type)) {

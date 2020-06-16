@@ -9,16 +9,19 @@
           :data="tableData"
           :table-option="tableOption"
           :table-loading="tableLoading"
+          @refresh-change="handleRefreshChange"
         >
           <template slot="menu" slot-scope="scope">
-            <el-button
-              type="text"
-              size="mini"
-              class="btn-text--danger"
-              @click="rowItemDel(scope.scope.row)"
-            >
-              移除
-            </el-button>
+            <div v-if="isAdmin">
+              <el-button
+                type="text"
+                size="mini"
+                class="btn-text--danger"
+                @click="rowItemDel(scope.scope.row)"
+              >
+                移除
+              </el-button>
+            </div>
           </template>
         </merge-table>
       </div>
@@ -29,7 +32,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption } from './table'
-import { delItemObj, fetchList } from '@/api/delList'
+import { delDelMouse, fetchList } from '@/api/delList'
 
 export default {
   name: 'DelList',
@@ -38,6 +41,7 @@ export default {
   },
   data() {
     return {
+      isAdmin: false,
       tableOption,
       tableLoading: false,
       page: {
@@ -49,6 +53,7 @@ export default {
     }
   },
   created() {
+    this.isAdmin = this.$store.getters.info.admin
     this.getList()
   },
   methods: {
@@ -58,14 +63,16 @@ export default {
     // 删除
     rowItemDel: function(row) {
       const _this = this
-      this.$confirm('是否确认删除"' + row.miceId + '"小鼠的数据?', '警告', {
+      this.$confirm('是否确认删除小鼠："' + row.miceId + '"的数据?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(function() {
-        return delItemObj(row.id)
+        return delDelMouse({
+          miceId: row.miceId
+        })
       }).then(() => {
-        this.getDictItemList()
+        this.getList()
         _this.$message({
           showClose: true,
           message: '删除成功',

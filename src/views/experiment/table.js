@@ -9,15 +9,18 @@ export const tableOption = {
   rowClassName: 'mouse__table--stripe',
   align: 'left',
   menu: true,
-  menuWidth: 130,
+  menuWidth: 100,
 
   column: [{
     label: '实验组名称',
     prop: 'name',
-    overHidden: true
+    overHidden: true,
+    width: 140,
+    slot: true
   }, {
     label: '实验分组数量',
     prop: 'experimentSampleGroupNum',
+    width: 120,
     overHidden: true
   }, {
     label: '小鼠总数',
@@ -25,31 +28,33 @@ export const tableOption = {
     overHidden: true
   }, {
     label: '开始时间',
-    prop: 'createTime',
-    width: 120,
+    prop: 'startTime',
+    width: 100,
     format: 'yyyy-MM-dd'
   }, {
     label: '结束时间',
     prop: 'endTime',
-    width: 120,
+    width: 100,
     format: 'yyyy-MM-dd'
   }, {
-    label: '最新监测时间',
+    label: '最新检测时间',
     prop: 'newTestTime',
-    width: 200,
+    width: 160,
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     label: '最新处理时间',
     prop: 'newHandleTime',
-    width: 200,
+    width: 160,
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
     label: '操作记录查看',
     prop: 'operation_check',
+    width: 120,
     slot: true
   }, {
     label: '建模检测结果',
     prop: 'module_rslt',
+    width: 120,
     slot: true
   }]
 }

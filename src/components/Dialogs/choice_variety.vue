@@ -1,6 +1,6 @@
 <template>
   <div class="dib">
-    <el-button type="primary" @click="chooseVarity()">选择品系</el-button>
+    <el-button type="primary" :disabled="disabled" @click="chooseVarity()">选择品系</el-button>
     <!-- 选择品系弹窗 -->
     <el-dialog
       title="选择品系"
@@ -12,7 +12,7 @@
           :key="item.id"
           v-model="variety_radio"
           :label="item"
-          class="mr0"
+          class="mr10 ml0 mb10"
           size="small"
           border
         >{{ item.varietiesName }}</el-radio>
@@ -29,6 +29,12 @@
 import { varietiesList } from '@/api/variety'
 export default {
   name: 'ChoiceVariety',
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       list: [],
@@ -57,6 +63,19 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+  .mouse__varietyDialog {
+    .el-radio--small.is-bordered{
+      padding: 8px 10px 0;
+      text-align: center;
+    }
+    .el-radio__input{
+      display: none;
+    }
+    .el-radio--small.is-bordered .el-radio__label{
+      padding-left: 0;
+      font-size: 14px;
+    }
+  }
 
 </style>
