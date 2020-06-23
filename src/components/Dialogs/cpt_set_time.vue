@@ -75,6 +75,10 @@ import { setExptTime } from '@/api/experiment'
 export default {
   name: 'SetTime',
   props: {
+    endTime: {
+      type: Number,
+      default: 0
+    },
     id: {
       type: Number,
       default: null
@@ -104,6 +108,10 @@ export default {
   },
   methods: {
     setTime() {
+      if (this.setTimeForm.time > this.endTime) {
+        this.$message.error('检测时间或处理时间不得大于结束时间')
+        return false
+      }
       this.$refs['setTimeForm'].validate((valid) => {
         if (valid) {
           this.setTimeDialog = false
