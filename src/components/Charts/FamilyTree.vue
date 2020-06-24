@@ -127,11 +127,12 @@ export default {
     },
     // 查看小鼠详情
     goDetail() {
+      console.log('this.curMouse===', this.curMouse)
       if (this.curMouse) {
         if (this.curMouseStatus) {
           this.$message.warning('小鼠已删除')
         } else {
-          this.$router.push({ name: 'mouseEdit', params: { id: this.curMouse }})
+          this.$router.push({ name: 'mouseEdit', params: { id: this.curMiceId }})
         }
       } else {
         this.$message.warning('请先点击小鼠')

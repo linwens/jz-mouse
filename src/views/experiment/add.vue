@@ -607,6 +607,10 @@ export default {
       const lables = this.tags.map((el) => {
         return el.label
       })
+      if (handleTime > endTime || testTime > endTime) {
+        this.$message.error('检测时间或处理时间不得大于结束时间')
+        return false
+      }
       addNewExpt(Object.assign({}, {
         createUser: userId,
         startTime: startTime / 1000,
