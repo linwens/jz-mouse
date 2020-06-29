@@ -233,7 +233,7 @@
             </div>
           </div>
           <el-form-item label="附件:" class="mb0">
-            <div class="df">
+            <div class="df s-aic">
               <view-files :cache-list="cacheFilesList" />
               <upload-btn class="dib" @done="fillFilesUrl" />
             </div>

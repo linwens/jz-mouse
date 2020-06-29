@@ -278,7 +278,7 @@
                 </div>
               </div>
               <el-form-item label="附件:" class="mb0">
-                <div v-if="canEdit" class="df">
+                <div v-if="canEdit" class="df s-aic">
                   <view-files :id="curMouseId" biz-type="mice" />
                   <upload-btn :id="curMouseId" biz-type="mice" class="dib" @done="fillFilesUrl" />
                 </div>

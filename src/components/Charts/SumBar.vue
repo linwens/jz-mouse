@@ -74,7 +74,11 @@ export default {
         const item = data[i]
         femaleSum.push(item.femaleNum)
         maleSum.push(item.maleNum)
-        xData.push(`${item.name}\n${item.varietiesName ? item.varietiesName : ''}`)
+        // xData.push(`${item.name}\n${item.varietiesName ? item.varietiesName : ''}`)
+        xData.push([
+          item.name,
+          item.varietiesName ? item.varietiesName : ''
+        ])
       }
       // var xData = (() => {
       //   var list = []
@@ -116,6 +120,7 @@ export default {
         calculable: true,
         xAxis: [{
           type: 'category',
+          offset: 10,
           axisLine: {
             lineStyle: {
               color: '#90979c'
@@ -132,7 +137,25 @@ export default {
           },
           axisLabel: {
             interval: 0,
-            rotate: 30
+            rotate: 24,
+
+            formatter(value, index) {
+              // 数组拆分拼接
+              const arr = value.split(',')
+              const a = arr[0].length > 20 ? arr[0].slice(0, 20) + '...' : arr[0]
+              const b = arr[1].length > 20 ? arr[1].slice(0, 20) + '...' : arr[1]
+              return [
+                '{a|' + a + '}',
+                '{b|' + b + '}'
+              ].join('\n')
+            },
+
+            rich: {
+              a: {},
+              b: {
+                fontWeight: 'bold'
+              }
+            }
           },
           data: xData
         }],

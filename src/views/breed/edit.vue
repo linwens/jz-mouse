@@ -15,7 +15,7 @@
             <span v-else>{{ breedForm.name }}</span>
           </el-form-item>
           <el-form-item
-            label="繁育时间:"
+            label="合笼时间:"
             label-width="89.56px"
             class="mb10"
             style="padding-left: 9.44px;"
@@ -40,6 +40,7 @@
               </el-form-item> -->
               <el-date-picker
                 v-model="breedForm.breedTime"
+                default-time="09:00:00"
                 type="datetime"
                 format="yyyy-MM-dd HH:mm:ss"
                 value-format="timestamp"

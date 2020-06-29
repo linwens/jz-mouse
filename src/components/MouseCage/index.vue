@@ -441,7 +441,7 @@ export default {
       width: 80px;
       height: 88px;
       padding: 0 13px;
-      margin-right: 3px;
+      margin-right: 10px;
       box-sizing: border-box;
       border-width: 2px;
       border-style: solid;

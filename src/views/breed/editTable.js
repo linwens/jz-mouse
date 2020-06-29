@@ -63,6 +63,24 @@ export const tableOption = {
       overHidden: true
     },
     {
+      width: 200,
+      label: '纯/杂合子',
+      prop: 'pureHeterozygote',
+      overHidden: true,
+      dicData: [
+        {
+          label: '纯合子',
+          value: 0
+        }, {
+          label: '杂合子',
+          value: 1
+        }, {
+          label: '未测试',
+          value: 2
+        }
+      ]
+    },
+    {
       label: '毛色',
       prop: 'geneColor'
     },
