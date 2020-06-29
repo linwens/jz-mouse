@@ -6,7 +6,7 @@
       class="btn-text--black"
       @click="dialogVisible = true"
     >{{ btnText }}</el-button>
-    <svg-icon v-else icon-class="upload" class="cp" @click="dialogVisible = true" />
+    <svg-icon v-else icon-class="upload" class="fs20 cp" @click="dialogVisible = true" />
     <!-- 上传 -->
     <el-dialog
       title="上传文件"

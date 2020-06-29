@@ -41,7 +41,7 @@
                 <span class="mouse__info--span">显示颜色:</span>
                 <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" />
               </p>
-              <p class="mouse__info--p df">
+              <p class="mouse__info--p df s-aic">
                 <span class="mouse__info--span">附件:</span>
                 <view-files v-if="curMouseId" :id="curMouseId" biz-type="mice" />
                 <upload-btn v-if="curMouseId && (isAdmin || activeName === 'myCage')" :id="curMouseId" biz-type="mice" class="dib" />
@@ -81,7 +81,7 @@
           <div>
             <h6 class="mouse__info--h6">实验进度</h6>
             <div class="df s-jcsb s-aic mb8">
-              <p class="mouse__info--p df">
+              <p class="mouse__info--p df s-aic">
                 <span class="mouse__info--span">检测试验结果:</span>
                 <view-files v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" biz-type="experiment" />
                 <upload-btn v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" biz-type="experiment" class="dib" />
