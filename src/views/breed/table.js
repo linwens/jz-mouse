@@ -16,6 +16,10 @@ export const tableOption = {
     prop: 'name',
     overHidden: true
   }, {
+    width: 100,
+    label: '笼位号',
+    prop: 'cageNo'
+  }, {
     label: '繁育时间',
     prop: 'breedTime',
     format: 'yyyy-MM-dd hh:mm:ss'

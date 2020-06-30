@@ -6,16 +6,46 @@
           <div>
             <h6 class="mouse__info--h6">品系信息</h6>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">品系:</span><i class="mouse__info--i">{{ mouseInfo.varietiesName }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">毛色:</span><i class="mouse__info--i">{{ mouseInfo.geneColor }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">饲养条件:</span><i class="mouse__info--i">{{ mouseInfo.miceCondition }}</i></p>
-              <p class="mouse__info--p"><span class="mouse__info--span">健康状态:</span><i class="mouse__info--i">{{ mouseInfo.geneStatus }}</i></p>
+              <p class="mouse__info--p">
+                <span class="mouse__info--span">品系:</span>
+                <el-tooltip effect="dark" :content="mouseInfo.varietiesName" placement="top">
+                  <i class="mouse__info--i">{{ mouseInfo.varietiesName }}</i>
+                </el-tooltip>
+              </p>
+              <p class="mouse__info--p">
+                <span class="mouse__info--span">毛色:</span>
+                <el-tooltip effect="dark" :content="mouseInfo.geneColor" placement="top">
+                  <i class="mouse__info--i">{{ mouseInfo.geneColor }}</i>
+                </el-tooltip>
+              </p>
+              <p class="mouse__info--p">
+                <span class="mouse__info--span">饲养条件:</span>
+                <el-tooltip effect="dark" :content="mouseInfo.miceCondition" placement="top">
+                  <i class="mouse__info--i">{{ mouseInfo.miceCondition }}</i>
+                </el-tooltip>
+              </p>
+              <p class="mouse__info--p">
+                <span class="mouse__info--span">健康状态:</span>
+                <el-tooltip effect="dark" :content="mouseInfo.geneStatus" placement="top">
+                  <i class="mouse__info--i">{{ mouseInfo.geneStatus }}</i>
+                </el-tooltip>
+              </p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p"><span class="mouse__info--span">基因型:</span><i class="mouse__info--i">{{ mouseInfo.geneName }}</i></p>
+              <p class="mouse__info--p w-100">
+                <span class="mouse__info--span">基因型:</span>
+                <el-tooltip effect="dark" :content="mouseInfo.geneName" placement="top">
+                  <i class="mouse__info--i">{{ mouseInfo.geneName }}</i>
+                </el-tooltip>
+              </p>
             </div>
             <div class="df s-jcfs s-aic mb8">
-              <p class="mouse__info--p w-100"><span class="mouse__info--span">应用领域:</span><i class="mouse__info--i">{{ mouseInfo.area }}</i></p>
+              <p class="mouse__info--p w-100">
+                <span class="mouse__info--span">应用领域:</span>
+                <el-tooltip effect="dark" :content="mouseInfo.area" placement="top">
+                  <i class="mouse__info--i">{{ mouseInfo.area }}</i>
+                </el-tooltip>
+              </p>
             </div>
           </div>
           <div>
@@ -39,9 +69,9 @@
               <p class="mouse__info--p"><span class="mouse__info--span">状态:</span><i class="mouse__info--i">{{ mouseInfo.miceStatusDesc }}</i></p>
               <p class="mouse__info--p df">
                 <span class="mouse__info--span">显示颜色:</span>
-                <i class="mouse__info--i dib" :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" />
+                <i class="mouse__info--i dib"><div :style="{'width': '16px', 'height': '16px', 'backgroundColor': mouseInfo.miceColor}" /></i>
               </p>
-              <p class="mouse__info--p df">
+              <p class="mouse__info--p df s-aic">
                 <span class="mouse__info--span">附件:</span>
                 <view-files v-if="curMouseId" :id="curMouseId" biz-type="mice" />
                 <upload-btn v-if="curMouseId && (isAdmin || activeName === 'myCage')" :id="curMouseId" biz-type="mice" class="dib" />
@@ -81,7 +111,7 @@
           <div>
             <h6 class="mouse__info--h6">实验进度</h6>
             <div class="df s-jcsb s-aic mb8">
-              <p class="mouse__info--p df">
+              <p class="mouse__info--p df s-aic">
                 <span class="mouse__info--span">检测试验结果:</span>
                 <view-files v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" biz-type="experiment" />
                 <upload-btn v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" biz-type="experiment" class="dib" />
@@ -553,16 +583,28 @@ export default {
           message: '请先选择鼠笼'
         })
       } else {
-        // 如果当前鼠笼里没有小鼠(找到当前鼠笼，获取小鼠信息)
-        const thisCageNoMouse = this.cageList.filter((el) => {
+        // 当前选中的鼠笼
+        const nowCage = this.cageList.filter((el) => {
           return el.id === this.choosedCage
-        })[0].miceInfoByMiceCageQueryVO.length === 0
+        })[0];
+        // 如果当前鼠笼里没有小鼠(找到当前鼠笼，获取小鼠信息)
+        const thisCageNoMouse = nowCage.miceInfoByMiceCageQueryVO.length === 0
         if (thisCageNoMouse) {
           this.$message({
             type: 'error',
             message: '当前鼠笼中没有小鼠，请添加小鼠后进行操作'
           })
           return
+        }
+        // 如果选中的鼠笼中只有1雄1雌
+        const femaleAndMale = nowCage.miceInfoByMiceCageQueryVO.length === 2
+        if (femaleAndMale && nowCage.miceInfoByMiceCageQueryVO[0].gender != nowCage.miceInfoByMiceCageQueryVO[1].gender) {
+          console.log('刚好两只异性')
+          this.$set(this, 'curCageMouseList', {
+            cid: this.choosedCage,
+            mouses: nowCage.miceInfoByMiceCageQueryVO
+          })
+          console.log(this.curCageMouseList)
         }
         if (this.buildStep === 0) {
           this.isBuilding = true
@@ -689,6 +731,8 @@ export default {
       color: #333;
     }
     &--p{
+      display: flex;
+      align-items: center;
       width: 180px;
       font-size: 14px;
       // display: inline-block;
@@ -698,6 +742,11 @@ export default {
       color: #999;
     }
     &--i {
+      flex: 1;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       color: #333;
     }
     &-sign {

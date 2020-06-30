@@ -255,8 +255,12 @@ export default {
   },
   watch: {
     'choicedList.mouses'(n, o) {
+      console.log('-=---=---[][', n)
+
       if (!n) { // 选中小鼠项情况，checkList也清空
         this.$set(this, 'checkList', [])
+      } else {
+        this.$set(this, 'checkList', n)
       }
     }
   },
@@ -441,7 +445,7 @@ export default {
       width: 80px;
       height: 88px;
       padding: 0 13px;
-      margin-right: 3px;
+      margin-right: 10px;
       box-sizing: border-box;
       border-width: 2px;
       border-style: solid;

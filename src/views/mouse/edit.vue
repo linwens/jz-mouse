@@ -158,14 +158,12 @@
                     <el-input
                       v-model="weekAge"
                       placeholder="0"
-                      disabled
                       class="w80"
                     />
                     <span class="ml8">周</span>
                     <el-input
                       v-model="dayAge"
                       placeholder="0"
-                      disabled
                       class="w80"
                     />
                     <span class="ml8">天</span>
@@ -278,7 +276,7 @@
                 </div>
               </div>
               <el-form-item label="附件:" class="mb0">
-                <div v-if="canEdit" class="df">
+                <div v-if="canEdit" class="df s-aic">
                   <view-files :id="curMouseId" biz-type="mice" />
                   <upload-btn :id="curMouseId" biz-type="mice" class="dib" @done="fillFilesUrl" />
                 </div>
@@ -397,19 +395,45 @@ export default {
   },
   computed: {
     // 周龄，不存数据库
-    weekAge() {
-      if (!this.form.birthDate) return 0
-      const duration = +new Date() - this.form.birthDate
-      const weeks = duration / 1000 / 60 / 60 / 24 / 7
-      return Math.floor(weeks)
+    // weekAge() {
+    //   if (!this.form.birthDate) return 0
+    //   const duration = +new Date() - this.form.birthDate
+    //   const weeks = duration / 1000 / 60 / 60 / 24 / 7
+    //   return Math.floor(weeks)
+    // },
+    weekAge: {
+      get() {
+        if (!this.form.birthDate) return 0
+        const duration = +new Date() - this.form.birthDate
+        const weeks = duration / 1000 / 60 / 60 / 24 / 7
+        return Math.floor(weeks)
+      },
+      set(newVal) {
+        console.log('当前dayage==', this.dayAge)
+        const weeks = newVal * 1000 * 60 * 60 * 24 * 7 + this.dayAge * 1000 * 60 * 60 * 24
+        this.form.birthDate = +new Date() - weeks
+      }
     },
     // 天
-    dayAge() {
-      if (!this.form.birthDate) return 0
-      const duration = +new Date() - this.form.birthDate
-      const days = duration / 1000 / 60 / 60 / 24 % 7
-      return Math.floor(days)
+    dayAge: {
+      get() {
+        if (!this.form.birthDate) return 0
+        const duration = +new Date() - this.form.birthDate
+        const days = duration / 1000 / 60 / 60 / 24 % 7
+        return Math.floor(days)
+      },
+      set(newVal) {
+        console.log('当前weekage==', this.weekAge)
+        const days = newVal * 1000 * 60 * 60 * 24 + this.weekAge * 1000 * 60 * 60 * 24 * 7
+        this.form.birthDate = +new Date() - days
+      }
     },
+    // dayAge() {
+    //   if (!this.form.birthDate) return 0
+    //   const duration = +new Date() - this.form.birthDate
+    //   const days = duration / 1000 / 60 / 60 / 24 % 7
+    //   return Math.floor(days)
+    // },
     // statusLable
     statusLable() {
       const MAP = {
