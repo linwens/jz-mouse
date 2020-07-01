@@ -20,7 +20,7 @@ export const tableOption = {
     label: '笼位号',
     prop: 'cageNo'
   }, {
-    label: '繁育时间',
+    label: '合笼时间',
     prop: 'breedTime',
     format: 'yyyy-MM-dd hh:mm:ss'
   }, {
