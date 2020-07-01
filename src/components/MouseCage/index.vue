@@ -255,8 +255,12 @@ export default {
   },
   watch: {
     'choicedList.mouses'(n, o) {
+      console.log('-=---=---[][', n)
+
       if (!n) { // 选中小鼠项情况，checkList也清空
         this.$set(this, 'checkList', [])
+      } else {
+        this.$set(this, 'checkList', n)
       }
     }
   },

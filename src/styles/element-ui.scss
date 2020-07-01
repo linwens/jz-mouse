@@ -129,3 +129,8 @@
     top: 8px;
   }
 }
+
+// tool-tips 定宽
+.el-tooltip__popper {
+  max-width: 500px;
+}
