@@ -698,12 +698,15 @@ export default {
 <style lang="scss">
   .mouse__info {
     &1{
-      width: 680px;
+      flex: 1;
+      min-width: 680px;
       height: 352px;
       padding: 16px 24px;
+      margin-right: 20px;
     }
     &2{
-      width: 428px;
+      flex: 1;
+      min-width: 428px;
       height: 352px;
       padding: 16px 24px;
     }
