@@ -10,6 +10,7 @@
     <el-dialog
       :title="btnText"
       :visible.sync="cageDialog"
+      append-to-body
       width="433px"
     >
       <div class="mouse__cageDialog">
@@ -110,9 +111,9 @@ export default {
   },
   created() {
     const iptHistory = JSON.parse(JSON.stringify(this.$store.getters.inputHistory))
-    const latestCageNo = iptHistory['cageNo'].pop()
-    const latestRoomNo = iptHistory['roomNo'].pop()
-    const latestShelvesNo = iptHistory['shelvesNo'].pop()
+    const latestCageNo = iptHistory['cageNo'] ? iptHistory['cageNo'].pop() : 0
+    const latestRoomNo = iptHistory['roomNo'] ? iptHistory['roomNo'].pop() : 0
+    const latestShelvesNo = iptHistory['shelvesNo'] ? iptHistory['shelvesNo'].pop() : 0
 
     this.addCageForm.cageNo = latestCageNo ? latestCageNo.value : '0'
     this.addCageForm.roomNo = latestRoomNo ? latestRoomNo.value : '0'
