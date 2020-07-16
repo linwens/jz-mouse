@@ -33,7 +33,7 @@
               <upload-btn :id="scope.row.id" biz-type="experiment" class="dib" btn-text="上传" />
             </template>
             <template slot="menu" slot-scope="{scope}">
-              <set-time :id="scope.row.id" btn-text="设置时间" type="text" class="dib" />
+              <set-time :id="scope.row.id" btn-text="设置时间" type="text" class="dib" :start-time="scope.row.startTime" :end-time="scope.row.endTime" />
               <el-button
                 type="text"
                 size="mini"
@@ -71,7 +71,7 @@ import ViewFiles from '@/components/Dialogs/ViewFiles'
 import SetTime from '@/components/Dialogs/cpt_set_time'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import { tableOption } from './table'
-import { addItemObj, addObj, delExptObj, delObj, fetchItemList, fetchList, putItemObj, endExpt } from '@/api/experiment'
+import { delExptObj, fetchList, endExpt } from '@/api/experiment'
 
 export default {
   name: 'DelList',

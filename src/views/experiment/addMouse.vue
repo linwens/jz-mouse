@@ -326,7 +326,7 @@ export default {
       if (this.choicedList.length === 0) {
         this.$message({
           type: 'error',
-          message: '请选择小鼠'
+          message: '未选择小鼠，请点击左上角勾选对应小鼠'
         })
         return false
       }

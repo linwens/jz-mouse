@@ -36,6 +36,7 @@
                 v-model="setTimeForm.time"
                 type="datetime"
                 format="yyyy-MM-dd HH:mm:ss"
+                default-time="09:00:00"
                 value-format="timestamp"
                 placeholder="选择日期时间"
               />
@@ -75,6 +76,10 @@ import { setExptTime } from '@/api/experiment'
 export default {
   name: 'SetTime',
   props: {
+    startTime: {
+      type: Number,
+      default: 0
+    },
     endTime: {
       type: Number,
       default: 0
@@ -108,8 +113,12 @@ export default {
   },
   methods: {
     setTime() {
-      if (this.setTimeForm.time > this.endTime) {
+      if (this.setTimeForm.time / 1000 > this.endTime) {
         this.$message.error('检测时间或处理时间不得大于结束时间')
+        return false
+      }
+      if (this.setTimeForm.time / 1000 < this.startTime) {
+        this.$message.error('检测时间或处理时间不得小于开始时间')
         return false
       }
       this.$refs['setTimeForm'].validate((valid) => {
