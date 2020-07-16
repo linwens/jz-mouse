@@ -143,7 +143,7 @@
 
             </div>
             <div class="df s-jcc s-aic mt30">
-              <set-time v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" :end-time="mouseExptInfo.endTime" @done="setProgress" />
+              <set-time v-if="mouseExptInfo.experimentId && (isAdmin || activeName === 'myCage')" :id="mouseExptInfo.experimentId" :start-time="mouseExptInfo.startTime" :end-time="mouseExptInfo.endTime" @done="setProgress" />
               <expt-record v-if="mouseExptInfo.experimentId" :id="mouseExptInfo.experimentId" class="ml16 w100" />
             </div>
           </div>
@@ -531,7 +531,7 @@ export default {
         if (this.transStep === 1 && this.choicedList.length === 0) {
           this.$message({
             type: 'error',
-            message: '请选择小鼠'
+            message: '未选择小鼠，请点击左上角勾选对应小鼠'
           })
         }
       }
@@ -643,7 +643,7 @@ export default {
         if (this.buildStep === 1 && this.choicedList.length === 0) {
           this.$message({
             type: 'error',
-            message: '请选择小鼠'
+            message: '未选择小鼠，请点击左上角勾选对应小鼠'
           })
         }
       }

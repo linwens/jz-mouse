@@ -352,7 +352,7 @@
 <script>
 import MergeTable from '@/components/MergeTable'
 import { tableOption, mouseListOption } from './addTable'
-import { addTags, addNewExpt, addNewGroup, delItemObj, delObj, fetchItemList, fetchList, putItemObj, getGroupSampleList } from '@/api/experiment'
+import { addNewExpt, getGroupSampleList } from '@/api/experiment'
 import { getMouseInfoByIds } from '@/api/mouse'
 import { calcWeek } from '@/components/Mixins/calcWeek'
 
@@ -607,8 +607,20 @@ export default {
       const lables = this.tags.map((el) => {
         return el.label
       })
-      if (handleTime > endTime || testTime > endTime) {
+      if (!startTime) {
+        this.$message.error('请选择开始时间')
+        return false
+      }
+      if (!endTime) {
+        this.$message.error('请选择结束时间')
+        return false
+      }
+      if ((handleTime && handleTime > endTime) || (testTime && testTime > endTime)) { // 新增时候可以为空
         this.$message.error('检测时间或处理时间不得大于结束时间')
+        return false
+      }
+      if ((handleTime && handleTime < startTime) || (testTime && testTime < startTime)) {
+        this.$message.error('检测时间或处理时间不得小于开始时间')
         return false
       }
       addNewExpt(Object.assign({}, {

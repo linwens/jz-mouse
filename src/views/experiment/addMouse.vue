@@ -166,23 +166,19 @@
 <script>
 import MouseCage from '@/components/MouseCage'
 import ViewFiles from '@/components/Dialogs/ViewFiles'
-import FileViewer from '@/components/FileViewer'
 import ShowFamily from '@/components/Dialogs/cpt_show_family'
-import AddCageBtn from '@/components/Dialogs/cpt_add_cage'
 import UploadBtn from '@/components/Dialogs/cpt_upload'
 import ExptRecord from '@/components/Dialogs/ExptRecord'
-import MergeTable from '@/components/MergeTable'
 import { recordOption } from './recordTable'
-import { transferCage, delItemObj, getMouseExpInfo, delObj, fetchItemList, fetchCageList, putItemObj, putObj, recordList } from '@/api/mouse'
+import {
+  fetchCageList
+} from '@/api/mouse'
 
 export default {
   name: 'MouseMain',
   components: {
-    MergeTable,
     MouseCage,
-    AddCageBtn,
     ExptRecord,
-    FileViewer,
     ShowFamily,
     UploadBtn,
     ViewFiles
@@ -279,13 +275,14 @@ export default {
     'curCageMouseList.mouses'(n, o) {
       const { table: cacheExpt } = this.$store.getters.addingExpt
       const curExpt = cacheExpt[this.item_index]
-      console.log('选中的小鼠===', n, cacheExpt, curExpt, this.item_index)
       if (n[0] && (curExpt.experimentGroupSelectionMiceIds.indexOf(n[0].miceInfoId + '') > -1)) {
         this.$message.warning('当前小鼠已被选择，请更换小鼠')
         return
       }
       const _self = this
+      // 所有选中的小鼠所在的鼠笼的列表
       let list = this.cacheChoicedList
+      // 当前选中的小鼠所在的鼠笼
       const hasThis = this.cacheChoicedList.filter((el) => {
         return el.cid === _self.curCageMouseList.cid
       }).length > 0
@@ -298,9 +295,17 @@ export default {
       list.push(this.curCageMouseList)
       this.$set(this, 'cacheChoicedList', list)
       // 降维数组
-      const allMouses = list.reduce(function(total, val, idx, arr) {
-        return total.concat(val.mouses)
-      }, [])
+      // const allMouses = list.reduce(function(total, val, idx, arr) {
+      //   console.log('val.mouses==', val.mouses)
+      //   // 过滤重复的小鼠
+      //   const newMouses = val.mouses.filter((el) => {
+      //     return total.indexOf(el) === -1
+      //   })
+      //   return total.concat(newMouses)
+      // }, [])
+      // 取最新加入的小鼠
+      const allMouses = list[list.length - 1].mouses
+      console.log('allMouses===', allMouses)
       this.choicedList = allMouses
     }
   },
@@ -326,7 +331,7 @@ export default {
       if (this.choicedList.length === 0) {
         this.$message({
           type: 'error',
-          message: '请选择小鼠'
+          message: '未选择小鼠，请点击左上角勾选对应小鼠'
         })
         return false
       }
